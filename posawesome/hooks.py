@@ -104,6 +104,7 @@ after_migrate = []
 
 doc_events = {
     "Item": {
+        "before_insert": "posawesome.posawesome.api.item_processing.item_codes.generate_short_code_and_barcode",
         "after_insert": "posawesome.posawesome.api.item_processing.alternates.clear_alternate_item_caches",
         "on_update": "posawesome.posawesome.api.item_processing.alternates.clear_alternate_item_caches",
         "on_trash": "posawesome.posawesome.api.item_processing.alternates.clear_alternate_item_caches",

@@ -267,6 +267,7 @@ def _collect_searchable_values(row: Dict[str, Any]) -> List[str]:
         row.get("brand"),
         row.get("item_group"),
         row.get("retailmind_short_name"),
+        row.get("custom_short_code"),
         row.get("retailmind_old_pos_pack"),
         row.get("retailmind_old_pos_company_code"),
         row.get("retailmind_old_pos_generic_code"),

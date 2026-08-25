@@ -72,6 +72,8 @@ const uniqueStrings = (values) =>
 
 const deriveItemSearchFields = (it) => {
 	const barcodes = uniqueStrings([
+		...(it.barcode ? [String(it.barcode)] : []),
+		...(it.custom_short_code ? [String(it.custom_short_code)] : []),
 		...(Array.isArray(it.item_barcode)
 			? it.item_barcode.map((b) => b && b.barcode)
 			: it.item_barcode
@@ -81,7 +83,10 @@ const deriveItemSearchFields = (it) => {
 			? it.barcodes.map((entry) => (entry && typeof entry === "object" ? entry.barcode : entry))
 			: []),
 	]);
-	const nameKeywords = uniqueStrings(it.item_name ? normalizeSearchValue(it.item_name).split(/\s+/) : []);
+	const nameKeywords = uniqueStrings([
+		...(it.item_name ? normalizeSearchValue(it.item_name).split(/\s+/) : []),
+		...(it.custom_short_code ? [normalizeSearchValue(it.custom_short_code)] : []),
+	]);
 	const itemCodeLc = normalizeSearchValue(it.item_code);
 	const itemNameLc = normalizeSearchValue(it.item_name);
 	const barcodesLc = barcodes.map(normalizeSearchValue).filter(Boolean);
@@ -358,6 +363,8 @@ self.onmessage = async (event) => {
 				rate: it.rate,
 				price_list_rate: it.price_list_rate,
 				currency: it.currency,
+				barcode: it.barcode,
+				custom_short_code: it.custom_short_code,
 				item_barcode: it.item_barcode,
 				item_uoms: it.item_uoms,
 				actual_qty: it.actual_qty,

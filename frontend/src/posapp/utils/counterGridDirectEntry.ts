@@ -36,6 +36,7 @@ const itemIdentity = (item: CounterGridDirectEntryItem | null | undefined) =>
 const matchedBarcodeUom = (item: CounterGridDirectEntryItem, query: string) => {
 	const normalizedQuery = query.trim().toLowerCase();
 	const barcodeRows = [
+		...(item.custom_short_code ? [{ barcode: item.custom_short_code }] : []),
 		...(Array.isArray(item.item_barcode) ? item.item_barcode : []),
 		...(Array.isArray(item.barcodes) ? item.barcodes : []),
 	];

@@ -506,6 +506,7 @@ export function useScanProcessor(context: ScanProcessorContext) {
 			foundItem = items.value.find((item) => {
 				const barcodeMatch =
 					item.barcode === searchCode ||
+					(item.custom_short_code && String(item.custom_short_code) === searchCode) ||
 					(Array.isArray(item.item_barcode) &&
 						item.item_barcode.some(
 							(b: any) => b.barcode === searchCode,

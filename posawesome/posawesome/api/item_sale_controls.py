@@ -9,6 +9,7 @@ LOCKED_FIELD = "retailmind_locked_for_sale"
 NON_DISCOUNTABLE_FIELD = "retailmind_non_discountable"
 CONTROLLED_FIELD = "retailmind_controlled_item"
 SHORT_NAME_FIELD = "retailmind_short_name"
+SHORT_CODE_FIELD = "custom_short_code"
 PHARMACY_SEARCH_FIELDS = (
     "retailmind_old_pos_pack",
     "retailmind_old_pos_company_code",
@@ -51,7 +52,7 @@ def installed_item_control_fields():
 def installed_item_search_fields():
     return [
         field
-        for field in [*item_control_fields(), *PHARMACY_SEARCH_FIELDS]
+        for field in [*item_control_fields(), SHORT_CODE_FIELD, *PHARMACY_SEARCH_FIELDS]
         if item_has_field(field)
     ]
 

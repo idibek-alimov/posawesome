@@ -69,6 +69,7 @@ export const indexItemInBarcodeIndex = (
 	const map = ensureBarcodeIndex(index);
 	registerCode(map, item, item.item_code);
 	registerCode(map, item, item.barcode);
+	registerCode(map, item, item.custom_short_code);
 	if (Array.isArray(item.item_barcode)) {
 		item.item_barcode.forEach((barcode) =>
 			registerCode(map, item, barcode?.barcode),
@@ -112,6 +113,8 @@ export const isExactBarcodeMatch = (
 	return Boolean(
 		(item.barcode &&
 			String(item.barcode).trim().toLowerCase() === normalized) ||
+			(item.custom_short_code &&
+				String(item.custom_short_code).trim().toLowerCase() === normalized) ||
 			item.item_barcode?.some(
 				(row) =>
 					row?.barcode &&
@@ -214,6 +217,8 @@ export function useBarcodeIndexing() {
 			const barcodeMatch =
 				(item.barcode &&
 					String(item.barcode).toLowerCase().includes(searchTerm)) ||
+				(item.custom_short_code &&
+					String(item.custom_short_code).toLowerCase().includes(searchTerm)) ||
 				(Array.isArray(item.barcodes) &&
 					item.barcodes.some((bc) =>
 						String(bc).toLowerCase().includes(searchTerm),

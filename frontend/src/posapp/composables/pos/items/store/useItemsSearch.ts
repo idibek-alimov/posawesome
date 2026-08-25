@@ -31,6 +31,10 @@ export function useItemsSearch() {
 			values.push(String(item.barcode));
 		}
 
+		if (item.custom_short_code) {
+			values.push(String(item.custom_short_code));
+		}
+
 		if (Array.isArray(item.item_barcode)) {
 			item.item_barcode.forEach((entry: any) => {
 				if (entry?.barcode) {
@@ -150,6 +154,7 @@ export function useItemsSearch() {
 				item.item_code,
 				item.item_name,
 				item.barcode,
+				item.custom_short_code,
 				item.description,
 			];
 
@@ -231,6 +236,7 @@ export function useItemsSearch() {
 				item.item_code,
 				item.item_name,
 				item.barcode,
+				item.custom_short_code,
 				item.description,
 			];
 
@@ -276,6 +282,7 @@ export function useItemsSearch() {
 
 		if (normalizedCode === searchTerm) return 1000;
 		if (normalizedBarcodes.includes(searchTerm)) return 950;
+		if (item.custom_short_code && normalizeSearchText(item.custom_short_code) === searchTerm) return 940;
 		if (normalizedCode.startsWith(searchTerm)) return 800;
 		if (normalizedName.startsWith(searchTerm)) return 700;
 		if (

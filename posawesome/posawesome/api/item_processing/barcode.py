@@ -455,7 +455,16 @@ def get_items_from_barcode(selling_price_list, currency, barcode):
 
 @frappe.whitelist()
 def search_serial_or_batch_or_barcode_number(search_value, search_serial_no=None, search_batch_no=None):
-    """Search for items by serial number, batch number, or barcode."""
+    """Search for items by short code, serial number, batch number, or barcode."""
+    search_value = cstr(search_value).strip()
+
+    # Search by short code (exact numeric match)
+    if search_value.isdigit() and frappe.get_meta("Item").has_field("custom_short_code"):
+        item_code = frappe.db.get_value("Item", {"custom_short_code": search_value}, "item_code")
+        if item_code:
+            barcode = frappe.db.get_value("Item Barcode", {"parent": item_code}, "barcode")
+            return {"item_code": item_code, "barcode": barcode}
+
     # Search by barcode
     barcode_data = frappe.db.get_value(
         "Item Barcode",

@@ -121,6 +121,12 @@ export const deriveItemSearchFields = (
 
 	const getBarcodes = (): string[] => {
 		const values: unknown[] = [];
+		if (safeItem.barcode) {
+			values.push(String(safeItem.barcode));
+		}
+		if (safeItem.custom_short_code) {
+			values.push(String(safeItem.custom_short_code));
+		}
 		if (Array.isArray(safeItem.item_barcode)) {
 			values.push(
 				...safeItem.item_barcode
@@ -148,6 +154,7 @@ export const deriveItemSearchFields = (
 		const values = [
 			safeItem.item_name,
 			safeItem.retailmind_short_name,
+			safeItem.custom_short_code,
 			safeItem.brand,
 			safeItem.item_group,
 			safeItem.retailmind_old_pos_pack,
@@ -240,8 +247,9 @@ const itemMatchesStoredSearch = (
 	const barcodeMatch = barcodes.some((barcode) => barcode.includes(term));
 	const textMatch =
 		searchText && terms.every((token) => searchText.includes(token));
-
-	return Boolean(nameMatch || codeMatch || barcodeMatch || textMatch);
+	const shortCodeMatch = item.custom_short_code && normalizeSearchValue(item.custom_short_code) === term;
+	return Boolean(nameMatch || codeMatch || barcodeMatch || shortCodeMatch || textMatch);
+	//return Boolean(nameMatch || codeMatch || barcodeMatch || textMatch);
 };
 
 const scoreStoredItemSearch = (
@@ -264,6 +272,7 @@ const scoreStoredItemSearch = (
 
 	if (itemCode === term) return 1000;
 	if (barcodes.includes(term)) return 950;
+	if (item.custom_short_code && normalizeSearchValue(item.custom_short_code) === term) return 940;
 	if (itemCode.startsWith(term)) return 800;
 	if (itemName.startsWith(term)) return 700;
 	if (

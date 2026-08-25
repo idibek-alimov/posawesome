@@ -7,6 +7,7 @@ type SearchItem = {
 	item_code?: string;
 	item_name?: string;
 	barcode?: string;
+	custom_short_code?: string;
 	description?: string;
 	brand?: string;
 	item_group?: string;
@@ -77,6 +78,7 @@ export function useItemSearch() {
 			filtered = filtered.filter((item) => {
 				return (
 					item.barcode ||
+					item.custom_short_code ||
 					(Array.isArray(item.barcodes) &&
 						item.barcodes.length > 0) ||
 					(Array.isArray(item.item_barcode) &&
@@ -112,6 +114,7 @@ export function useItemSearch() {
 				pushValue(item.item_code);
 				pushValue(item.item_name);
 				pushValue(item.barcode);
+				pushValue(item.custom_short_code);
 				pushValue(item.description);
 				pushValue(item.brand);
 
@@ -253,7 +256,9 @@ export function useItemSearch() {
 						" " +
 						(item.item_name || "") +
 						" " +
-						(item.barcode || "")
+						(item.barcode || "") +
+						" " +
+						(item.custom_short_code || "")
 					).toLowerCase();
 					matches = activeTerms.every((t) => rawIndex.includes(t));
 				}
@@ -274,6 +279,7 @@ export function useItemSearch() {
 			if (onlyBarcode) {
 				const hasBarcode =
 					item.barcode ||
+					item.custom_short_code ||
 					(Array.isArray(item.barcodes) &&
 						item.barcodes.length > 0) ||
 					(Array.isArray(item.item_barcode) &&
