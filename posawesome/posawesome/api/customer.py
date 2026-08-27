@@ -28,29 +28,31 @@ def validate(doc, method):
 
 
 def create_customer_referral_code(doc):
-    if doc.posa_referral_company:
-        company = frappe.get_cached_doc("Company", doc.posa_referral_company)
-        if not company.posa_auto_referral:
+    ref_company = doc.get("posa_referral_company")
+    if ref_company:
+        company = frappe.get_cached_doc("Company", ref_company)
+        if not company.get("posa_auto_referral"):
             return
         create_referral_code(
-            doc.posa_referral_company,
+            ref_company,
             doc.name,
-            company.posa_customer_offer,
-            company.posa_primary_offer,
-            company.posa_referral_campaign,
+            company.get("posa_customer_offer"),
+            company.get("posa_primary_offer"),
+            company.get("posa_referral_campaign"),
         )
 
 
 def create_gift_coupon(doc):
-    if doc.posa_referral_code:
+    ref_code = doc.get("posa_referral_code")
+    if ref_code:
         coupon = frappe.new_doc("POS Coupon")
         coupon.customer = doc.name
-        coupon.referral_code = doc.posa_referral_code
+        coupon.referral_code = ref_code
         coupon.create_coupon_from_referral()
 
 
 def validate_referral_code(doc):
-    referral_code = doc.posa_referral_code
+    referral_code = doc.get("posa_referral_code")
     exist = None
     if referral_code:
         exist = frappe.db.exists("Referral Code", referral_code)
