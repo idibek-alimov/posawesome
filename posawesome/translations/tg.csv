@@ -1,0 +1,1362 @@
+POS Awesome,POS аҷиб
+Fetch Items Directly from Server,Объектҳоро мустақиман аз сервер гиред
+Menu,Меню
+Actions,Амалҳо
+Close Shift,Shift-ро пӯшед
+End current session,Сеанси ҷорӣро ба итмом расонед
+Print Last Invoice,Ҳисобнома-фактураи охиринро чоп кунед
+Reprint previous transaction,Муомилоти қаблиро дубора чоп кунед
+Sync Offline Invoices,Ҳисобнома-фактураҳои офлайнро ҳамоҳанг созед
+Upload pending transactions,Амалиётҳои интизоршударо бор кунед
+Go Online,Ба онлайн равед
+Go Offline,Офлайн равед
+Disable offline mode,Ҳолати офлайнро хомӯш кунед
+Work without server connection,Бе пайвасти сервер кор кунед
+Clear Cache,Тоза кардани кэш
+Remove local data and refresh,Маълумоти маҳаллиро нест кунед ва навсозӣ кунед
+About,Дар бораи
+App information,Маълумоти барнома
+Language,Забон
+Change interface language,Забони интерфейсро тағир диҳед
+Light Mode,Ҳолати нур
+Dark Mode,Ҳолати торик
+Switch theme appearance,Намуди зоҳирии мавзӯъро иваз кунед
+Logout,Хуруҷ
+Sign out of session,Аз сессия хориҷ шавед
+Select Language,Забонро интихоб кунед
+Choose your preferred language for the POS interface,Забони дилхоҳи худро барои интерфейси POS интихоб кунед
+Language will be changed to,Забон ба иваз карда мешавад
+Cancel,Бекор кардан
+Change Language,Тағйир додани забон
+Close,Пӯшед
+Cannot change language - same language selected,Забонро тағир додан мумкин нест - ҳамон забони интихобшуда
+Language changed successfully! Reloading...,Забон бомуваффақият иваз карда шуд!Аз нав бор карда мешавад...
+Failed to change language,Забонро иваз карда натавонист
+Unknown error,Хатогии номаълум
+- Total Unallocated,- Ҳамагӣ тақсимнашуда
+* Required,* Ҳатмӣ
+{0} (Qty: {1}),{0} (Миқдор: {1})
+{0} actions,{0} амал
+{0} has only {1} in stock. You requested {2}. Adjust quantity or restock.,{0} танҳо {1} захира дорад.Шумо {2} дархост кардед.Миқдорро танзим кунед ё захира кунед.
+{0} offline invoice{1} pending,{0} ҳисобнома-фактураи офлайнӣ{1} интизор аст
+{0} offline invoice{1} saved as draft,{0} ҳисобнома-фактураи офлайнӣ{1} ҳамчун лоиҳа захира карда шудааст
+{0} offline invoice{1} synced,{0} ҳисобнома-фактураи офлайнӣ{1} ҳамоҳанг карда шудааст
+{0}: {1} {2},{0}: {1} {2}
+{0}d ago,{0}д пеш
+{0}h ago,{0}с пеш
+{0}m ago,{0}дақ пеш
+A POS supervisor is required for this action.,Барои ин амал супервайзери POS лозим аст.
+Access,Дастрасӣ
+Account,Ҳисоб
+Account is overdrawn,Ҳисоб аз ҳад зиёд гирифта шудааст
+Acknowledge the error to resume scanning,Барои идомаи сканкунӣ хатогиро эътироф кунед
+Acknowledge the error to resume scanning.,Барои идомаи сканкунӣ хатогиро эътироф кунед.
+Across,Дар саросари
+Action,Амал
+Active sale,Фурӯши фаъол
+add,илова кунед
+Add items from the selector to start building this sale.,Барои оғози сохтани ин фурӯш ашёҳоро аз селектор илова кунед.
+Add more value to an existing gift card,Ба корти тӯҳфаи мавҷуда арзиши бештар илова кунед
+Add New Address,Иловаи суроғаи нав
+Add new customer,Муштарии нав илова кунед
+Add on New Line,Дар хати нав илова кунед
+Add Payment,Иловаи пардохт
+Add payment to invoice,Ба ҳисобнома-фактура пардохт илова кунед
+Add/Edit Coupon Conditions,Шартҳои купонҳоро илова / таҳрир кунед
+Additional Discount,Тахфифи иловагӣ
+Additional Discount %,Тахфифи иловагӣ %
+Address Line 1,нишонаи сатри якум
+Address not found,Суроға ёфт нашуд
+Adjust the quantity or enable negative stock to continue.,Миқдорро танзим кунед ё захираи манфиро барои идома додан имкон диҳед.
+Adjustment,Танзим
+After returns,Пас аз бозгашт
+Against,зидди
+Against Name,Бар зидди Ном
+Age Bracket,Кранси синну сол
+All,Ҳама
+All Caught Up!,Ҳама дастгир шуданд!
+All invoices are synchronized,Ҳама ҳисобнома-фактураҳо ҳамоҳанг карда мешаванд
+All pending invoices are up to date,Ҳама ҳисобнома-фактураҳои интизоршуда нав карда шудаанд
+All Profiles,Ҳама профилҳо
+All Synchronized,Ҳама ҳамоҳангшуда
+All visible invoices are fully settled.,Ҳама ҳисобнома-фактураҳои намоён пурра ҳисоб карда мешаванд.
+All Warehouses,Ҳама анборҳо
+Allowed UOM is {0},Иҷозаи UOM ин {0} аст
+Always fetch items from server (ignore local cache),Ҳамеша ашёро аз сервер гиред (кеши маҳаллиро сарфи назар кунед)
+Amount,Маблағ
+Amount already received,Маблағи аллакай гирифташуда
+Amount exceeds profile cash movement max amount.,Маблағ аз миқдори максималии ҳаракати нақд аз профил зиёд аст.
+Amount must be greater than zero.,Маблағ бояд аз сифр зиёд бошад.
+Amount received from customer,Маблағи аз муштарӣ гирифташуда
+Appearance and user-level preferences for the current session.,Намуди зоҳирӣ ва афзалиятҳои сатҳи корбар барои сессияи ҷорӣ.
+Applied,Татбик карда шудааст
+Apply,Муроҷиат кунед
+Apply Gift Card,Корти тӯҳфаро татбиқ кунед
+Apply Offer,Пешниҳодро татбиқ кунед
+Apply On,Apply On
+Apply only the amount you want to redeem on this invoice. The remaining balance stays on the card.,"Дар ин ҳисобнома-фактура танҳо маблағеро, ки мехоҳед пардохт кунед, татбиқ кунед.Бақияи боқимонда дар корт мемонад."
+Apply Redemption,Бозгаштро татбиқ кунед
+Applying,Мурочиат кардан
+Apps,Барномаҳо
+Are you sure you want to close? All entered data will be lost.,"Шумо мутмаин ҳастед, ки мехоҳед пӯшед?Ҳама маълумоти воридшуда гум мешаванд."
+Attributes (Size/Color),Хусусиятҳо (андоза/ранг)
+Auto Allocate Payment Amount,Тақсимоти автоматии маблағи пардохт
+Auto Reconcile,Худшиносии худкор
+Auto reconciliation completed after payment submit.,"Пас аз пешниҳоди пардохт, ҳамоҳангсозии худкор анҷом ёфт."
+Auto reconciliation completed. Allocated: {0}{1}. Remaining outstanding: {0}{2}.,Мутобиқсозии худкор анҷом ёфт.Ҷудо карда шудааст: {0}{1}.Боқимондаҳои барҷаста: {0}{2}.
+Available Actions,Амалҳои дастрас
+Available QTY,QTY дастрас
+Available:,Дастрас:
+Average Basket,Сабади миёна
+Average Bill,Ҳисоби миёна
+Average Ticket,Чиптаи миёна
+Avg Bill,Миёнаи Билл
+Avg Invoice,Ҳисобнома-фактураи миёна
+Avg Invoice Profit,Фоидаи миёнаи ҳисобнома-фактура
+Avg Invoice Value,Арзиши миёнаи ҳисобнома-фактура
+Avg Purchase Frequency,Фосилаи миёнаи харид
+Awesome,Аҷоиб
+Awesome Dashboard,Панели аҷиб
+Awesome Dashboard is disabled for the selected POS Profile.,Панели олӣ барои профили интихобшудаи POS ғайрифаъол аст.
+Awesome Dashboard is unavailable for the selected scope.,Панели олӣ барои доираи интихобшуда дастрас нест.
+Awesome Dashboard is visible only to POS supervisors.,Панели олӣ танҳо ба нозирони POS намоён аст.
+Back,Бозгашт
+Back Office Cash Account,Ҳисоби пули нақд офис
+Back Office Cash Account (Optional Override),Ҳисоби пули нақд дар офис (Ихтиёрӣ бекор кардан)
+Back office cash account is required.,Ҳисоби пули нақд лозим аст.
+Back to {0},Бозгашт ба {0}
+Background processing did not finish in time.,Коркарди заминай дар вакташ ба охир нарасид.
+Background processing failed for Invoice {0}: {1},Коркарди замина барои ҳисобнома-фактураи {0} ноком шуд: {1}
+Background Submission Failed,Пешниҳоди замина ноком шуд
+Background sync interval (seconds),Фосилаи ҳамоҳангсозии замина (сонияҳо)
+Balance,Мувозинат
+Balance will be updated when connection is restored,Тавозуни пас аз барқарор кардани пайвастшавӣ нав карда мешавад
+Balances still pending,Тавозуниҳо ҳанӯз интизоранд
+Barcode,Штрих-код
+Barcode / QR Ready,Штрих-код / ​​QR омода аст
+Barcode Label Printing,Чопи штрих-код
+Base Paid:,Пардохти асосӣ:
+Base Recv:,Recv асосӣ:
+Base:,Асос:
+Basic Information,Маълумоти асосӣ
+Batch,Партия
+Batch Information,Маълумоти дастаҷамъӣ
+Before any return workflow,Пеш аз ҳама ҷараёни кории бозгашт
+Before returns,Пеш аз бозгашт
+Best Day,Беҳтарин рӯз
+Best Seller,Пурфурӯш
+Book expense or deposit from active shift.,Хароҷоти китоб ё пасандоз аз басти фаъол.
+Branch / Location-wise Report,Филиал / Ҳисобот аз рӯи макон
+Brand-wise,Аз ҷиҳати бренд
+Breakdown,Шикастан
+Browse,Мурури
+Build Time:,Вақти сохтмон:
+Built with Frappe,Бо Frappe сохта шудааст
+Bundle,баста
+Buying Price,Нархи харид
+Cache cleared successfully,Кэш бомуваффақият тоза карда шуд
+Cache Usage,Истифодаи кэш
+cache used,кэш истифода мешавад
+Calculating...,Ҳисоб карда мешавад...
+Camera Access Required,Дастрасӣ ба камера лозим аст
+Camera access was aborted. Please try again.,Дастрасӣ ба камера қатъ карда шуд.Лутфан бори дигар кӯшиш кунед.
+Camera constraints not supported by your device. Trying fallback settings...,Маҳдудиятҳои камераро дастгоҳи шумо дастгирӣ намекунад.Кӯшиши танзимоти бозгашт...
+Camera is busy or blocked by another app/tab. Close other camera apps and try again.,Камера банд аст ё аз ҷониби дигар барнома/ҷадвал баста шудааст.Дигар барномаҳои камераро пӯшед ва дубора кӯшиш кунед.
+Camera permission denied. Please allow camera access in your browser settings and refresh the page.,Иҷозат ба камера рад карда шуд.Лутфан дастрасии камераро дар танзимоти браузери худ иҷозат диҳед ва саҳифаро навсозӣ кунед.
+Camera scanner is locked until the current error is acknowledged,"Сканери камера то он даме, ки хатогии ҷорӣ эътироф карда нашавад, баста мешавад"
+Camera started but the video stream did not load in time. Please try again.,"Камера оғоз шуд, аммо ҷараёни видео сари вақт бор нашуд.Лутфан бори дигар кӯшиш кунед."
+Cancel cash movement {0}?,Ҳаракати пули нақд {0} бекор карда шавад?
+Cancel Payment,Бекор кардани пардохт
+Cancel Sale,Бекор кардани фурӯш
+Cancel Sale ?,Фурӯшро бекор кунед?
+Cancelled,Бекор карда шуд
+Cannot add an item with zero or negative quantity.,Адад бо миқдори сифр ё манфӣ илова карда намешавад.
+Cannot clear cache while offline,Ҳангоми офлайн кэш тоза карда намешавад
+Cannot redeem customer credit more than invoice total,Қарзи муштариро аз маблағи ҳисобнома-фактура зиёдтар пардохт карда наметавонад
+Cannot redeem gift cards more than invoice total,Кортҳои тӯҳфаро аз маблағи ҳисобнома-фактура зиёдтар пардохт карда наметавонанд
+Cannot Save Offline Invoice:,Ҳисобнома-фактураи офлайнро захира кардан мумкин нест:
+Cannot Save Offline Payment:,Пардохти офлайнро захира кардан мумкин нест:
+Card,Корт
+Card / Online,Корт / онлайн
+Card health after the last live lookup,Саломатии корт пас аз ҷустуҷӯи охирини зинда
+Cards,Кортҳо
+Cart,Ароба
+Cash,Пули нақд
+Cash back to customers,Бозгашти пули нақд ба муштариён
+Cash Collections,Коллексияҳои пули нақд
+Cash Deposit is disabled for this POS Profile.,Депозити пули нақд барои ин профили POS ғайрифаъол аст.
+Cash Drawer Snapshot,Намоиши пулакӣ
+Cash In Hand,Cash In Hand
+Cash Movement,Ҳаракати пули нақд
+Cash movement cancelled,Ҳаракати пули нақд бекор карда шуд
+Cash movement deduction applied,Тарҳи интиқоли пули нақд татбиқ карда мешавад
+Cash movement deleted,Ҳаракати пули нақд нест карда шуд
+Cash movement is disabled for this POS Profile.,Ҳаракати пули нақд барои ин профили POS ғайрифаъол аст.
+Cash Movement is disabled in current POS Profile.,Ҳаракати пули нақд дар профили ҷории POS ғайрифаъол аст.
+Cash movement saved offline,Ҳаракати пули нақд офлайн захира карда шудааст
+Cash movement submitted,Ҳаракати пули нақд пешниҳод карда шуд
+Cash Movements,Ҳаракатҳои пули нақд
+Cash payment cannot be less than invoice total when partial payment is not allowed,"Пардохти пули нақд набояд аз маблағи ҳисобнома-фактура камтар бошад, вақте ки пардохти қисман иҷозат дода намешавад"
+Cash returned after payment,Пули нақд пас аз пардохт баргардонида шуд
+Cashier,Кассир
+Cashier Access,Дастрасии кассир
+Cashier identity and appearance preferences.,Шахсияти хазинадор ва афзалиятҳои намуди зоҳирӣ.
+Cashier PIN,ПИН-коди хазинадор
+Cashier PIN saved successfully.,ПИН-коди кассир бомуваффақият захира карда шуд.
+Cashiers,Кассирхо
+Cashier-wise,Кассири хирадманд
+Categories,Категорияҳо
+Category,Категория
+Category / Brand / Variant Report,Категория / Бренд / Гузориши вариант
+Category-wise,Аз рӯи категория
+Category-wise Margin,Маржа аз рӯи категория
+Certificate,Шаҳодатнома
+Certificate is missing or not trusted. QZ may show confirmation dialogs.,Сертификат нест ё боваринок нест.QZ метавонад муколамаҳои тасдиқро нишон диҳад.
+Certificate is trusted. Silent QZ printing is active.,Шаҳодатнома эътимод дорад.Чопи бесадо QZ фаъол аст.
+Change,Тағйир
+Change allocation repaired,Тағироти тақсимот таъмир карда шуд
+Change Price,Тағйир додани нарх
+Change Return,Бозгаштро тағир диҳед
+Change Returned,Тағйир баргашт
+Change terminal cashier,Кассири терминалро иваз кунед
+Charge Heads,Сарпӯши барқ
+Charges,Пардохтҳо
+Charges not found,Пардохтҳо ёфт нашуд
+Check Balance,Тавозуни тафтиш
+Check balance for any card. Supervisors can issue and top up cards here.,Тавозуни ҳама гуна кортро тафтиш кунед.Нозирон метавонанд дар ин ҷо кортҳоро бароранд ва пур кунанд.
+Check balance only,Танҳо тавозунро тафтиш кунед
+Check for new commits,Уҳдадориҳои навро тафтиш кунед
+Check for Updates,Навсозиро тафтиш кунед
+Check live balance before applying redemption,Пеш аз татбиқи пардохт тавозуни зиндаро тафтиш кунед
+Check live balance before redemption,Пеш аз пардохт тавозуни зиндаро тафтиш кунед
+Checking...,Санҷиш...
+Cheque/Reference Date,Чек/Санаи истинод
+Cheque/Reference No,Чек/Рақами истинод
+Choose the cashier currently operating this terminal.,"Кассиреро, ки айни замон дар ин терминал кор мекунад, интихоб кунед."
+City,Шаҳр
+Clear,Тоза
+Clear All,Ҳамаро тоза кунед
+Clear all barcode items,Ҳама ҷузъҳои штрих-кодро тоза кунед
+Clear all purchase order items,Ҳама ҷузъҳои фармоиши харидро тоза кунед
+Clear Search,Ҷустуҷӯро тоза кунед
+Clearing local cache...,Тоза кардани кэши маҳаллӣ...
+Click to refresh,Барои навсозӣ клик кунед
+Client CPU Lag:,Қафомонии CPU муштарӣ:
+Client Memory Usage:,Истифодаи хотираи муштарӣ:
+Client Metrics,Метрикҳои муштарӣ
+Close about dialog,Дар бораи муколама пӯшед
+Close cashier switcher,Калиди кассирро пӯшед
+Close closing shift dialog,Муколамаи пӯшидани сменаро пӯшед
+Close column selector,Интихоби сутунро пӯшед
+Close Dialog,Муколамаро пӯшед
+Close drafts dialog,Муколамаи лоиҳаҳоро пӯшед
+Close invoice details dialog,Муколамаи тафсилоти ҳисобнома-фактураро пӯшед
+Close invoice management,Идоракунии ҳисобнома-фактураро пӯшед
+Close offline invoices dialog,Муколамаи ҳисобнома-фактураҳои офлайнро пӯшед
+Close packing list dialog,Муколамаи рӯйхати бастаҳоро пӯшед
+Close returns dialog,Муколамаи бозгаштҳоро пӯшед
+Close sales orders dialog,Муколамаи фармоишҳои фурӯшро пӯшед
+Close Scanner,Сканерро пӯшед
+Close scanner dialog,Муколамаи сканерро пӯшед
+Close Settings,Танзимотҳоро пӯшед
+Closing Amount,Маблағи пӯшида
+Closing POS Shift,Пӯшидани POS Shift
+Closing Snapshot Available,Сурати пӯшида дастрас аст
+Code,Кодекс
+Code scanned successfully,Рамз бомуваффақият скан карда шуд
+COGS,COGS
+Collapse item details,Ҷузъиёти ҷузъро ҷамъ кунед
+Collected,ҷамъоварӣ
+Cols,Колс
+Columns,Сутунҳо
+commits,ухдадор мекунад
+Completed and active sales in this range,Фурӯши пурра ва фаъол дар ин диапазон
+Completed returns will appear here.,Бозгашти анҷомшуда дар ин ҷо пайдо мешавад.
+Confirm,Тасдиқ кунед
+Confirm Close,Бастанро тасдиқ кунед
+Confirm Mobile Number,Рақами мобилиро тасдиқ кунед
+Confirm PIN,PIN-ро тасдиқ кунед
+Connect,Пайваст кунед
+Connect printer and manage certificate,Принтерро пайваст кунед ва сертификатро идора кунед
+Connecting to QZ Tray...,Пайвастшавӣ ба QZ Tray...
+Connection problem while submitting invoice,Мушкилоти пайвастшавӣ ҳангоми пешниҳоди ҳисобнома
+Connections:,Пайвастшавӣ:
+Connectivity and cached prerequisite status were rechecked.,Пайвастшавӣ ва ҳолати пешакии кэш дубора санҷида шуданд.
+Continue Editing,Таҳрирро идома диҳед
+Could not fetch latest balance from server,Тавозуни охиринро аз сервер гирифтан муяссар нашуд
+Count,Ҳисоб
+Country,кишвар
+Coupon,Купон
+Coupons,купонхо
+Cover,Сарпӯш
+CPU Cores:,ядроҳои CPU:
+Create,Эҷод кунед
+Create and load a new prepaid card,Корти нави пешпардохтро эҷод ва бор кунед
+Create and preload a new gift card,Корти тӯҳфаи навро эҷод ва пешакӣ бор кунед
+Create Bill,Эҷоди Билл
+Create Customer,Эҷоди муштарӣ
+Create New Item,Эҷоди ашёи нав
+Create or change your PIN,PIN-и худро эҷод кунед ё тағир диҳед
+Create PIN,Эҷоди PIN
+Create POS Opening Shift,Эҷоди Shift Opening POS
+Create Purchase Order,Эҷоди фармоиши харид
+Create Return,Эҷоди Бозгашт
+Create return from invoice,Эҷоди бозгашт аз ҳисобнома-фактура
+Create Supplier,Таъминкунанда эҷод кунед
+Credit and Output,Кредит ва баромад
+Credit Note,Эзоҳҳои кредитӣ
+Credit Outstanding,Қарзи бақия
+Credit sales remaining to be collected,Фурӯши қарзи боқимонда бояд ситонида шавад
+Critical,Интиқодӣ
+Currency,Асъор
+Current,ҷорӣ
+Current Event Loop Lag:,Қафомонии даврии ҷорӣ:
+Current Month,Моҳи ҷорӣ
+Current PIN,PIN ҷорӣ
+Current Profile,Профили ҷорӣ
+Current redeemable value on the gift card,Арзиши ҷории баргардонидашаванда дар корти тӯҳфа
+Current User,Корбари ҷорӣ
+Custom,Фармоишгар
+Custom Due Days,Рӯзҳои фармоишӣ
+Custom items per page,Ададҳои фармоишӣ дар як саҳифа
+Customer,Муштарӣ
+Customer already selected,Муштарӣ аллакай интихоб шудааст
+Customer Balance,Тавозуни муштариён
+Customer balance unavailable offline,Тавозуни муштариён офлайн дастрас нест
+Customer created successfully.,Муштарӣ бомуваффақият офарида шудааст.
+Customer creation failed.,Эҷоди муштарӣ ноком шуд.
+Customer Details,Тафсилоти муштарӣ
+Customer display channel is missing,Канали намоиши муштариён нест
+Customer display was blocked. Please allow pop-ups for this site.,Намоиши муштарӣ баста шуд.Лутфан ба поп-апҳо барои ин сайт иҷозат диҳед.
+Customer group is required,Гурӯҳи муштариён талаб карда мешавад
+Customer is required to add payment,Муштарӣ бояд пардохтро илова кунад
+Customer Name is required,Номи муштарӣ лозим аст
+Customer not selected,Муштарӣ интихоб нашудааст
+Customer Report,Ҳисоботи муштарӣ
+Customer saved offline,Муштарӣ офлайн захира кард
+Customer Screen,Экрани муштарӣ
+Customer territory is required,Ҳудуди муштарӣ талаб карда мешавад
+Customer updated successfully.,Муштарӣ бомуваффақият навсозӣ шуд.
+Customer-facing tools and printer setup.,Асбобҳо барои муштариён ва насби чопгар.
+Customers,Мизоҷон
+Customers not found,Муштариён ёфт нашуд
+Daily cashier actions without scrolling.,Амалҳои ҳаррӯзаи хазинадор бидуни ҳаракат.
+Daily Sales,Фурӯши ҳаррӯза
+Daily Sales Summary,Хулосаи фурӯши ҳаррӯза
+Data loaded in form. Review and submit.,Маълумот дар формат бор карда шудааст.Барраси ва пешниҳод.
+Database Health,Тандурустии пойгоҳи додаҳо
+Database health affects overall system speed and reliability.,Саломатии пойгоҳи додаҳо ба суръат ва эътимоднокии умумии система таъсир мерасонад.
+Database Info,Маълумоти пойгоҳи додаҳо
+Date,Сана
+Day ?,рӯз?
+days,рӯз
+Day-wise (MTD),Рӯзона (MTD)
+Day-wise Movement,Ҳаракати рӯзона
+Dead Stock,Захираи мурда
+Dead Stock Items,Маҳсулоти захираи мурда
+Decrease quantity,Миқдорро кам кунед
+Default,Пешфарз
+Default:,Пешфарз:
+Delete,Нобуд кунед
+Delete cancelled cash movement {0}?,{0} ҳаракати пули нақд бекор кардашударо нест кунед?
+Delete Draft,Лоиҳаро нест кунед
+Delete draft invoice,Лоиҳаи ҳисобнома-фактураро нест кунед
+Delete draft invoice {0}?,Лоиҳаи ҳисобнома-фактураи {0} нест карда шавад?
+Delete Invoice,Ҳисобнома-фактураро нест кунед
+Delete offline invoice,Ҳисобнома-фактураи офлайнро нест кунед
+Delivered,Супурд
+Delivery Charges,Пардохти интиқол
+Delivery Information,Маълумот дар бораи интиқол
+Delivery Note {0} created,Қайд оид ба таҳвил {0} сохта шудааст
+Delivery note created,Қайдномаи таҳвил сохта шудааст
+Deployed Bundle:,Бастаи ҷойгиршуда:
+Deposit,Амонат
+Description,Тавсифи
+Detailed Supplier Breakdown,Тақсими муфассали таъминкунандагон
+Detecting formats:,Муайян кардани форматҳо:
+Device Memory:,Хотираи дастгоҳ:
+Difference,Фарқият
+Difference (In Company Currency),Тафовут (бо асъори ширкат)
+Disable offline mode first to recheck live connectivity.,"Аввалан ҳолати офлайнро хомӯш кунед, то пайвасти мустақимро дубора тафтиш кунед."
+Disconnect,Қатъ кунед
+discount,тахфиф
+Discount %,Тахфиф %
+Discount / Void / Return Report,Тахфиф / Беэътибор / Ҳисоботи бозгашт
+Discount Amount,Маблағи тахфиф
+Discount limited by POS Profile,Тахфиф бо профили POS маҳдуд аст
+Discounted Invoices,Ҳисобнома-фактураҳои тахфифшуда
+Discounts,Тахфифҳо
+Dismiss,Рад кардан
+Download Certificate,Сертификатро зеркашӣ кунед
+Draft,Лоиҳа
+Draft invoice deleted,Лоиҳаи ҳисобнома-фактура нест карда шуд
+Draft source,Манбаи лоиҳа
+Drafts,Лоиҳаҳо
+Due {0},Мӯҳлати {0}
+Due Date,Мӯҳлати пардохт
+Duplicate,Дубликат
+Edit customer,Муштариро таҳрир кунед
+Edit discount amount,Маблағи тахфифро таҳрир кунед
+Edit discount percentage,Таҳрири фоизи тахфиф
+Edit Gift Application,Аризаи тӯҳфаро таҳрир кунед
+Edit item name,Номи ашёро таҳрир кунед
+Edit quantity,Миқдорро таҳрир кунед
+Edit rate,Сатҳи таҳрир
+Edit unit of measure,Таҳрири воҳиди ченак
+Edited,Таҳрир
+Employee,Корманд
+Enable background sync,Синхронизатсияи заминаро фаъол созед
+Enable Customer Display in POS Profile first.,Аввал Намоиши муштариро дар профили POS фаъол созед.
+Enter a PIN.,PIN-ро ворид кунед.
+Enter a valid grams value,Арзиши дурусти граммро ворид кунед
+Enter new price list rate,Сатҳи нави нархҳоро ворид кунед
+Enter Quantity,Миқдорро ворид кунед
+Enter the cashier PIN to continue.,Барои идома додан PIN-коди кассирро ворид кунед.
+Enter the current PIN first.,Аввалан PIN-и ҷорӣ ворид кунед.
+"Enter the current PIN, then choose a new one.",PIN-и ҷориро ворид кунед ва пас навашро интихоб кунед.
+Enter valid grams for scale barcode,Барои штрих-коди миқёс граммҳои дурустро ворид кунед
+Entries,Вурудҳо
+Error accessing camera:,Хатогии дастрасӣ ба камера:
+Error calculating prices,Хатогӣ дар ҳисоб кардани нархҳо
+Error fetching customer balance,Хатогӣ ҳангоми гирифтани тавозуни муштарӣ
+Error in change calculations!,Хатогӣ дар ҳисобкунии тағирот!
+Error Loading Data,Хатогӣ ҳангоми боркунии маълумот
+Error loading invoice details,Хатогӣ ҳангоми боркунии тафсилоти ҳисобнома-фактура
+Error processing invoice,Хатогӣ дар коркарди ҳисобнома
+Error processing payment,Хатогӣ ҳангоми коркарди пардохт
+Error searching invoices,Хатогӣ дар ҷустуҷӯи ҳисобнома-фактураҳо
+Error submitting invoice:,Хатогӣ ҳангоми пешниҳоди ҳисобнома:
+Error submitting invoice: {0},Хатогӣ ҳангоми пешниҳоди ҳисобнома: {0}
+Error submitting invoice: No response from server,Хатогӣ ҳангоми пешниҳоди ҳисобнома: Ҷавоб аз сервер нест
+Error updating currency,Хатогӣ ҳангоми навсозии асъор
+Error updating item details,Хатогӣ ҳангоми навсозии ҷузъиёти ашё
+Est. Purchase,ЗСШ - Замони Стандарти Шарқӣ.Харид
+Est. Value,ЗСШ - Замони Стандарти Шарқӣ.Арзиш
+Event-loop lag measures how busy your browser is. Lower is better.,Қафомонии рӯйдодҳо то чӣ андоза банд будани браузери шуморо чен мекунад.Поёнтар беҳтар аст.
+Every,Хар
+Exchange Rate,Қурби пул
+Expand item details,Тафсилоти ашёро васеъ кунед
+Expected Amount (In Company Currency),Маблағи пешбинишаванда (бо асъори ширкат)
+Expected Cash,Нақди пешбинишуда
+Expected cash on hand grouped by currency,Пули нақди пешбинишуда дар касса аз рӯи асъор гурӯҳбандӣ шудааст
+Expected vs Actual,Интизорӣ ва воқеӣ
+Expense,Хароҷот
+Expense Account (Optional Override),Ҳисоби хароҷот (Иловаи барҳам додан)
+Expense account is required.,Ҳисоби хароҷот лозим аст.
+Expenses and deposits posted during this shift,"Харочот ва пасандозхое, ки дар ин смена гузошта шудаанд"
+Expired,Муддат гузаштааст
+Failed to auto reconcile payments.,Мутобиқсозии автоматии пардохтҳо натавонист.
+Failed to cancel cash movement,Ҳаракати пули нақдро бекор карда натавонист
+Failed to clear cache,Тоза кардани кэш муяссар нашуд
+Failed to create item,Эҷоди адад
+Failed to create supplier,Муваффақият эҷод кардани таъминкунанда
+Failed to delete cash movement,Ҳаракати пули нақдро тоза карда натавонист
+Failed to generate scale barcode. Using item barcode only.,Дар тавлиди штрих-коди миқёс муваффақ нашуд.Истифодаи штрих-коди ашё танҳо.
+Failed to load cash movement context.,Контексти ҳаракати пули нақдро бор карда натавонист.
+Failed to load dashboard data.,Боркунии маълумоти панели идоракунӣ ноком шуд.
+Failed to reload invoice from server,Ҳисобнома-фактураро аз сервер бор карда натавонист
+Failed to submit cash movement,Пешниҳоди ҳаракати пули нақд
+Failed to sync offline cash movements,Ҳамоҳангсозии ҳаракатҳои нақд дар офлайн муяссар нашуд
+Fast cashier actions for active shifts.,Амалҳои хазинадори зуд барои бастҳои фаъол.
+Fast Moving Items,Ададҳои зуд ҳаракаткунанда
+Fees,Пардохтҳо
+Fetch the latest offline prerequisite updates,Навсозиҳои охирини офлайнро гиред
+Find a sales order quickly and load it into the current sale.,Фармоиши фурӯшро зуд пайдо кунед ва онро ба фурӯши ҷорӣ бор кунед.
+Fixing payment amounts for return invoice...,Муайян кардани маблағи пардохт барои баргардонидани ҳисобнома-фактура...
+Flash Off,Флеш Хомӯш
+Flash On,Флеш фурӯзон
+"For 'Product Bundle' items, Warehouse, Serial No and Batch No will be considered from the 'Packing List' table. If Warehouse and Batch No are same for all packing items for any 'Product Bundle' item, those values can be entered in the main Item table; values will be copied to 'Packing List' table.","Барои ашёи ""Бастаи маҳсулот"" анбор, рақами серия ва рақами партия аз ҷадвали ""Рӯйхати бастабандӣ"" баррасӣ карда мешаванд.Агар ""Анбор"" ва ""Рақами партия"" барои ҳама ҷузъҳои бастабандии ҳама гуна ашёи ""Бастаи маҳсулот"" якхела бошанд, ин арзишҳоро дар ҷадвали ашёи асосӣ ворид кардан мумкин аст;арзишҳо ба ҷадвали ""Рӯйхати бастабандӣ"" нусхабардорӣ карда мешаванд."
+Free,Озод
+Free Qty,Миқдори ройгон
+Frequency,Басомад
+from,аз
+From Date,Аз сана
+Fulfillment Details,Тафсилоти иҷро
+Full Name,Номи пурра
+Gain,Фоида
+Generate a fresh prepaid card and start it with an opening balance.,Корти пешпардохти нав тавлид кунед ва онро бо тавозуни кушода оғоз кунед.
+Generate and install the certificate to allow fully silent printing without trust prompts.,"Шаҳодатномаро эҷод ва насб кунед, то чопи пурраи хомӯшро бидуни дархости эътимод иҷозат диҳед."
+Generate Certificate,Эҷоди сертификат
+Generated scale barcode: {0},Штрих-коди миқёси тавлидшуда: {0}
+Get Payments,Пардохтҳоро гиред
+Gift Card,Корти тӯҳфа
+Gift card amount must be greater than zero.,Маблағи корти тӯҳфа бояд аз сифр зиёд бошад.
+Gift Card Code,Рамзи корти тӯҳфа
+Gift card code is required for redemption,Рамзи корти тӯҳфа барои пардохт лозим аст
+Gift card code is required.,Рамзи корти тӯҳфа лозим аст.
+Gift card issued successfully.,Корти тӯҳфа бомуваффақият бароварда шуд.
+Gift card loaded successfully.,Корти тӯҳфа бомуваффақият бор карда шуд.
+Gift Card Management,Идоракунии корти тӯҳфа
+Gift card payment,Пардохти корти тӯҳфа
+Gift card redemption requires an online connection,Пардохти корти тӯҳфа пайвасти онлайнро талаб мекунад
+Gift card topped up successfully.,Корти тӯҳфа бомуваффақият пур карда шуд.
+Gift Cards,Кортҳои тӯҳфа
+Go to Frappe Desk,Ба мизи кории Frappe равед
+Grand Total,Ҷамъи умумӣ
+Gross Margin,Маржаи умумӣ
+Gross Profit,Даромади умумӣ
+Gross Sales,Фурӯши умумӣ
+Group not found,Гурӯҳ ёфт нашуд
+"Grouped controls for terminal, UI, and session settings.","Назорати гурӯҳбандишуда барои терминал, UI ва танзимоти сессия."
+Grouped totals for each payment method and currency,Маблағҳои гурӯҳбандишуда барои ҳар як усули пардохт ва асъор
+Hide,Пинҳон кардан
+Hide Gift Card,Корти тӯҳфаро пинҳон кунед
+Hide Non Essential Fields,Майдонҳои ғайримуқаррариро пинҳон кунед
+Hide quantity decimals,Даҳҳои миқдорро пинҳон кунед
+Hide search tools,Воситаҳои ҷустуҷӯро пинҳон кунед
+Hide zero rated items,Пинҳон кардани ашёи баҳои сифр
+High,Баланд
+History,Таърих
+Hourly (Today),Соатӣ (Имрӯз)
+How this section works,Чӣ тавр ин бахш кор мекунад
+"If stale data remains, open Settings > Offline & Sync and run Rebuild Offline Data again while online.","Агар маълумоти кӯҳна боқӣ монад, Танзимотҳо > Офлайн ва Ҳамоҳангсозӣ -ро кушоед ва ҳангоми онлайн дубора барқарор кардани маълумотҳои офлайнро иҷро кунед."
+"If the warning persists, open Settings > Offline & Sync, then run Refresh Offline Data or Rebuild Offline Data.","Агар огоҳӣ боқӣ монад, Танзимотҳо > Офлайн ва Ҳамоҳангсозӣ -ро кушоед, пас Навсозии маълумоти офлайнӣ ё барқарор кардани маълумоти офлайнро иҷро кунед."
+Import the certificate into QZ Tray and restart QZ Tray on each POS machine.,Шаҳодатномаро ба QZ Tray ворид кунед ва QZ Trayро дар ҳар як мошини POS аз нав оғоз кунед.
+In,Дар
+In stock: {0},Дар захира: {0}
+Include Batch / Serial,Маҷмаи / Силсиларо дохил кунед
+Include Price,Нархро дохил кунед
+Increase quantity,Миқдорро зиёд кунед
+IndexedDB,IndexedDB
+Initial Amount,Маблағи ибтидоӣ
+Initialize your shift with opening balances,Сменаи худро бо тавозуни кушода оғоз кунед
+Initializing application...,Оғози барнома...
+"Inspect cache, sync, and prerequisite status","Кэш, ҳамоҳангсозӣ ва ҳолати шартиро тафтиш кунед"
+Installed Applications,Барномаҳои насбшуда
+Insufficient stock:\n{0},Захираи нокифоя:\n{0}
+Invalid rate,Меъёри беэътибор
+Inventory Status Report,Ҳисобот дар бораи ҳолати инвентаризатсия
+Invoice,Ҳисобнома-фактура
+Invoice {0} is Submitted,Ҳисобнома-фактураи {0} пешниҳод шудааст
+Invoice {0} processed successfully,Ҳисобнома-фактураи {0} бомуваффақият коркард карда шуд
+Invoice {0} submission failed,Пешниҳоди ҳисобнома-фактураи {0} ноком шуд
+Invoice {0} was already submitted,Ҳисобнома-фактураи {0} аллакай фиристода шудааст
+Invoice Adjustments,Ислоҳҳои ҳисобнома-фактура
+Invoice Change,Тағйир додани ҳисобнома
+Invoice Details,Тафсилоти ҳисобнома-фактура
+Invoice is still in draft after background submission.,Ҳисобнома-фактура пас аз пешниҳоди замина ҳанӯз дар лоиҳа аст.
+Invoice Items,Маводҳои ҳисобнома-фактура
+Invoice Management,Идоракунии ҳисобнома-фактура
+Invoice Mgmt,Ҳисобнома-фактура Mgmt
+Invoice saved offline,Ҳисобнома-фактура офлайн захира карда шуд
+Invoice submission failed,Пешниҳоди ҳисобнома-фактура иҷро нашуд
+Invoice Submitted,Ҳисобнома-фактура пешниҳод карда шуд
+"Invoice value settled by loyalty points, not cash collection","Арзиши ҳисобнома-фактура бо нуқтаҳои вафодорӣ ҳисоб карда мешавад, на инкассатсияи пули нақд"
+Invoices,Ҳисобнома-фактураҳо
+Invoices already past due date,Ҳисобнома-фактураҳо аллакай гузаштаанд
+Invoices saved as POS Invoices,Ҳисобнома-фактураҳо ҳамчун ҳисобнома-фактураҳои POS захира карда мешаванд
+Invoices still carrying balances,Ҳисобнома-фактураҳо то ҳол бақияи худро доранд
+Issue Mode,Режими масъала
+Issue New Card,Корти навро бароред
+Issue Workflow,Масъалаи ҷараёни корӣ
+"Issue, top up, and check","Баровард, пур кунед ва тафтиш кунед"
+Item,Адад
+Item / Product Sales Report,Ҳисобот дар бораи фурӯши маҳсулот
+Item {0} added to invoice,Унсури {0} ба ҳисобнома-фактура илова карда шуд
+Item '{0}' has no barcode,Ҷузъи '{0}' штрих-код надорад
+Item Code,Рамзи адад
+Item created successfully,Элемент бомуваффақият офарида шудааст
+Item is out of stock,Маҳсулот дар захира нест
+Item Name,Номи ашё
+Item not found,Элемент ёфт нашуд
+Item order updated,Тартиби ашё нав карда шуд
+Item Selector Settings,Танзимоти интихобкунандаи ашё
+Items,Ададҳо
+Items added in POS will appear here automatically.,Ададҳои дар POS иловашуда дар ин ҷо ба таври худкор пайдо мешаванд.
+Items added to invoice,Ададҳо ба ҳисобнома-фактура илова карда шудаанд
+Items per page,Ададҳо дар як саҳифа
+Items Sold,Молҳои фурӯхташуда
+Items/Invoice,Ададҳо / Ҳисобнома-фактура
+Item-wise Profitability,Даромаднокии ашё
+Journal Entry,Воридоти рӯзнома
+json,json
+Just now,Ҳамин ҳоло
+Keep offline prerequisites healthy and recover stale data safely.,Шартҳои офлайнӣ солим нигоҳ доред ва маълумоти кӯҳнаро бехатар барқарор кунед.
+Labels,Тамғакоғазҳо
+"Language, theme, terminal tools, and session controls.","Забон, мавзӯъ, абзорҳои терминал ва назорати сессия."
+Last,Охирин
+Last 14 Days (Paid vs Pending),14 рӯзи охир (пардохтшуда ва дар интизорӣ)
+Last 14 Days Activity,Фаъолияти 14 рӯзи охир
+Last 14 Days Gross Profit,Фоидаи умумии 14 рӯзи охир
+Last 14 Days Purchases,Харидҳои 14 рӯзи охир
+Last 14 Days Tax/Charges,Андоз/пардохтҳои 14 рӯзи охир
+Last sync:,Синхронизатсияи охирин:
+Last sync: {0} | ok: {1} | failed: {2} | skipped: {3},Синхронизатсияи охирин: {0} |хуб: {1} |натавонист: {2} |гузаред: {3}
+Latest entries for current shift,Воридоти охирин барои басти ҷорӣ
+Lead Time,Вақти иҷрошуда
+Limited,Маҳдуд
+lines,хатҳо
+List,Рӯйхат
+Live Snapshot,Сурати зинда
+Load a POS profile and cashier first.,Аввал профили POS ва кассирро бор кунед.
+Load More Invoices,Ҳисобнома-фактураҳои бештарро бор кунед
+Load previously saved invoices,Ҳисобнома-фактураҳои қаблан захирашударо бор кунед
+Load Sale,Фурӯши бор
+Load Sales Invoice,Ҳисобнома-фактураи фурӯшро бор кунед
+Loading app data...,Боркунии маълумоти барнома...
+Loading customer database...,Базаи муштариён бор карда мешавад...
+Loading customers...,Мизоҷон бор карда мешавад...
+Loading database stats...,Боркунии омори пойгоҳи додаҳо...
+Loading details...,Тафсилот бор карда мешавад...
+Loading invoice history...,Таърихи ҳисобнома-фактураҳо бор карда мешавад...
+Loading items...,Боркунии ашё...
+Loading product catalog...,Каталоги маҳсулот бор карда мешавад...
+Loading return invoices...,Ҳисобнома-фактураҳои баргардонидан бор карда мешавад...
+Loading server CPU/memory usage...,Боркунии сервери CPU/истифодаи хотира...
+Loading suppliers...,Таъминкунандагон бор карда мешавад...
+Loading unpaid invoices...,Ҳисобнома-фактураҳои пардохтнашуда бор карда мешаванд...
+Loading view...,Намоиш бор карда мешавад...
+Loading...,Loading...
+Local storage is unavailable. Switching to online-only mode.,Анбори маҳаллӣ дастрас нест.Гузариш ба режими танҳо онлайн.
+localStorage,Захираи маҳаллӣ
+Location Performance,Фаъолияти ҷойгиршавӣ
+Locations,Ҷойҳо
+Lock Screen,Экрани қулф
+Lookup Workflow,Ҷустуҷӯи ҷараёни корӣ
+Loss,талафот
+Low,Кам
+Low Stock,Захираи кам
+Low Stock Alerts,Огоҳӣ оид ба саҳмияҳои кам
+Low Stock Items,Маҳсулоти ками захиравӣ
+Low Stock Threshold,Ҳадди пасти саҳҳомӣ
+Low Stock Total,Ҳаҷми ками саҳҳомӣ
+Lowest Margin,Маржаи пасттарин
+Low-frequency maintenance and system details.,Нигоҳдории басомади паст ва тафсилоти система.
+Loyalty Redeemed,Садоқате
+Loyalty Redemption,Кафолати вафодорӣ
+Make New Payment,Пардохти нав кунед
+Manage all,Ҳамаро идора кунед
+Manage and synchronize your offline transactions,Муомилоти офлайнии худро идора ва ҳамоҳанг созед
+Manage Cashier PIN,Идоракунии PIN кассир
+"Manage offline tools, terminal controls, and maintenance from one workspace.","Асбобҳои офлайнӣ, назорати терминалҳо ва нигоҳдорӣ аз як фазои корӣ идора кунед."
+manual,дастур
+"Manual codes, barcode scans, and QR scans work in the same field","Рамзҳои дастӣ, сканҳои штрих-код ва сканерҳои QR дар як соҳа кор мекунанд"
+Manual offline mode is enabled,Ҳолати офлайнии дастӣ фаъол аст
+Margin,Маржа
+Maximum available quantity is {0}. Quantity adjusted to match stock.,Миқдори максималии дастрас {0} аст.Миқдори мувофиқи захираҳо тасҳеҳ карда шудааст.
+Maximum discount amount for this offer item is {0}.,Ҳадди ниҳоии тахфиф барои ин ашёи пешниҳод {0} аст.
+Maximum discount percentage for this offer item is {0}%.,Фоизи ниҳоии тахфиф барои ин ашёи пешниҳод {0}% аст.
+Maximum offer quantity is {0}. Quantity adjusted to allowed limit.,Миқдори максималии пешниҳод {0} аст.Миқдор ба маҳдудияти иҷозатдодашуда тасҳеҳ карда шудааст.
+Medium,Миёна
+Method-wise Collections,Маҷмӯаҳои методӣ
+Minimum allowed rate for this offer item is {0}.,Меъёри ҳадди ақали иҷозатдодашуда барои ин ашёи пешниҳод {0} аст.
+Minimum Qty,Миқдори ҳадди аққал
+Mobile No,Рақами мобилӣ
+Mode,Режим
+Mode of Payment,Тарзи пардохт
+Month,Моҳ
+Month ?,Мох?
+Monthly Profit,Фоидаи моҳона
+Monthly Sales,Фурӯши моҳона
+Monthly Sales Summary,Хулосаи фурӯши моҳона
+Month-wise,Аз рӯи моҳ
+Most Active Cashiers,Кассирҳои фаъолтарин
+Movement Type,Навъи ҳаракат
+Movements,Ҳаракатҳо
+Multi Currency,Мулти асъор
+N/A,Н/А
+Name,Ном
+Negative Stock,Захираи манфӣ
+Negative Stock Items,Ададҳои саҳҳомии манфӣ
+Negative values not allowed,Қиматҳои манфӣ иҷозат дода намешаванд
+Net,соф
+Net Qty,Миқдори холис
+Net Sales,Фурӯши соф
+Net Value,Арзиши холис
+Never,Ҳеҷ гоҳ
+New changes are ready to load,Тағироти нав барои бор кардан омодаанд
+New Item,Элементи нав
+New Offer Available,Пешниҳоди нав дастрас
+New PIN,PIN нав
+New rate,Нархи нав
+Next unit of measure,Воҳиди ченаки навбатӣ
+No attribute data found.,Ягон маълумоти атрибут ёфт нашуд.
+No Barcode,Штрихкод нест
+No barcode found for UOM '{0}',Барои UOM '{0}' штрих-код ёфт нашуд
+No branch/location data found.,Ягон маълумоти филиал/ҷойгир ёфт нашуд.
+No brand data found.,Ягон маълумоти бренд ёфт нашуд.
+No cached gift card balance is available offline.,Ягон тавозуни корти тӯҳфаи кэшшудаи офлайн дастрас нест.
+No camera found on this device. Please ensure your device has a working camera.,"Дар ин дастгоҳ ягон камера ёфт нашуд.Лутфан боварӣ ҳосил кунед, ки дастгоҳи шумо камераи корӣ дорад."
+No capability warnings recorded yet.,То ҳол ягон огоҳии қобилият сабт нашудааст.
+No cash expected for this shift.,Барои ин смена ягон пули нақд пешбинӣ нашудааст.
+No cash mode configured,Ҳолати пули нақд танзим карда нашудааст
+No cash movement type is allowed for this POS Profile.,Барои ин профили POS ягон намуди ҳаракати пули нақд иҷозат дода намешавад.
+No cashier PIN is set yet. Create one now.,Ҳанӯз ягон PIN-коди кассир муқаррар нашудааст.Ҳоло як эҷод кунед.
+No cashier profiles are available for this POS profile yet.,Барои ин профили POS ҳоло ягон профили хазинадор дастрас нест.
+No cashier-wise discount/void/return activity.,Тахфиф/беэътибор/баргардонидани фаъолияти хазинадор нест.
+No category data found.,Ягон маълумоти категория ёфт нашуд.
+No category profitability data found.,Ягон маълумот оид ба даромаднокии категория ёфт нашуд.
+No change returned recorded for this shift.,Дар ин смена ягон тағйирот сабт нашудааст.
+No change-allocation invoices match the current filters.,Ҳеҷ як ҳисобнома-фактураи тағирот ба филтрҳои ҷорӣ мувофиқат намекунад.
+No charge head breakdown found.,Ягон шикасти сари заряд ёфт нашуд.
+No Company Selected,Ягон ширкат интихоб нашудааст
+No customer sales data found.,Ягон маълумоти фурӯши муштариён ёфт нашуд.
+No day-wise discount/void/return trend.,Тамоюли тахфиф/беэътибор/бозгашти рӯзона нест.
+No day-wise payment data found.,Маълумот дар бораи пардохти рӯзона ёфт нашуд.
+No day-wise profitability trend found.,Тамоюли даромаднокии рӯзона пайдо нашуд.
+No day-wise purchase data found.,Маълумот дар бораи хариди рӯзона ёфт нашуд.
+No day-wise sales trend found.,Тамоюли фурӯши рӯзона пайдо нашуд.
+No day-wise tax/charges trend found.,Тамоюли андоз/пардохтҳои рӯзона пайдо нашуд.
+No dead stock items.,Ягон ашёи захираи мурда.
+No due date,Мӯҳлати ниҳоӣ нест
+No exact repair match found for this invoice,Барои ин фактура ягон мувофиқати дақиқи таъмир ёфт нашуд
+No hourly sales trend found for today.,Тамоюли фурӯши ҳарсоата барои имрӯз пайдо нашуд.
+No invoice activity found.,Ягон фаъолияти ҳисобнома-фактура ёфт нашуд.
+No invoices found,Ҳисобнома-фактура ёфт нашуд
+No invoices found. Try different search criteria.,Ҳисобнома-фактура ёфт нашуд.Меъёрҳои гуногуни ҷустуҷӯро санҷед.
+No invoices recorded for this shift.,Барои ин смена ягон фактура сабт нашудааст.
+No item profitability data found.,Ягон маълумот оид ба даромаднокии ашё ёфт нашуд.
+No item sales data found for this period.,Дар ин давра маълумот оид ба фурӯши маҳсулот ёфт нашуд.
+No items found,Ягон ашё ёфт нашуд
+No items in cart,Дар ароба ашё нест
+No items with barcodes to print,Ягон адад бо штрих-код барои чоп
+No location-wise top item data found.,Ягон маълумот оид ба ҷойгиршавии ҷузъҳои боло ёфт нашуд.
+No low stock alerts right now.,Дар айни замон огоҳии ками саҳмияҳо вуҷуд надорад.
+No low stock items.,Маҳсулоти ками захиравӣ вуҷуд надорад.
+No matching items in cart,Дар ароба ягон ашёи мувофиқ нест
+No month-wise sales trend found.,Тамоюли фурӯши моҳона пайдо нашуд.
+No negative stock items.,Ягон ашёи саҳҳомии манфӣ.
+No notifications yet,Ҳанӯз огоҳинома нест
+No offline cash movement synced.,Ҳаракати пули нақд дар офлайн ҳамоҳанг карда нашудааст.
+No offline invoices pending synchronization,Ҳисобнома-фактураҳои офлайнӣ дар интизори ҳамоҳангсозӣ вуҷуд надоранд
+No offline sync issues recorded yet.,Ҳанӯз ягон масъалаи ҳамоҳангсозии офлайн сабт нашудааст.
+No out-of-stock items.,Ягон ашёи аз захирашуда.
+No outstanding credit invoices for this shift.,Ҳисобнома-фактураҳои қарзӣ барои ин смена вуҷуд надорад.
+No payment collection data found.,Ягон маълумоти ҷамъоварии пардохт ёфт нашуд.
+No payment rows available on this invoice.,Дар ин фактура ягон сатри пардохт мавҷуд нест.
+No payments registered for this shift.,Барои ин смена ягон пардохт ба қайд гирифта нашудааст.
+No pending balances in this period.,Дар ин давра бақияи интизорӣ вуҷуд надорад.
+No pending offline invoices,Ҳисобнома-фактураҳои офлайнӣ интизор нестанд
+No Print Formats Found,Ягон формати чоп ёфт нашуд
+No profiles found for selected scope. Falling back to current profile failed.,Ягон профил барои доираи интихобшуда ёфт нашуд.Бозгаштан ба профили ҷорӣ муваффақ нашуд.
+No recent customer activity found.,Ягон фаъолияти муштариёни охирин ёфт нашуд.
+No recent stock entries found.,Ягон сабти саҳмияҳои охирин ёфт нашуд.
+No records found,Ягон сабт ёфт нашуд
+No reorder suggestions right now.,Дар айни замон ягон пешниҳоди такрорӣ вуҷуд надорад.
+No repeat customers in this period.,Дар ин давра муштариёни такрорӣ вуҷуд надоранд.
+No response from server,Аз сервер ҷавобе нест
+No return invoices found,Ҳисобнома-фактураҳои баргардонидан ёфт нашуд
+No return item trend found.,Тамоюли баргардонидани ашё пайдо нашуд.
+No returnable items found for this invoice,Барои ин фактура ягон ашёи баргардонидашуда ёфт нашуд
+No returns were processed in this shift.,Дар ин смена ягон баргардонида нашудааст.
+No risk activity found.,Ягон фаъолияти хавфнок ёфт нашуд.
+No sales activity found for this period.,Дар ин давра ягон фаъолияти фурӯш ёфт нашуд.
+No slow moving items.,Ҳеҷ гуна ашёи суст ҳаракат намекунад.
+No staff sales activity found.,Ягон фаъолияти фурӯши кормандон ёфт нашуд.
+No stock movement for this period.,Дар ин давра ҳаракати саҳмияҳо вуҷуд надорад.
+No submitted cash movements in this shift.,Дар ин смена ягон ҳаракати пули нақд пешниҳод нашудааст.
+No supplier purchases found in this month.,Дар ин моҳ ягон хариди таъминкунанда ёфт нашуд.
+No suppliers found for this period.,Дар ин давра ягон таъминкунанда ёфт нашуд.
+No sync trigger has run yet in this session.,Дар ин сессия то ҳол ягон триггери ҳамоҳангсозӣ иҷро нашудааст.
+No tax head breakdown found.,Ягон таснифи сардори андоз ёфт нашуд.
+No top items found for this location.,Барои ин макон ягон ашёи боло ёфт нашуд.
+No unpaid invoices,Ҳисобнома-фактураҳои пардохтнашуда
+No variant data found.,Ягон маълумоти вариант ёфт нашуд.
+No week-wise sales trend found.,Тамоюли фурӯш дар тӯли ҳафта пайдо нашуд.
+No.,Не.
+Nobile Number,Рақами нобил
+Not available,Дастрас нест
+Not checked,Санҷида нашудааст
+Not selected,Интихоб нашудааст
+Not Set,Муқаррар нашудааст
+Notifications,Огоҳиномаҳо
+Offer,Пешниҳод
+Offer Applied,Пешниҳод татбиқ карда мешавад
+Offer criteria exceeded,Меъёрҳои пешниҳод аз ҳад зиёданд
+Offer Item,Объекти пешниҳод
+Offer item unavailable,Объекти пешниҳод дастрас нест
+Offer Removed,Пешниҳод хориҷ карда шуд
+Offer UOM cannot be changed,Пешниҳоди UOM тағир дода намешавад
+Offer?,Пешниҳод?
+Offers,Пешниҳодҳо
+Offline,Офлайн
+Offline & Sync,Офлайн ва синхронизатсия
+Offline Capabilities,Имкониятҳои офлайнӣ
+Offline data status refreshed,Ҳолати маълумоти офлайнӣ нав карда шуд
+Offline diagnostics,Ташхиси офлайнӣ
+Offline Invoices,Ҳисобнома-фактураҳои офлайнӣ
+Offline invoices status,Ҳолати ҳисобнома-фактураҳои офлайнӣ
+Offline invoices synced,Ҳисобнома-фактураҳои офлайнӣ ҳамоҳанг карда шуданд
+Offline Queue: {0},Навбати офлайнӣ: {0}
+Offline rebuild guidance,Роҳнамои барқарорсозии офлайн
+Offline restore is unavailable for this session.,Барқарорсозии офлайнӣ барои ин сессия дастрас нест.
+Offline selling is available with degraded capabilities.,Фурӯши офлайнӣ бо қобилиятҳои пастшуда дастрас аст.
+Offline snapshot does not match the current POS state.,Сурати офлайнӣ ба ҳолати кунунии POS мувофиқат намекунад.
+Offline Status,Ҳолати офлайн
+"Offline, terminal, and system controls","Назорати офлайн, терминал ва система"
+OK,ДУРУСТ
+Online,Онлайн
+Open actions menu,Менюи амалҳоро кушоед
+Open balance to collect,Тавозуни кушода барои ҷамъоварӣ
+Open Customer Display,Намоиши муштариро кушоед
+Open drawer,Обоварашонро кушоед
+Open invoices,Ҳисобнома-фактураҳоро кушоед
+Open Payments?,Пардохтҳоро кушоед?
+Open POS home,POS хонаро кушоед
+Open this screen from POS Menu -> Open Customer Display.,Ин экранро аз Менюи POS -> Кушодани Намоиши муштарӣ кушоед.
+OpenCV image processing enabled - Enhanced barcode detection,Коркарди тасвири OpenCV фаъол аст - Муайянкунии мукаммали штрих-код
+OpenCV image processing unavailable on this device,Коркарди тасвири OpenCV дар ин дастгоҳ дастрас нест
+OpenCV Off,OpenCV Хомӯш
+OpenCV On,OpenCV Фаъол
+OpenCV processing disabled,Коркарди OpenCV ғайрифаъол аст
+Opening Amount,Маблағи кушода
+Opening Cash,Кушодани пули нақд
+options,имконоти
+Order,Тартиб
+Original,Асли
+Other,Дигар
+Out,берун
+Out of Stock,Батамом фурӯхта шудааст
+Out of Stock Items,Аҳдҳои захиравӣ
+Outstanding,Барҷаста
+Outstanding Credit by Currency,Қарзи барҷаста аз рӯи асъор
+Overdue,Муддат гузаштааст
+Overpayment Change,Тағйир додани пардохти изофа
+Overpayment change deducted: {0},Тағироти изофа ситонида шуд: {0}
+Packing List,Феҳрасти бастабандӣ
+Page Format,Формати саҳифа
+Page unavailable offline,Саҳифа дар офлайн дастрас нест
+Paid,Пардохтшуда
+Paid (orig):,Пардохтшуда (аслӣ):
+Paid Amount,Маблағи пардохтшуда
+Paid change cannot be greater than total change!,Тағйироти пардохтшуда наметавонад аз тағироти умумӣ зиёдтар бошад!
+Paid:,Пардохтшуда:
+Parent Item,Объекти волидайн
+Partial,Қисман
+Partly Paid,Қисман пардохта мешавад
+Party Account,Ҳисоби ҳизб
+Party Type,Навъи ҳизб
+Pause terminal until next cashier,Терминалро то кассири навбатӣ таваққуф кунед
+PAY,ПАРДОХ
+Payment,Пардохт
+Payment Account,Ҳисоби пардохт
+Payment entries processed for Invoice {0},Сабтҳои пардохт барои ҳисобнома-фактураи {0} коркард карда шуданд
+Payment Entry Type,Навъи вуруди пардохт
+Payment History,Таърихи пардохт
+Payment ID,ID пардохт
+Payment Method Report,Ҳисобот дар бораи усули пардохт
+Payment Methods,Усулҳои пардохт
+Payment of {0} received successfully.,Пардохти {0} бомуваффақият гирифта шуд.
+Payment Progress,Раванди пардохт
+Payment Reconciliation,Баррасии пардохт
+Payment request status could not be retrieved. Please try again,Ҳолати дархости пардохтро гирифтан ғайриимкон аст.Лутфан бори дигар кӯшиш кунед
+Payment Request took too long to respond. Please try requesting for payment again,"Барои посух додан ба дархости пардохт хеле тӯл кашид.Лутфан, бори дигар кӯшиш кунед, ки пардохтро дархост кунед"
+Payment saved offline,Пардохт офлайн захира карда шуд
+Payment State,Ҳолати пардохт
+Payment Status,Ҳолати пардохт
+Payment submitted but print function could not be executed. Payment name not found.,"Пардохт фиристода шуд, аммо функсияи чопро иҷро карда натавонист.Номи пардохт ёфт нашуд."
+Payment submitted.,Пардохт пешниҳод карда шуд.
+Payment Summary,Хулосаи пардохт
+Payments,Пардохтҳо
+Payments are not open. Do you want to open payments and submit?,Пардохтҳо кушода нестанд.Оё шумо мехоҳед пардохтҳоро кушоед ва пешниҳод кунед?
+Payments by Mode of Payment,Пардохтҳо аз рӯи усули пардохт
+PDF,PDF
+Peak Hour,Соатҳои баландтарин
+Peak Memory:,Хотираи баландтарин:
+Peak Server:,Сервери баландтарин:
+Peak:,Қулла:
+Pending,Дар интизорӣ
+Pending Amount,Маблағи интизорӣ
+Pending count updated from {0} to {1},Шумораи интизоршуда аз {0} то {1} нав карда шуд
+Pending Exposure,Экспозитсияи интизорӣ
+Pending Invoices,Ҳисобнома-фактураҳои интизорӣ
+Pending Ratio,Таносуби интизорӣ
+Pending Sales,Фурӯши интизорӣ
+Pending sales: {0} | Cache usage: {1}%,Фурӯши интизорӣ: {0} |Истифодаи кэш: {1}%
+Pending Sync,Синхронизатсия интизор аст
+Pending: {0},Дар интизорӣ: {0}
+Pending: {0} | Synced: {1} | Draft: {2},Дар интизорӣ: {0} |Ҳамоҳангсозӣ: {1} |Лоиҳа: {2}
+Per Page,Дар як саҳифа
+Personal,Шахсӣ
+Personal preferences adjust the current cashier experience without changing the active POS route.,Афзалиятҳои шахсӣ таҷрибаи ҷории хазинадорро бидуни тағир додани масири фаъоли POS танзим мекунанд.
+PIN confirmation does not match.,Тасдиқи PIN мувофиқат намекунад.
+PIN must be 4 to 8 digits.,PIN бояд аз 4 то 8 рақам бошад.
+Please add at least one item.,Лутфан ақаллан як адад илова кунед.
+Please allow camera access to scan codes,Лутфан дастрасии камераро ба кодҳои скан иҷозат диҳед
+Please enter payment amount,Лутфан маблағи пардохтро ворид кунед
+Please fill all required fields,Лутфан ҳамаи майдонҳои заруриро пур кунед
+Please make a payment or select a payment,Лутфан пардохт кунед ё пардохтро интихоб кунед
+Please request phone payment or use another payment method,Лутфан пардохти телефонро дархост кунед ё усули дигари пардохтро истифода баред
+Please select a customer first,Лутфан аввал муштариро интихоб кунед
+Please select a party,Лутфан ҳизберо интихоб кунед
+Please select a party before reconciling.,"Лутфан пеш аз оштӣ шудан, тараферо интихоб кунед."
+Please select a valid movement type.,Лутфан як навъи ҳаракати дурустро интихоб кунед.
+Please select an invoice,Лутфан ҳисобнома-фактураро интихоб кунед
+Please select company before reconciling.,Лутфан ширкатро пеш аз оштӣ интихоб кунед.
+Please set the customer's mobile number,Лутфан рақами мобилии муштариро таъин кунед
+Please try again or enter the item manually.,Лутфан бори дигар кӯшиш кунед ё ашёро дастӣ ворид кунед.
+Please verify the barcode or check the item's availability.,Лутфан штрих-кодро тасдиқ кунед ё мавҷудияти ашёро тафтиш кунед.
+Points,Нуқтаҳо
+Popup blocked. Please allow popups.,Поп-ап блок баста шуд.Лутфан ба поп-апҳо иҷозат диҳед.
+POS,POS
+POS controls and maintenance,Назорати POS ва нигоҳдорӣ
+POS Expense is disabled for this POS Profile.,Хароҷоти POS барои ин профили POS ғайрифаъол аст.
+POS is running with limited offline prerequisites.,POS бо шартҳои маҳдуди офлайнӣ кор мекунад.
+POS Profile,Профили POS
+Position the QR code or barcode within the scanning area,Рамзи QR ё штрих-кодро дар минтақаи скан ҷойгир кунед
+Posting,Интишори
+Posting and Price List,Интишор ва нархнома
+Posting Date,Санаи интишор
+Preparing background sync,Омодасозии ҳамоҳангсозии замина
+"Press OK to continue offline with a warning, or Cancel to retry.",Барои идомаи офлайн бо огоҳӣ OK -ро пахш кунед ё барои дубора кӯшиш кардан Бекор кунед.
+Previous unit of measure,Воҳиди ченаки қаблӣ
+Price List,Рӯйхати нархҳо
+Price List Rate,Нархи рӯйхати нархҳо
+Price list rate updated locally only,Қурби рӯйхати нархҳо танҳо дар сатҳи маҳаллӣ нав карда мешавад
+Pricing & Discounts,Нархгузорӣ ва тахфифҳо
+Pricing Rule,Қоидаи нархгузорӣ
+Print,Чоп кардан
+Print Draft,Лоиҳаи чоп
+Print Format (Invoice),Формати чоп (инвойс)
+Print Format (Order),Формати чоп (фармоиш)
+Print invoice,Ҳисобнома-фактураро чоп кунед
+Print Purchase Invoice instead of PO,Чоп фактураи харид ба ҷои ТҶ
+Printer,Принтер
+Processed returns impacting the shift totals,"Бозгашти коркардшуда, ки ба ҷамъбасти смена таъсир мерасонад"
+Processing Payment,Коркарди пардохт
+Processing payment entries for Invoice {0},Коркарди сабтҳои пардохт барои ҳисобнома-фактураи {0}
+Profile,Профил
+Profiles,Профилҳо
+Profit,Фоида
+Profit: Invoice Item Estimate,Фоида: Ҳисоби ашёи ҳисобнома-фактура
+Profit: Stock Ledger (COGS),Фоида: Китоби саҳҳомӣ (COGS)
+Profitability Report,Ҳисобот дар бораи даромаднокӣ
+Prorated return discount,Тахфифи баргардонидани мутаносиб
+Purchase Amount,Маблағи харид
+Purchase Invoices,Ҳисобнома-фактураҳои харид
+Purchase Order created,Фармоиши харид сохта шудааст
+Qty,Миқдори
+Qualified,Ихтисоснок
+Quantity,Миқдор
+Quantity exceeds available stock,Миқдор аз захираҳои мавҷуда зиёд аст
+Quick Actions,Амалҳои зуд
+Quotation {0} is Submitted,Иқтибос {0} пешниҳод шудааст
+Quotation submitted,Иқтибос пешниҳод карда шуд
+QZ Tray connected.,QZ Tray пайваст.
+QZ Tray is manually disconnected. Press Connect to enable it again.,QZ Tray дастӣ ҷудо карда шудааст.Барои аз нав фаъол кардани он пайваст шавед.
+QZ Tray is not connected.,QZ Tray пайваст нашудааст.
+QZ Tray Setup,Танзимоти табақи QZ
+Rate,Нарх
+Rate adjusted to maximum allowed discount,Қурб ба ҳадди тахфифи иҷозатдодашуда тасҳеҳ карда шудааст
+Ready,Тайёр
+Ready to resume,Барои идома додан омода аст
+Ready!,Тайёр!
+Real-time POS insights for retail operations.,Андешаҳои воқеии POS барои амалиёти чакана.
+Rebuild Offline Data,Маълумоти офлайнро барқарор кунед
+Receive,Гирифтан
+Receive now,Ҳоло қабул кунед
+Received,Гирифтанд
+Received:,Гирифтанд:
+Recent Movement Entries,Воридоти охирини ҳаракат
+Recent updates about your invoices,Навсозиҳои охирин дар бораи фактураҳои шумо
+Recently Active Customers,Муштариёни фаъоли ба наздикӣ
+Rechecking connection,Тафтиши пайвастшавӣ
+Reconcile payment methods and close shift,Усулҳои пардохтро мувофиқат кунед ва сменаро пӯшед
+Reconciling Payments,Мутобиқсозии пардохтҳо
+"Reconnect and open this page once while online, then offline refreshes will be able to restore it.","Ҳангоми онлайн ин саҳифаро дубора пайваст кунед ва кушоед, пас тароватҳои офлайнӣ метавонанд онро барқарор кунанд."
+Reconnect online to refresh cached offline data from the server.,Барои нав кардани маълумоти кэшшудаи офлайнӣ аз сервер ба онлайн дубора пайваст шавед.
+Recreate local offline prerequisites from scratch,Шартҳои офлайнии маҳаллиро аз сифр дубора эҷод кунед
+Recv:,Recv:
+Redeem,Пардохт кунед
+Redeem / Scan,Харид / скан
+Redeem Amount,Пардохти маблағ
+Redeem Mode,Реҷаи барқароркунӣ
+Redeemed Amount,Маблағи баргардонидашуда
+Redeemed credit cannot be greater than its total.,Қарзи баргардонидашуда наметавонад аз маблағи умумии он зиёд бошад.
+Redemption and Totals,Пардохт ва ҷамъбаст
+Reference,Истинод
+Refresh,Навсозӣ
+Refresh Exchange Rate,Навсозии қурби асъор
+Refresh Offline Data,Маълумоти офлайнро навсозӣ кунед
+Refresh Printers,Навсозии чопгарҳо
+Refund,Бозгашт
+Release Notes,Қайдҳои нашр
+Reload,Аз нав бор кунед
+Reload customers,Муштариёнро аз нав бор кунед
+Reload Items,Навсозии ашё
+Reload Now,Ҳоло дубора бор кунед
+Reload to apply the latest changes. Your current session will be refreshed.,Барои татбиқ кардани тағйироти охирин аз нав бор кунед.Сеанси ҷории шумо нав карда мешавад.
+Reload Workflow,Раванди корро аз нав бор кунед
+Remarks,Мулохизахо
+Remarks are required.,Эзоҳҳо лозиманд.
+Remove,Хориҷ кунед
+Remove barcode item,Элементи штрих-кодро хориҷ кунед
+Remove cached data and reload the POS app,Маълумоти кэшшударо нест кунед ва барномаи POS-ро аз нав бор кунед
+Remove item,Объектро нест кунед
+Remove Offer,Пешниҳодро нест кунед
+Reorder / Purchase Suggestions,Пешниҳодҳои фармоишӣ / харид
+Repair Candidate,Номзади таъмир
+Repair Change Allocation,Таъмир Тағйир додани тақсимот
+Repair requires an online connection,Таъмир пайвасти онлайнро талаб мекунад
+Repaired,Таъмир карда шудааст
+Repairing change allocation,Таъмири тақсимоти тағирот
+Repeat Customers,Муштариёнро такрор кунед
+Repeat Rate,Меъёри такрорӣ
+Request,Дархост
+Request ID: {0},ID-и дархост: {0}
+Request Payment,Дархости пардохт
+Requested route: {0},Масири дархостшуда: {0}
+Required columns cannot be hidden,Сутунҳои заруриро пинҳон кардан мумкин нест
+Reset,Бозсозӣ
+Reset item name,Номи ашёро барқарор кунед
+Reset to Default,Баргардонед ба пешфарз
+Resource Health,Тандурустии захираҳо
+Restricted,Маҳдуд
+Restricted operational controls for supervisors only.,Назорати маҳдуди амалиётӣ танҳо барои нозирон.
+Retry,Аз нав кӯшиш кунед
+Retry route,Роҳро такрор кунед
+Return,Бозгашт
+Return Amount,Маблағи баргардонидани
+Return Count,Ҳисоби бозгашт
+Return items must have negative quantities,Ададҳои баргардонидашуда бояд миқдори манфӣ дошта бошанд
+Return total must be negative,Маблағи умумии бозгашт бояд манфӣ бошад
+Return Valid Until,"Бозгаштан эътибор дорад, то"
+Return window passed,Равзанаи бозгашт гузашт
+Return without Invoice,Бозгашти бе ҳисобнома
+Returns,Бозгашт
+Returns / Voids / Discounts,Бозгаштҳо / Бекорҳо / Тахфифҳо
+Returns by Currency,Бозгашт аз рӯи асъор
+Revenue,Даромад
+Review shift totals before submitting the closing entry,"Пеш аз пешниҳоди сабти ниҳоӣ, ҷамъи сменаҳоро аз назар гузаронед"
+Round Off,Раунд
+Rows,Қаторҳо
+Rows:,Қаторҳо:
+Rule,Қоида
+Sale,Фурӯш
+Sales,Фурӯш
+Sales Order {0} is Submitted,Фармоиши фурӯш {0} пешниҳод шудааст
+Sales Person and Print,Шахси фурӯш ва чоп
+Sales Person not found,Шахси фурӯшанда ёфт нашуд
+Sales processed,Фурӯш коркард шудааст
+Sales Return,Бозгашти фурӯш
+Sales Trend Report,Гузориши тамоюли фурӯш
+Save,Захира кунед
+Save & Clear,Захира & Тоза
+Save as POS Profile Default,Ҳамчун пешфарз профили POS захира кунед
+Save Settings,Захира Танзимотҳо
+Save the selected printer as the POS Profile default so it shows automatically on this setup.,"Чопгари интихобшударо ҳамчун профили пешфарзии POS захира кунед, то он ба таври худкор дар ин танзимот нишон дода шавад."
+Saved as draft because: {0},"Ҳамчун лоиҳа захира карда шуд, зеро: {0}"
+Saving...,Захира...
+Scale barcode detected. Quantity here is the number of labels to print.,Штрих-коди миқёс муайян карда шуд.Миқдор дар ин ҷо шумораи тамғакоғазҳо барои чоп аст.
+Scale barcode settings are not configured. Using item barcode only.,Танзимоти штрих-коди миқёс танзим карда нашудааст.Истифодаи штрих-коди ашё танҳо.
+Scale template barcode is missing for this item/UOM. Using item barcode only.,Барои ин ашё/UOM штрих-коди қолаби миқёс мавҷуд нест.Истифодаи штрих-коди ашё танҳо.
+Scan an existing card and top it up without leaving the payment flow.,Корти мавҷударо скан кунед ва онро бидуни тарк кардани ҷараёни пардохт пур кунед.
+Scan Error,Хатои скан
+Scan or enter a gift card code to check balance or redeem.,"Рамзи корти тӯҳфаро скан кунед ё ворид кунед, то тавозуни худро тафтиш кунед ё пардохт кунед."
+Scan or paste the card code below.,Рамзи кортро дар зер скан ё часбонед.
+Scan QR Code/Barcode,Коди QR/штрих-кодро скан кунед
+Scan with camera,Бо камера скан кунед
+Scan-First Flow,Скан-Ҷараёни аввал
+Scanned Code:,Рамзи сканшуда:
+Scanning for: {0},Скан кардани: {0}
+Scanning items,Сканкунии ашё
+Scan-Ready,Скан-тайёр
+Scope,Доираи
+Scope: All Profiles,Доираи: Ҳама профилҳо
+Scope: Current Profile,Доираи: Профили ҷорӣ
+Scope: Specific Profile,Доираи: Профили мушаххас
+Search,Ҷустуҷӯ
+Search Account,Ҷустуҷӯи ҳисоб
+Search an invoice and continue the return flow without extra steps.,Ҳисобнома-фактураро ҷустуҷӯ кунед ва ҷараёни бозгаштро бидуни қадамҳои иловагӣ идома диҳед.
+Search customer,Ҷустуҷӯи муштарӣ
+Search invoices or customers,Ҷустуҷӯи ҳисобнома-фактураҳо ё муштариён
+Search item,Ҷустуҷӯи ашё
+Search item / code,Ҷустуҷӯи ашё / код
+Search items or barcode,Ҷустуҷӯи ашё ё штрих-код
+Search Mpesa Payments,Ҷустуҷӯи пардохтҳои Mpesa
+Search return invoices or customers,Ҷустуҷӯи ҳисобнома-фактураҳо ё муштариён
+Search supplier,Ҷустуҷӯи таъминкунанда
+Search unpaid invoices or customers,Ҳисобнома-фактураҳои пардохтнашуда ё муштариёнро ҷустуҷӯ кунед
+Secure context (HTTPS or localhost) is required for camera access.,Барои дастрасии камера контексти амн (HTTPS ё localhost) лозим аст.
+Secure context (HTTPS) required for camera access. Please use HTTPS to access the camera.,Барои дастрасии камера контексти амн (HTTPS) лозим аст.Лутфан HTTPS-ро барои дастрасӣ ба камера истифода баред.
+Select,Интихоб кунед
+Select a cashier first.,Аввал кассирро интихоб кунед.
+Select a customer,Муштариро интихоб кунед
+Select a customer to use coupon,Барои истифодаи купон муштарӣ интихоб кунед
+Select a printer to use QZ silent printing.,Барои истифодаи чопи бесадо QZ чопгарро интихоб кунед.
+Select Batch,Маҷмӯаро интихоб кунед
+Select Columns to Display,Сутунҳоро барои намоиш интихоб кунед
+Select items to sell,Барои фурӯш ашёро интихоб кунед
+Select Payment,Пардохт-ро интихоб кунед
+Select Payment Account,Ҳисоби пардохтро интихоб кунед
+Select printer,Принтерро интихоб кунед
+Select Return Invoice,Баргардонидани ҳисобнома-фактураро интихоб кунед
+Select S.O,S.O.-ро интихоб кунед
+Select Sales Orders,Фармоишҳои фурӯшро интихоб кунед
+Select the cashier who is taking over this terminal.,"Кассиреро, ки ин терминалро қабул мекунад, интихоб кунед."
+Selected,Интихобшуда
+Selected movement type is not allowed by POS Profile.,Навъи ҳаракати интихобшуда аз ҷониби профили POS иҷозат дода намешавад.
+Selected Payments,Пардохтҳои интихобшуда
+Sensitive actions kept away from quick taps.,Амалҳои ҳассос аз ламсҳои зуд дур нигоҳ дошта мешаванд.
+Serial,Силсила
+Serial Numbers,Рақамҳои силсилавӣ
+Server CPU Usage:,Истифодаи CPU сервер:
+Server Health,Саломатии сервер
+Server Memory Usage:,Истифодаи хотираи сервер:
+Server Metrics,Метрикҳои сервер
+Server Uptime:,Вақти кори сервер:
+Service Charges,Пардохти хизматрасонӣ
+Session,Сессия
+Set each cashier PIN in the User form and keep terminal members assigned in POS Profile User.,"Ҳар як PIN-коди кассирро дар шакли корбар насб кунед ва аъзои терминалро, ки дар Корбари профили POS таъин шудаанд, нигоҳ доред."
+Settings,Танзимотҳо
+Settings in this section update the POS workspace without changing the current route.,Танзимотҳо дар ин бахш фазои кории POS-ро бе тағир додани масири ҷорӣ навсозӣ мекунанд.
+Setup complete!,Насбкунӣ анҷом ёфт!
+Share,Мубодила
+Shared terminal,Терминали муштарак
+Shift Closed Snapshot,Shift тасвири пӯшида
+Shift Overview,Шарҳи Shift
+Show,Намоиш
+Show cart on customer-facing screen,Аробаро дар экрани муштарӣ нишон диҳед
+Show last invoice rate,Нишон додани нархи охирини ҳисобнома
+Show rate info,Нишон додани маълумот дар бораи нарх
+Show Repair Candidates,Номзадҳои таъмирро нишон диҳед
+Show search tools,Воситаҳои ҷустуҷӯро нишон диҳед
+Show the active cart on a customer-facing screen,Аробаи фаъолро дар экрани муштарӣ нишон диҳед
+Showing {0}-{1} of {2},Намоиши {0}-{1} аз {2}
+Showing 0 of 0,Намоиши 0 аз 0
+Shows the distribution of invoices per currency,Тақсимоти ҳисобнома-фактураҳоро барои як асъор нишон медиҳад
+Sign out of the current POS session,Аз сеанси ҷории POS хориҷ шавед
+Size:,андоза:
+Skipped Payments,Пардохтҳои гузаронидашуда
+Skipping items without barcodes,Гузаронидани ашё бидуни штрих-код
+Slow Moving,Ҳаракати суст
+Slow Moving Items,Ҷузъҳои суст ҳаракаткунанда
+Slow Queries:,Саволҳои суст:
+Sold,фурӯхта шуд
+Source,Манбаъ
+Source Cash Account (Optional Override),Ҳисоби манбаи пули нақд (Ихтиёрӣ бекор кардан)
+Source Ex. Rate:,Сарчашма Ex.Нарх:
+Source Rate:,Меъёри манбаъ:
+Specific Profile,Профили мушаххас
+Split Invoices,Ҳисобнома-фактураҳоро тақсим кунед
+Staff / Cashier Performance Report,Кормандон / Ҳисобот оид ба иҷрои хазинадор
+Status,Статус
+Stock,Захира
+Stock Information,Маълумоти саҳмияҳо
+Stock is lower than requested,Захира аз дархост камтар аст
+Stock is lower than requested:\n{0},Захира аз дархост камтар аст:\n{0}
+Stock Movement Report,Ҳисоботи ҳаракати саҳмияҳо
+Stock update: {0} has {1} available. Adding {2} will bring the stock below zero.,Навсозии саҳҳомӣ: {0} дорои {1} дастрас аст.Илова кардани {2} саҳмияро аз сифр камтар мекунад.
+Submit,Пешниҳод кунед
+Submit & Print,Пешниҳод ва чоп
+Submit Deposit,Пешниҳоди пасандоз
+Submit Expense,Пешниҳоди хароҷот
+Submitted,Пешниҳод карда шуд
+Submitted Cash Movements,Ҳаракатҳои нақдии пешниҳодшуда
+Submitted entries,Сабтҳои пешниҳодшуда
+Successfully scanned:,Бомуваффақият скан карда шуд:
+Suggested,Тавсия дода мешавад
+Suggested Qty,Миқдори тавсияшаванда
+Supervisor Access,Дастрасии супервайзер
+Supervisor permissions unlock issuance and reloads,Иҷозатҳои супервайзер эмитент ва дубора боркуниро мекушоянд
+Supervisor Tools,Воситаҳои супервайзер
+Supplier,Таъминкунанда
+Supplier and dates are required.,Таъминкунанда ва санаҳо талаб карда мешаванд.
+Supplier Invoices,Ҳисобнома-фактураҳои таъминкунандагон
+Supplier is required.,Таъминкунанда талаб карда мешавад.
+Supplier name is required,Номи таъминкунанда талаб карда мешавад
+Supplier Payments,Пардохтҳои таъминкунанда
+Supplier Purchase Summary,Хулосаи хариди молрасон
+Suppliers,Таъминкунандагон
+Suppliers not found,Таъминкунандагон ёфт нашуд
+Switch Camera,Камераро иваз кунед
+Switch Cashier,Кассирро иваз кунед
+Switch the POS appearance theme,Мавзӯи намуди POS-ро иваз кунед
+Switched to:,Гузариш ба:
+Sync All Invoices,Ҳама ҳисобнома-фактураҳоро ҳамоҳанг созед
+Sync Offline Cash Movements ({0}),Ҳамоҳангсозии интиқоли пули нақд ({0})
+Sync Offline Sales,Ҳамоҳангсозии фурӯшҳои офлайнӣ
+Synced {0} offline cash movement(s).,{0} ҳаракати пули нақд офлайнӣ ҳамоҳанг карда шудааст.
+Syncing items in background,Синхронизатсияи ашё дар замина
+System / Diagnostics,Система / Диагностика
+"System actions are low-frequency maintenance controls such as app info, support diagnostics, and session controls.","Амалҳои система назорати нигоҳдории басомади паст ба монанди маълумоти барнома, ташхиси дастгирӣ ва идоракунии сессия мебошанд."
+System Information,Маълумоти системавӣ
+System Status,Ҳолати система
+Tables:,Ҷадвалҳо:
+Tap the button below to redeem a gift card during checkout.,"Тугмаи зерро клик кунед, то корти тӯҳфаро ҳангоми пардохт пардохт кунед."
+Target,Ҳадаф
+Target Ex. Rate:,Ҳадаф Ex.Нарх:
+Target Rate:,Меъёри мақсаднок:
+Tax,андоз
+Tax / Charges Report,Ҳисоботи андоз / пардохтҳо
+Tax Heads,Сардорони андоз
+Taxable Amount,Маблағи андозбандишаванда
+Tendered,Тендер карда шуд
+Terminal,Терминал
+Terminal & Devices,Терминал ва Дастгоҳҳо
+Terminal locked,Терминал баста шудааст
+"Terminal tools affect this checkout station, customer-facing displays, and future printer/device controls.","Воситаҳои терминал ба ин истгоҳи кассавӣ, дисплейҳои муштарӣ ва идоракунии ояндаи чопгар/дастгоҳ таъсир мерасонанд."
+Territory not found,Территория ёфт нашуд
+The amount paid is not complete,Маблағи пардохтшуда пурра нест
+The app stores data locally for offline use. This is called cache.,Барнома маълумотро ба таври маҳаллӣ барои истифодаи офлайн нигоҳ медорад.Ин кэш номида мешавад.
+The invoice stayed in draft. Please review and submit it manually.,Ҳисобнома-фактура дар лоиҳа монд.Лутфан онро аз назар гузаронед ва дастӣ пешниҳод кунед.
+The maximum discount allowed is,Максимум тахфиф иҷозат дода мешавад
+The quantity for {0} has been adjusted to the maximum available stock.,Миқдори {0} ба ҳадди ниҳоии захираи дастрас тасҳеҳ шудааст.
+The system could not retrieve the item details. Please try again.,Система тафсилоти ҷузъро дарёфт карда натавонист.Лутфан бори дигар кӯшиш кунед.
+These invoices will be synced when connection is restored,"Вақте ки пайвастшавӣ барқарор карда мешавад, ин ҳисобномаҳо ҳамоҳанг карда мешаванд"
+This action now opens inside the settings workspace.,Ин амал ҳоло дар дохили фазои кории танзимот кушода мешавад.
+This coupon already used !,Ин купон аллакай истифода шудааст!
+This invoice does not need change-allocation repair,Ин ҳисобнома-фактура ба таъмири тақсимот ниёз надорад
+This invoice is already repaired,Ин фактура аллакай таъмир карда шудааст
+This is an item template. Please choose a variant.,Ин як қолаби ашё аст.Лутфан вариантеро интихоб кунед.
+this item,ин адад
+This POS page could not be opened offline because its code was not cached on this terminal yet.,"Ин саҳифаи POS-ро офлайн кушодан ғайриимкон аст, зеро рамзи он ҳанӯз дар ин терминал кэш нашудааст."
+This Serial Number {0} has already been added!,Ин рақами силсилавии {0} аллакай илова карда шудааст!
+Threshold,Ҳадди
+Time,Вақт
+Tip: Clear cache regularly to free up space and keep the app fast.,Маслиҳат: Барои холӣ кардани ҷой ва зуд нигоҳ доштани барнома кэшро мунтазам тоза кунед.
+Tip: Close unused tabs or apps to reduce lag.,"Маслиҳат: Варақаҳо ё барномаҳои истифоданашударо пӯшед, то таъхирро кам кунед."
+Tip: Monitor slow queries and table size for optimal performance.,Маслиҳат: Барои иҷрои беҳтарин дархостҳои суст ва андозаи ҷадвалро назорат кунед.
+To Be Paid,Барои пардохт кардан
+To Date,То имрӯз
+Today,Имруз
+Today Profit,Имрӯз фоида
+Today Sales,Имрӯз фурӯш
+Toggle navigation drawer,Обоварди навигатсияро иваз кунед
+Toggle Theme,Мавзӯъро иваз кунед
+Tools,Воситаҳо
+Tools for customer-facing screens and terminal-specific actions.,Асбобҳо барои экранҳои муштарӣ ва амалҳои мушаххаси терминал.
+Top Brand,Бренди олӣ
+Top Category,Категорияи боло
+Top Charge Head,Сарвари пуркунандаи боло
+Top Customers,Мизоҷони беҳтарин
+Top Discount,Тахфифи боло
+Top Items by Location,Ададҳои беҳтарин аз рӯи ҷойгиршавӣ
+Top Margin,Маржаи боло
+Top Pending,Беҳтарин интизорӣ
+Top Profit Item,Объекти фоидаи боло
+Top Return Items,Маҳсулоти бозгашти боло
+Top Sales by Cashier,Беҳтарин фурӯш аз ҷониби хазинадор
+Top Supplier,Таъминкунандаи беҳтарин
+Top Suppliers by Spend,Беҳтарин таъминкунандагон аз рӯи харҷ
+Top Tables,Ҷадвалҳои боло
+Top Tax Head,Сардори андоз
+Top Up Amount,Маблағи пур кардан
+Top Up Card,Корти пур кардан
+Top Up Mode,Реҷаи пуркунӣ
+Top Variant,Варианти боло
+Total,Ҳамагӣ
+Total Amount,Ҳамагӣ
+Total Change,Тағйироти умумӣ
+Total Charges,Маблағҳои умумӣ
+Total In,Ҳамагӣ дар
+Total Invoices,Ҳаҷми ҳисобнома-фактураҳо
+Total Items,Ҳама чиз
+Total Mpesa,Ҳамагӣ Mpesa
+Total Out,Маҷмӯӣ
+Total Payments,Ҳама пардохтҳо
+Total Purchase,Маблағи умумии харид
+Total Selected :,Ҳаҷми интихобшуда:
+Total Size,Андозаи умумӣ
+Total Stock Qty,Миқдори умумии саҳмияҳо
+Total:,Ҳамагӣ:
+Totals by Invoice Currency,Ҳамагӣ аз рӯи асъори ҳисобнома-фактура
+Track how much cash was handed back to customers,"Ҳисоб кунед, ки чӣ қадар пули нақд ба муштариён баргардонида шудааст"
+"Track recent sales, collect unpaid balances, and reopen saved work","Фурӯшҳои охиринро пайгирӣ кунед, бақияи пардохтнашударо ҷамъ кунед ва кори захирашударо дубора кушоед"
+Transaction ID,ID транзаксия
+Transfer,Интиқол
+Try a different search term or clear the cart search.,Истилоҳи дигари ҷустуҷӯро санҷед ё ҷустуҷӯи аробаро тоза кунед.
+Try adjusting your search or filters,"Кӯшиш кунед, ки ҷустуҷӯ ё филтрҳои худро танзим кунед"
+Try another source or refresh the list.,Манбаи дигарро санҷед ё рӯйхатро нав кунед.
+Try changing the date range or status filter.,"Кӯшиш кунед, ки диапазони сана ё филтри вазъро тағир диҳед."
+Type,Навъи
+Unable to access camera even with basic settings. Please check your camera permissions and device compatibility.,Ҳатто бо танзимоти асосӣ имкони дастрасӣ ба камераро надорад.Лутфан иҷозати камера ва мутобиқати дастгоҳи худро санҷед.
+Unable to add offer item {0}. Please refresh and try again.,Илова кардани ашёи пешниҳоди {0} ғайриимкон аст.Лутфан навсозӣ кунед ва бори дигар кӯшиш кунед.
+Unable to add offer item. Please refresh and try again.,Илова кардани ашёи пешниҳодшуда имконнопазир аст.Лутфан навсозӣ кунед ва бори дигар кӯшиш кунед.
+Unable to add scanned item.,Илова кардани ашёи сканшуда ғайриимкон аст.
+Unable to create purchase order,Фармоиши харидро эҷод кардан ғайриимкон аст
+Unable to delete draft invoice,Лоиҳаи ҳисобнома-фактураро нест кардан ғайриимкон аст
+Unable to fetch documents,Ҳуҷҷатҳоро гирифтан ғайриимкон аст
+Unable to fetch draft orders,Қабули лоиҳаи фармоишҳо ғайриимкон аст
+Unable to fetch invoice history,Таърихи ҳисобнома-фактураро гирифтан ғайриимкон аст
+Unable to fetch M-Pesa payments,Пардохтҳои M-Pesa гирифтан ғайриимкон аст
+Unable to fetch sales orders,Фармоишҳои фурӯшро гирифтан ғайриимкон аст
+Unable to fetch unpaid invoices,Ҳисобнома-фактураҳои пардохтнашударо гирифтан ғайриимкон аст
+Unable to generate scale barcode,Штрих-коди миқёсро тавлид кардан ғайриимкон аст
+Unable to issue gift card.,Корти тӯҳфаро додан ғайриимкон аст.
+Unable to load cashier PIN status.,Ҳолати PIN-коди хазинаро бор кардан ғайриимкон аст.
+Unable to load document,Ҳуҷҷатро бор кардан ғайриимкон аст
+Unable to load draft invoice,Лоиҳаи ҳисобнома-фактураро бор кардан ғайриимкон аст
+Unable to load gift card balance.,Тавозуни корти тӯҳфаро бор кардан ғайриимкон аст.
+Unable to load invoice details,Тафсилоти ҳисобнома-фактураро бор кардан ғайриимкон аст
+Unable to load parked order,Фармоиши таваққуфшударо бор кардан ғайриимкон аст
+Unable to load the selected sales order,Фармоиши фурӯши интихобшударо бор кардан ғайриимкон аст
+Unable to prepare document,Ҳуҷҷат омода карда намешавад
+Unable to prepare return invoice,Ҳисобнома-фактураи баргардониданро таҳия карда натавонист
+Unable to print draft invoice,Лоиҳаи ҳисобнома-фактураро чоп кардан ғайриимкон аст
+Unable to print submitted invoice,Ҳисобнома-фактураи пешниҳодшударо чоп кардан ғайриимкон аст
+Unable to process document action,Амали ҳуҷҷатро коркард карда натавонист
+Unable to repair change allocation,Таъмири тақсимоти тағирот ғайриимкон аст
+Unable to save cashier PIN.,ПИН-коди кассирро захира кардан ғайриимкон аст.
+Unable to save the rate to the backend price list,Қурбро дар рӯйхати нархҳои пуштибонӣ захира кардан ғайриимкон аст
+Unable to submit invoice,Пешниҳоди ҳисобнома-фактура имконнопазир аст
+Unable to submit the selected payment,Пардохти интихобшударо пешниҳод кардан ғайриимкон аст
+Unable to top up gift card.,Корти тӯҳфаро пур кардан ғайриимкон аст.
+Unable to verify cashier PIN.,ПИН-коди кассирро тасдиқ кардан ғайриимкон аст.
+Unallocated,Тақсимнашуда
+Unallocated:,Тақсимнашуда:
+Unavailable,Дастнорас
+Unknown,Номаълум
+Unknown Item,Объекти номаълум
+Unknown Warehouse,Анбори номаълум
+Unlock POS,Қулфи POS
+Unpaid,Бемузд
+"Unselected payments stay unallocated first, then auto reconcile after submit.",Пардохтҳои интихобнашуда аввал тақсимнашуда боқӣ мемонанд ва баъд аз пешниҳод худкор оштӣ мешаванд.
+UOM,UOM
+UOM not found,UOM ёфт нашуд
+Update available,Навсозии дастрас
+Update Customer,Муштариро навсозӣ кунед
+Update PIN,Навсозии PIN
+Update Price List Rate,Навсозии нархи рӯйхати нархҳо
+Updated,Навсозӣ
+Updates and app info that stay out of the cashier flow.,"Навсозиҳо ва иттилооти барномае, ки аз ҷараёни хазинадорӣ берун мемонанд."
+Updates automatically,Навсозӣ ба таври худкор
+Usage,Истифода
+Usage Stats,Статистикаи истифода
+Use a 4 to 8 digit PIN for cashier switching and terminal unlock.,Барои иваз кардани кассир ва кушодани терминал аз 4 то 8 рақами PIN-ро истифода баред.
+Use Cashier,Кассирро истифода баред
+Use date range to search for older invoices,Барои ҷустуҷӯи фактураҳои кӯҳна аз диапазони сана истифода баред
+"Use one field for manual code entry, barcode scans, or QR scans.","Як майдонро барои ворид кардани коди дастӣ, сканҳои штрих-код ё сканҳои QR истифода баред."
+"Use one workflow for balance checks, new issuance, and top ups without leaving POS.","Як ҷараёни корро барои тафтиши тавозун, барориши нав ва пуркунӣ бидуни тарк кардани POS истифода баред."
+"Use this section when cached prerequisite data needs a refresh, rebuild, or diagnostics review.","Ин бахшро вақте истифода баред, ки маълумоти пешакии кэшшуда ба навсозӣ, барқарорсозӣ ё баррасии ташхис ниёз дорад."
+Use Western numerals,Рақамҳои ғарбиро истифода баред
+Used:,Истифода бурда мешавад:
+Using basic camera settings due to device limitations,Истифодаи танзимоти асосии камера бинобар маҳдудиятҳои дастгоҳ
+Using cached customer balance,Истифодаи тавозуни муштарии кэшшуда
+Valid until,То
+Variance %,Тафовут %
+Variants,Вариантҳо
+Variant-wise,Варианти
+Verify closing amounts for each payment method,Маблағҳои пӯшидаро барои ҳар як усули пардохт тафтиш кунед
+View all,Ҳамаро бинед
+View app information and current build details,Дидани маълумоти барнома ва тафсилоти кунунии сохтмон
+View Data Diagnostics,Диагностикаи маълумотро бинед
+View Details,Дидани тафсилот
+View invoice details,Тафсилоти ҳисобнома-фактураро дидан
+View notifications,Дидани огоҳиномаҳо
+View offline invoices,Ҳисобнома-фактураҳои офлайнро бинед
+View restricted POS insights,Дидани фаҳмишҳои маҳдуди POS
+Void Amount,Маблағи беэътибор
+Void Count,Ҳисоби бекор
+Voids,Холӣ
+Waiting for cart items,Интизори ашёи ароба
+Waiting for payment...,Интизори пардохт...
+Walk-in Customer,Муштарии воридшаванда
+Warehouse,Анбор
+Warning: High cache usage may affect performance.,Огоҳӣ: Истифодаи зиёди кэш метавонад ба кор таъсир расонад.
+Warning: High lag may indicate heavy processing or browser slowness.,Огоҳӣ: Қафомонии баланд метавонад коркарди вазнин ё сустии браузерро нишон диҳад.
+Week ?,Ҳафта?
+Week-wise,Ҳафталик
+Weight (g),Вазн (г)
+Weight (grams),Вазн (грамм)
+We'll let you know if an invoice fails to submit,"Агар ҳисобнома-фактура пешниҳод нашавад, мо ба шумо хабар медиҳем"
+Workflow,Раванди кор
+Write off amount cannot exceed the POS profile maximum of {0},Маблағи аз ҳисоб баровардан набояд аз ҳадди профили POS аз {0} зиёд бошад
+Write off amount exceeds the allowed limit ({0}). Please add payment for the remaining amount.,Маблағи аз ҳисоб баровардан аз ҳадди иҷозатдодашуда зиёд аст ({0}).Лутфан пардохтро барои маблағи боқимонда илова кунед.
+Yes,Бале
+"Yes, Cancel sale","Бале, фурӯшро бекор кунед"
+"Yes, Close","Бале, наздик"
+You are not allowed to print draft invoices,"Шумо иҷозат надоред, ки лоиҳаи ҳисобнома-фактураҳоро чоп кунед"
+You are offline. Add Payment will work again when the connection is restored.,Шумо офлайн ҳастед.Иловаи пардохт ҳангоми барқарор шудани пайвастшавӣ дубора кор мекунад.
+You have no notifications right now,Шумо ҳоло ягон огоҳинома надоред
+Your Cart,Аробаи шумо
