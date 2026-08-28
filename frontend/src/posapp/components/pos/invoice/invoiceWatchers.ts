@@ -44,6 +44,7 @@ interface InvoiceWatchersVm {
 	update_item_detail: (_item: WatcherItem) => void;
 	emitCartQuantities?: () => void;
 	scheduleOfferRefresh?: () => void;
+	applyPricingRulesForCart?: (_force?: boolean) => void;
 	schedulePricingRuleApplication?: (_force?: boolean) => void;
 	formatDateForDisplay: (_value: string) => string;
 	formatDateForBackend: (_value: string) => string;
@@ -113,15 +114,35 @@ const invoiceWatchers: Record<string, unknown> & ThisType<InvoiceWatchersVm> = {
 		if (hasCustomer) {
 			this.fetch_customer_details();
 			this.fetch_customer_balance();
+		} else {
+			this.customer_info = {};
 		}
 		this.set_delivery_charges();
 		this.sync_invoice_customer_details();
+
+		if (Array.isArray(this.items) && this.items.length > 0) {
+			if (typeof this.applyPricingRulesForCart === "function") {
+				this.applyPricingRulesForCart(true);
+			}
+			if (typeof this.schedulePricingRuleApplication === "function") {
+				this.schedulePricingRuleApplication(true);
+			}
+		}
 	},
 	// Watch for customer_info change and emit to edit form
 	customer_info() {
 		const customersStore = useCustomersStore();
 		customersStore.setCustomerInfo(this.customer_info || {});
 		this.sync_invoice_customer_details(this.customer_info);
+
+		if (Array.isArray(this.items) && this.items.length > 0) {
+			if (typeof this.applyPricingRulesForCart === "function") {
+				this.applyPricingRulesForCart(true);
+			}
+			if (typeof this.schedulePricingRuleApplication === "function") {
+				this.schedulePricingRuleApplication(true);
+			}
+		}
 	},
 	// Watch for expanded row change and update item detail
 	expanded(data_value: Array<string | number>) {

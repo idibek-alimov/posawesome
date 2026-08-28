@@ -287,6 +287,7 @@
 			@open-offers="handleOpenCounterAuxiliary('offers')"
 			@open-coupons="handleOpenCounterAuxiliary('coupons')"
 			@resume-parked-order="resume_parked_order"
+			@refresh-prices="refresh_prices"
 		/>
 	</div>
 </template>
@@ -585,6 +586,28 @@ export default {
 	},
 
 	methods: {
+		async refresh_prices() {
+			if (!this.items || !this.items.length) {
+				this.toastStore?.show?.({
+					title: this.__("Cart is empty"),
+					color: "info",
+				});
+				return;
+			}
+			if (typeof this.update_items_details === "function") {
+				await this.update_items_details(this.items);
+			}
+			if (typeof this.applyPricingRulesForCart === "function") {
+				this.applyPricingRulesForCart(true);
+			}
+			if (typeof this.schedulePricingRuleApplication === "function") {
+				this.schedulePricingRuleApplication(true);
+			}
+			this.toastStore?.show?.({
+				title: this.__("Prices and discounts refreshed"),
+				color: "success",
+			});
+		},
 		formatDateForDisplay(date) {
 			if (!date) return "";
 			const parts = date.split("-");

@@ -94,6 +94,14 @@
 					<v-list-item-title>{{ __("Print Draft") }}</v-list-item-title>
 				</v-list-item>
 				<v-list-item
+					prepend-icon="mdi-tag-refresh-outline"
+					data-pos-keyboard-target="invoice-action"
+					data-testid="invoice-action-refresh-prices"
+					@click="$emit('refresh-prices')"
+				>
+					<v-list-item-title>{{ __("Refresh Prices") }}</v-list-item-title>
+				</v-list-item>
+				<v-list-item
 					v-if="showCustomerDisplayButton"
 					prepend-icon="mdi-monitor"
 					data-testid="invoice-action-customer-display"
@@ -237,6 +245,20 @@
 				{{ __("Print Draft") }}
 			</v-btn>
 		</v-col>
+		<v-col cols="12" sm="6">
+			<v-btn
+				block
+				color="teal"
+				theme="dark"
+				prepend-icon="mdi-tag-refresh-outline"
+				@click="$emit('refresh-prices')"
+				class="summary-btn"
+				data-pos-keyboard-target="invoice-action"
+				data-testid="invoice-action-refresh-prices"
+			>
+				{{ __("Refresh Prices") }}
+			</v-btn>
+		</v-col>
 		<v-col cols="12" sm="6" v-if="showCustomerDisplayButton">
 			<v-btn
 				block
@@ -308,6 +330,7 @@ defineEmits([
 	"open-customer-display",
 	"open-offers",
 	"open-coupons",
+	"refresh-prices",
 ]);
 
 const __ = window.__;

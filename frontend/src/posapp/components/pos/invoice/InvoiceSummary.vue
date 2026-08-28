@@ -102,6 +102,7 @@
 				@open-customer-display="handleOpenCustomerDisplay"
 				@open-offers="$emit('open-offers')"
 				@open-coupons="$emit('open-coupons')"
+				@refresh-prices="$emit('refresh-prices')"
 			/>
 		</div>
 
@@ -222,6 +223,7 @@
 					@print-draft="handlePrintDraft"
 					@show-payment="handleShowPayment"
 					@open-customer-display="handleOpenCustomerDisplay"
+					@refresh-prices="$emit('refresh-prices')"
 				/>
 			</v-col>
 		</v-row>
@@ -360,6 +362,7 @@ const emit = defineEmits([
 	"open-offers",
 	"open-coupons",
 	"resume-parked-order",
+	"refresh-prices",
 ]);
 
 const saveLoading = ref(false);

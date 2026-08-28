@@ -32,6 +32,13 @@ export async function fetch_customer_details(context: any) {
 			context.customer.trim() === requestedCustomer
 		) {
 			context.customer_info = cachedCustomer;
+			sync_invoice_customer_details(context, cachedCustomer);
+			if (context.items && context.items.length > 0) {
+				if (context.applyPricingRulesForCart)
+					context.applyPricingRulesForCart(true);
+				if (context.schedulePricingRuleApplication)
+					context.schedulePricingRuleApplication(true);
+			}
 		}
 
 		const r = await frappe.call({
@@ -52,6 +59,7 @@ export async function fetch_customer_details(context: any) {
 			context.customer.trim() === requestedCustomer
 		) {
 			context.customer_info = r.message;
+			sync_invoice_customer_details(context, r.message);
 			await setCustomerStorage([r.message]);
 			if (context?.pos_profile?.company) {
 				const totalCredit = Number(r.message?.stored_value_balance || 0);
@@ -94,6 +102,10 @@ export async function fetch_customer_details(context: any) {
 			if (context.items.length > 0) {
 				if (context.update_items_details)
 					await context.update_items_details(context.items);
+				if (context.applyPricingRulesForCart)
+					context.applyPricingRulesForCart(true);
+				if (context.schedulePricingRuleApplication)
+					context.schedulePricingRuleApplication(true);
 			}
 		}
 	} catch (error) {
@@ -141,6 +153,7 @@ export function sync_invoice_customer_details(
 			context.invoice_doc.shipping_address_name = null;
 			context.invoice_doc.contact_person = null;
 			context.invoice_doc.territory = null;
+			context.invoice_doc.customer_group = null;
 			context.invoice_doc.customer = activeCustomer || null;
 			return;
 		}
@@ -154,6 +167,8 @@ export function sync_invoice_customer_details(
 			context.invoice_doc.customer_address = details.customer_address;
 		if (details.territory)
 			context.invoice_doc.territory = details.territory;
+		if (details.customer_group)
+			context.invoice_doc.customer_group = details.customer_group;
 		if (details.contact_person)
 			context.invoice_doc.contact_person = details.contact_person;
 		if (details.shipping_address)
