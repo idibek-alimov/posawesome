@@ -7,6 +7,8 @@
 
 			<v-card-text class="pt-4">
 				<v-tabs v-model="activeTab" class="mb-4">
+					<v-tab value="Purchase Receipt">{{ __("Purchase Receipt") }}</v-tab>
+					<v-tab value="Stock Entry">{{ __("Stock Entry") }}</v-tab>
 					<v-tab value="Sales Order">{{ __("Sales Order") }}</v-tab>
 					<v-tab value="Delivery Note">{{ __("Delivery Note") }}</v-tab>
 					<v-tab value="BOM">{{ __("BOM") }}</v-tab>
@@ -125,6 +127,8 @@ const bomForQty = ref(1);
 
 const sourceTypeLabel = computed(() => {
 	const labels: Record<string, string> = {
+		"Purchase Receipt": "Purchase Receipt",
+		"Stock Entry": "Stock Entry",
 		"Sales Order": "Sales Order",
 		"Delivery Note": "Delivery Note",
 		BOM: "Bill of Materials",
@@ -163,6 +167,8 @@ const selectDocument = async (doc: any) => {
 	selectedDoc.value = doc;
 
 	const methodMap: Record<string, string> = {
+		"Purchase Receipt": "get_purchase_receipt_items",
+		"Stock Entry": "get_stock_entry_items",
 		"Sales Order": "get_sales_order_items",
 		"Delivery Note": "get_delivery_note_items",
 		BOM: "get_bom_items",

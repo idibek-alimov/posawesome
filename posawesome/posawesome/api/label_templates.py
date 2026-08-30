@@ -3,13 +3,94 @@
 
 """API for Barcode Label Template CRUD."""
 
+import json
 import frappe
 from frappe import _
+
+BUILTIN_LABEL_TEMPLATES = [
+    {
+        "title": "Radolfa Standard (58x40mm)",
+        "label_size": "58x40mm",
+        "description": "Standard retail label with Radolfa badge, short code, Cyrillic item name, barcode, and bold price (Xprinter XP-365B)",
+        "layout": [
+            {"id": "border_1", "type": "shape", "shapeType": "rect", "x": 1, "y": 1, "width": 56, "height": 38, "borderWidth": 0.5, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
+            {"id": "header_bg", "type": "shape", "shapeType": "rect", "x": 1.5, "y": 1.5, "width": 55, "height": 6.5, "borderWidth": 0.3, "borderColor": "#666666", "color": "#e0e0e0", "zIndex": 2, "content": ""},
+            {"id": "company_text", "type": "text", "x": 3, "y": 1.8, "width": 26, "height": 6, "fontSize": 10, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "{company}"},
+            {"id": "code_text", "type": "text", "x": 30, "y": 1.8, "width": 25, "height": 6, "fontSize": 10, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "{short_code}"},
+            {"id": "name_text", "type": "text", "x": 2, "y": 8.5, "width": 54, "height": 8.5, "fontSize": 10, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 3, "content": "{item_name}"},
+            {"id": "barcode_obj", "type": "barcode", "x": 4, "y": 17.5, "width": 50, "height": 13.5, "symbology": "EAN13", "humanReadable": True, "zIndex": 3, "content": "{barcode}"},
+            {"id": "price_text", "type": "text", "x": 2, "y": 31.5, "width": 54, "height": 7, "fontSize": 15, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 3, "content": "{price}"}
+        ]
+    },
+    {
+        "title": "Radolfa Discount / Sale (58x40mm)",
+        "label_size": "58x40mm",
+        "description": "Discount / Sale promo label with Radolfa header, old price strikethrough, and big sale price",
+        "layout": [
+            {"id": "border_1", "type": "shape", "shapeType": "rect", "x": 1, "y": 1, "width": 56, "height": 38, "borderWidth": 0.5, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
+            {"id": "sale_bg", "type": "shape", "shapeType": "rect", "x": 1.5, "y": 1.5, "width": 55, "height": 6.5, "borderWidth": 0, "borderColor": "#000000", "color": "#222222", "zIndex": 2, "content": ""},
+            {"id": "company_sale", "type": "text", "x": 3, "y": 1.8, "width": 24, "height": 6, "fontSize": 10, "fontBold": True, "textAlign": "left", "color": "#ffffff", "zIndex": 3, "content": "{company}"},
+            {"id": "sale_tag", "type": "text", "x": 28, "y": 1.8, "width": 27, "height": 6, "fontSize": 10, "fontBold": True, "textAlign": "right", "color": "#ffffff", "zIndex": 3, "content": "★ СКИДКА ★"},
+            {"id": "name_sale", "type": "text", "x": 2, "y": 8.5, "width": 54, "height": 7.5, "fontSize": 9.5, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 3, "content": "{item_name}"},
+            {"id": "barcode_sale", "type": "barcode", "x": 4, "y": 16.5, "width": 50, "height": 13, "symbology": "EAN13", "humanReadable": True, "zIndex": 3, "content": "{barcode}"},
+            {"id": "old_price_text", "type": "text", "x": 3, "y": 30.5, "width": 24, "height": 6, "fontSize": 8.5, "fontBold": False, "textAlign": "left", "color": "#777777", "zIndex": 3, "content": "{old_price}"},
+            {"id": "strike_line", "type": "line", "lineDirection": "horizontal", "x": 3, "y": 33.5, "width": 22, "height": 1, "borderWidth": 1, "borderColor": "#000000", "zIndex": 4, "content": ""},
+            {"id": "new_price_text", "type": "text", "x": 28, "y": 30, "width": 28, "height": 8.5, "fontSize": 15, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "{price}"}
+        ]
+    },
+    {
+        "title": "Radolfa Promo 1+1 (58x40mm)",
+        "label_size": "58x40mm",
+        "description": "Buy 1 Get 1 Free promotion label with Radolfa branding and promo highlight",
+        "layout": [
+            {"id": "border_1", "type": "shape", "shapeType": "rect", "x": 1, "y": 1, "width": 56, "height": 38, "borderWidth": 0.5, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
+            {"id": "company_promo", "type": "text", "x": 3, "y": 1.8, "width": 26, "height": 6, "fontSize": 10, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "{company}"},
+            {"id": "promo_rect", "type": "shape", "shapeType": "rect", "x": 31, "y": 1.5, "width": 25, "height": 6.5, "borderWidth": 0, "color": "#000000", "zIndex": 2, "content": ""},
+            {"id": "promo_tag", "type": "text", "x": 31, "y": 1.8, "width": 25, "height": 6, "fontSize": 9.5, "fontBold": True, "textAlign": "center", "color": "#ffffff", "zIndex": 3, "content": "АКЦИЯ 1+1"},
+            {"id": "name_promo", "type": "text", "x": 2, "y": 8.5, "width": 54, "height": 7.5, "fontSize": 9.5, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 3, "content": "{item_name}"},
+            {"id": "barcode_promo", "type": "barcode", "x": 4, "y": 16.5, "width": 50, "height": 13, "symbology": "EAN13", "humanReadable": True, "zIndex": 3, "content": "{barcode}"},
+            {"id": "promo_desc", "type": "text", "x": 3, "y": 30.5, "width": 28, "height": 7, "fontSize": 8.5, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "1+1 В ПОДАРОК"},
+            {"id": "price_promo", "type": "text", "x": 32, "y": 30, "width": 24, "height": 8.5, "fontSize": 14, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "{price}"}
+        ]
+    },
+    {
+        "title": "Radolfa Compact (40x30mm)",
+        "label_size": "40x30mm",
+        "description": "Compact thermal label for small products with Radolfa header and barcode",
+        "layout": [
+            {"id": "border_1", "type": "shape", "shapeType": "rect", "x": 1, "y": 1, "width": 38, "height": 28, "borderWidth": 0.5, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
+            {"id": "compact_header", "type": "text", "x": 2, "y": 1.5, "width": 36, "height": 4.5, "fontSize": 8.5, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 2, "content": "Radolfa · {short_code}"},
+            {"id": "compact_name", "type": "text", "x": 2, "y": 6, "width": 36, "height": 5.5, "fontSize": 7.5, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 2, "content": "{item_name}"},
+            {"id": "compact_barcode", "type": "barcode", "x": 2.5, "y": 12, "width": 35, "height": 10.5, "symbology": "EAN13", "humanReadable": True, "zIndex": 2, "content": "{barcode}"},
+            {"id": "compact_price", "type": "text", "x": 2, "y": 23, "width": 36, "height": 5.5, "fontSize": 11, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 2, "content": "{price}"}
+        ]
+    }
+]
+
+
+def ensure_default_templates():
+    """Seed built-in label templates into Barcode Label Template DocType if not present."""
+    for tmpl in BUILTIN_LABEL_TEMPLATES:
+        if not frappe.db.exists("Barcode Label Template", {"title": tmpl["title"]}):
+            try:
+                doc = frappe.get_doc({
+                    "doctype": "Barcode Label Template",
+                    "title": tmpl["title"],
+                    "label_size": tmpl["label_size"],
+                    "description": tmpl["description"],
+                    "layout_json": json.dumps(tmpl["layout"]),
+                })
+                doc.flags.ignore_permissions = True
+                doc.flags.ignore_links = True
+                doc.insert()
+            except Exception:
+                frappe.log_error(f"Failed to seed barcode template {tmpl['title']}")
 
 
 @frappe.whitelist()
 def get_label_templates(label_size=None):
     """Return list of barcode label templates."""
+    ensure_default_templates()
     filters = {"disabled": 0}
     if label_size:
         filters["label_size"] = label_size

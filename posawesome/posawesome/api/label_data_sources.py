@@ -55,6 +55,32 @@ def search_label_source_documents(source_type: str, search_term: str, company: s
         )
         return [{"type": "BOM", **d} for d in docs]
 
+    if source_type == "Purchase Receipt":
+        docs = frappe.get_all(
+            "Purchase Receipt",
+            filters={"company": company, "docstatus": 1},
+            or_filters=[
+                ["name", "like", search_val],
+                ["supplier", "like", search_val],
+            ],
+            fields=["name", "supplier", "posting_date", "grand_total", "status"],
+            limit=20,
+        )
+        return [{"type": "Purchase Receipt", **d} for d in docs]
+
+    if source_type == "Stock Entry":
+        docs = frappe.get_all(
+            "Stock Entry",
+            filters={"company": company, "docstatus": 1},
+            or_filters=[
+                ["name", "like", search_val],
+                ["stock_entry_type", "like", search_val],
+            ],
+            fields=["name", "stock_entry_type", "posting_date", "docstatus"],
+            limit=20,
+        )
+        return [{"type": "Stock Entry", **d} for d in docs]
+
     return []
 
 
@@ -105,6 +131,50 @@ def get_delivery_note_items(name: str):
             "item_name": item.item_name,
             "qty": item.qty,
             "uom": item.uom,
+            "barcode": _get_item_barcode(item.item_code),
+            "batch_no": getattr(item, "batch_no", None),
+            "serial_no": getattr(item, "serial_no", None),
+        })
+    return items
+
+
+@frappe.whitelist()
+def get_purchase_receipt_items(name: str):
+    """Get items from a submitted Purchase Receipt for label printing."""
+    pr = frappe.get_doc("Purchase Receipt", name)
+    if pr.docstatus != 1:
+        frappe.throw(_("Purchase Receipt must be submitted"))
+
+    items = []
+    for item in pr.items:
+        items.append({
+            "item_code": item.item_code,
+            "item_name": item.item_name,
+            "qty": item.qty,
+            "uom": item.uom,
+            "price": item.rate or 0,
+            "barcode": _get_item_barcode(item.item_code),
+            "batch_no": getattr(item, "batch_no", None),
+            "serial_no": getattr(item, "serial_no", None),
+        })
+    return items
+
+
+@frappe.whitelist()
+def get_stock_entry_items(name: str):
+    """Get items from a submitted Stock Entry for label printing."""
+    se = frappe.get_doc("Stock Entry", name)
+    if se.docstatus != 1:
+        frappe.throw(_("Stock Entry must be submitted"))
+
+    items = []
+    for item in se.items:
+        items.append({
+            "item_code": item.item_code,
+            "item_name": item.item_name,
+            "qty": item.qty,
+            "uom": item.uom,
+            "price": item.basic_rate or 0,
             "barcode": _get_item_barcode(item.item_code),
             "batch_no": getattr(item, "batch_no", None),
             "serial_no": getattr(item, "serial_no", None),

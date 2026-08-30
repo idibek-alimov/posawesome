@@ -29,6 +29,14 @@
 							</v-btn>
 						</v-btn-toggle>
 						<v-btn
+							icon="mdi-folder-open-outline"
+							variant="text"
+							color="white"
+							@click="templateLibraryDialog = true"
+							:title="__('Label Templates')"
+							:aria-label="__('Open label template library')"
+						></v-btn>
+						<v-btn
 							icon="mdi-truck-delivery"
 							variant="text"
 							color="white"
@@ -113,6 +121,23 @@
 									variant="outlined"
 									hide-details
 									class="pos-themed-input"
+								></v-select>
+							</v-col>
+							<v-col cols="12" md="3">
+								<v-select
+									v-model="selectedTemplateDoc"
+									:items="availableTemplates"
+									item-title="title"
+									item-value="name"
+									return-object
+									:label="__('Design / Template')"
+									density="compact"
+									variant="outlined"
+									hide-details
+									class="pos-themed-input"
+									clearable
+									:loading="loadingTemplates"
+									@update:modelValue="onSelectTemplateDoc"
 								></v-select>
 							</v-col>
 							<v-col v-if="pageFormat === 'A4'" cols="6" md="1">
@@ -911,6 +936,7 @@
 
 <script setup lang="ts">
 import { computed, watch, onMounted, onUnmounted, ref } from "vue";
+import { useRoute } from "vue-router";
 import ItemsSelector from "../items/ItemsSelector.vue";
 import { useItemsStore } from "../../../stores/itemsStore";
 import { useUIStore } from "../../../stores/uiStore";
@@ -929,6 +955,7 @@ import { exportPng, exportSvg, exportCsv } from "../../../services/exportService
 
 const itemsStore = useItemsStore();
 const uiStore = useUIStore();
+const route = useRoute();
 
 const printQueue = useBarcodePrintQueue();
 const printOutput = useBarcodePrintOutput();
@@ -1342,15 +1369,60 @@ const onSaveTemplate = async () => {
 const templateLibraryDialog = ref(false);
 const verificationDialog = ref(false);
 
-const loadTemplateFromLibrary = (tpl: any) => {
-	if (tpl.layout_json) {
-		try {
-			designer.importLayout(tpl.layout_json);
-			pageFormat.value = tpl.label_size;
-			syncDesignerLabelSize();
-		} catch (err) {
-			useToastStore().show({ title: __("Failed to load template layout"), color: "error" });
+const availableTemplates = ref<any[]>([]);
+const selectedTemplateDoc = ref<any>(null);
+const loadingTemplates = ref(false);
+
+const loadAvailableTemplates = async (autoApplyDefault = false) => {
+	loadingTemplates.value = true;
+	try {
+		const res = await frappe.call({
+			method: "posawesome.posawesome.api.label_templates.get_label_templates",
+			silent: true,
+		});
+		availableTemplates.value = res.message || [];
+		if (autoApplyDefault && availableTemplates.value.length) {
+			const radolfaDefault = availableTemplates.value.find((t: any) => String(t.title).includes("Radolfa Standard")) || availableTemplates.value[0];
+			if (radolfaDefault) {
+				await onSelectTemplateDoc(radolfaDefault);
+			}
 		}
+	} catch (e) {
+		console.warn("Failed to load templates:", e);
+	} finally {
+		loadingTemplates.value = false;
+	}
+};
+
+const onSelectTemplateDoc = async (tmplDoc: any) => {
+	selectedTemplateDoc.value = tmplDoc;
+	if (!tmplDoc) {
+		printOutput.clearDesignerTemplate();
+		return;
+	}
+	try {
+		const res = await frappe.call({
+			method: "posawesome.posawesome.api.label_templates.get_label_template_detail",
+			args: { name: tmplDoc.name },
+			silent: true,
+		});
+		if (res.message && res.message.layout_json) {
+			designer.importLayout(res.message.layout_json);
+			printOutput.setDesignerTemplate(res.message.layout_json);
+			if (res.message.label_size && res.message.label_size !== pageFormat.value) {
+				pageFormat.value = res.message.label_size;
+				syncDesignerLabelSize();
+			}
+			useToastStore().show({ title: __("Template applied: {0}", [res.message.title || res.message.name]), color: "success" });
+		}
+	} catch (e) {
+		console.warn("Failed to load template detail:", e);
+	}
+};
+
+const loadTemplateFromLibrary = async (tpl: any) => {
+	if (tpl) {
+		await onSelectTemplateDoc(tpl);
 	}
 };
 
@@ -1370,6 +1442,7 @@ watch(viewMode, (mode) => {
 });
 
 watch(pageFormat, () => {
+	loadAvailableTemplates(false);
 	if (viewMode.value === "designer") {
 		syncDesignerLabelSize();
 	}
@@ -1472,9 +1545,68 @@ watch(
 	{ deep: true, immediate: true },
 );
 
-onMounted(() => {
+onMounted(async () => {
 	scaleSettings.ensureScaleBarcodeSettings();
 	fetchPrinterProfiles();
+	await loadAvailableTemplates(true);
+
+	if (route?.query?.item_code) {
+		const itemCode = String(route.query.item_code).trim();
+		const qty = parseInt(String(route.query.qty || "1"), 10) || 1;
+		try {
+			const res = await frappe.call({
+				method: "posawesome.posawesome.api.items.get_items_details",
+				args: {
+					items_data: JSON.stringify([{ item_code: itemCode }]),
+					pos_profile: JSON.stringify(uiStore.posProfile || {}),
+					price_list: uiStore.posProfile?.selling_price_list || "",
+				},
+				silent: true,
+			});
+			const itemData = res?.message?.[0];
+			if (itemData) {
+				addOrMergePrintableItem(
+					{
+						...itemData,
+						barcode: itemData.barcode || (Array.isArray(itemData.item_barcode) && itemData.item_barcode[0]?.barcode) || "",
+						uom: itemData.uom || itemData.stock_uom || "",
+						qty: qty,
+						_prices_by_uom: itemData._prices_by_uom || {},
+						item_barcode: itemData.item_barcode || [],
+						item_uoms: itemData.item_uoms || [],
+					},
+					qty,
+					"desk-import",
+				);
+			}
+		} catch (e) {
+			console.warn("Failed to load item from query:", e);
+		}
+	} else if (route?.query?.source_type && route?.query?.source_doc) {
+		const srcType = String(route.query.source_type);
+		const srcDoc = String(route.query.source_doc);
+		const methodMap: Record<string, string> = {
+			"Purchase Receipt": "get_purchase_receipt_items",
+			"Stock Entry": "get_stock_entry_items",
+			"Sales Order": "get_sales_order_items",
+			"Delivery Note": "get_delivery_note_items",
+		};
+		const method = methodMap[srcType];
+		if (method) {
+			try {
+				const { message } = await frappe.call({
+					method: `posawesome.posawesome.api.label_data_sources.${method}`,
+					args: { name: srcDoc },
+					silent: true,
+				});
+				if (Array.isArray(message) && message.length) {
+					onImportFromSource(message);
+				}
+			} catch (e) {
+				console.warn("Failed to load source doc from query:", e);
+			}
+		}
+	}
 });
 
 onUnmounted(() => {

@@ -41,7 +41,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Label Size",
-   "options": "25x25mm\n38x25mm\n50x25mm\n75x25mm\n100x50mm\n100x100mm\n",
+   "options": "58x40mm\n58x30mm\n40x30mm\n30x20mm\n25x25mm\n38x25mm\n50x25mm\n75x25mm\n100x50mm\n100x100mm\n100x150mm\n100x200mm\n",
    "reqd": 1
   },
   {

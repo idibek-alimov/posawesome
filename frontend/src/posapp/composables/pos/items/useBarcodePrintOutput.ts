@@ -222,7 +222,10 @@ export interface PageFormatPreset {
 }
 
 export const PAGE_FORMAT_PRESETS: PageFormatPreset[] = [
-	{ label: "A4 Sheet", value: "A4", type: "A4", cols: 3, rows: 7 },
+	{ label: "58 × 40 mm (Xprinter XP-365B)", value: "58x40mm", type: "thermal", widthMm: 58, heightMm: 40 },
+	{ label: "58 × 30 mm", value: "58x30mm", type: "thermal", widthMm: 58, heightMm: 30 },
+	{ label: "40 × 30 mm", value: "40x30mm", type: "thermal", widthMm: 40, heightMm: 30 },
+	{ label: "30 × 20 mm", value: "30x20mm", type: "thermal", widthMm: 30, heightMm: 20 },
 	{ label: "25 × 25 mm", value: "25x25mm", type: "thermal", widthMm: 25, heightMm: 25 },
 	{ label: "38 × 25 mm", value: "38x25mm", type: "thermal", widthMm: 38, heightMm: 25 },
 	{ label: "50 × 25 mm", value: "50x25mm", type: "thermal", widthMm: 50, heightMm: 25 },
@@ -231,6 +234,7 @@ export const PAGE_FORMAT_PRESETS: PageFormatPreset[] = [
 	{ label: "100 × 100 mm", value: "100x100mm", type: "thermal", widthMm: 100, heightMm: 100 },
 	{ label: "100 × 150 mm (4×6\")", value: "100x150mm", type: "thermal", widthMm: 100, heightMm: 150 },
 	{ label: "100 × 200 mm", value: "100x200mm", type: "thermal", widthMm: 100, heightMm: 200 },
+	{ label: "A4 Sheet", value: "A4", type: "A4", cols: 3, rows: 7 },
 ];
 
 export function guessSymbologyFromBarcode(barcode: string): string {
@@ -310,7 +314,21 @@ export function resolveTemplateVars(template: string, item: any): string {
 			.replace(/HH/g, pad(now.getHours()))
 			.replace(/mm/g, pad(now.getMinutes()))
 			.replace(/ss/g, pad(now.getSeconds()));
+
+	const companyName = item.company || (typeof frappe !== "undefined" && frappe.defaults?.get_default?.("company")) || "Radolfa";
+	const currency = item.currency || (typeof frappe !== "undefined" && frappe.defaults?.get_default?.("currency")) || "TJS";
+	const shortCode = item.short_code || item.retailmind_short_name || item.item_code || "";
+	const oldPrice = item.old_price != null ? String(item.old_price) : (item.standard_rate != null && item.price != null && Number(item.standard_rate) > Number(item.price) ? String(item.standard_rate) : "");
+	const discount = item.discount != null ? String(item.discount) : (item.discount_percentage != null ? `${item.discount_percentage}%` : "");
+	const promo = item.promo || item.posa_offer || "1+1";
+
 	return template
+		.replace(/\{company\}/g, companyName)
+		.replace(/\{currency\}/g, currency)
+		.replace(/\{short_code\}/g, shortCode)
+		.replace(/\{old_price\}/g, oldPrice)
+		.replace(/\{discount\}/g, discount)
+		.replace(/\{promo\}/g, promo)
 		.replace(/\{item_code\}/g, item.item_code || "")
 		.replace(/\{item_name\}/g, item.item_name || "")
 		.replace(/\{barcode\}/g, item.barcode || "")
@@ -338,7 +356,7 @@ export function useBarcodePrintOutput() {
 	const toastStore = useToastStore();
 	const uiStore = useUIStore();
 
-	const pageFormat = ref("A4");
+	const pageFormat = ref("58x40mm");
 	const pageFormatOptions = computed(() => PAGE_FORMAT_PRESETS.map((p) => p.value));
 	const gridCols = ref(3);
 	const gridRows = ref(7);
@@ -562,9 +580,14 @@ export function useBarcodePrintOutput() {
 		}
 		return `
 			@page { size: ${size.width}mm ${size.height}mm; margin: 0; }
-			body { font-family: sans-serif; margin: 0; padding: 0; width: ${size.width}mm; height: ${size.height}mm; overflow: hidden; }
-			.label { width: ${size.width}mm; height: ${size.height}mm; page-break-after: always; overflow: hidden; box-sizing: border-box; }
+			* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+			html, body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; padding: 5px 0; background: #f0f0f0; }
+			.label { width: ${size.width}mm; height: ${size.height}mm; background: #fff; margin: 0 auto 6px auto; page-break-after: always; break-after: page; page-break-inside: avoid; break-inside: avoid; overflow: hidden; box-sizing: border-box; position: relative; box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
 			img.barcode { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+			@media print {
+				html, body { width: ${size.width}mm !important; height: auto !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
+				.label { width: ${size.width}mm !important; height: ${size.height}mm !important; margin: 0 !important; box-shadow: none !important; page-break-after: always !important; break-after: page !important; page-break-inside: avoid !important; break-inside: avoid !important; }
+			}
 		`;
 	};
 
@@ -580,7 +603,8 @@ export function useBarcodePrintOutput() {
 
 			return `
 				@page { size: A4; margin: 10mm; }
-				body { font-family: sans-serif; margin: 0; padding: 0; }
+				* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+				body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; padding: 0; background: #fff; }
 				.label-container {
 					display: grid;
 					grid-template-columns: repeat(${cols}, 1fr);
@@ -611,26 +635,33 @@ export function useBarcodePrintOutput() {
 
 		const isTiny = (size.height ?? 25) < 35;
 		const nameSize = isTiny ? "8px" : "10px";
-		const priceSize = isTiny ? "8px" : "10px";
+		const priceSize = isTiny ? "8px" : "11px";
 		const metaSize = isTiny ? "7px" : "8px";
 		const uomSize = isTiny ? "7px" : "9px";
 		const paddingMm = isTiny ? "0.5mm" : "1.5mm";
 
 		return `
 			@page { size: ${size.width}mm ${size.height}mm; margin: 0; }
-			body { font-family: sans-serif; margin: 0; padding: 0; width: ${size.width}mm; height: ${size.height}mm; overflow: hidden; }
+			* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+			html, body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; padding: 5px 0; background: #f0f0f0; }
 			.label {
 				width: ${size.width}mm;
 				height: ${size.height}mm;
+				background: #fff;
+				margin: 0 auto 6px auto;
 				text-align: center;
 				display: flex;
 				flex-direction: column;
 				justify-content: flex-start;
 				align-items: center;
 				page-break-after: always;
+				break-after: page;
+				page-break-inside: avoid;
+				break-inside: avoid;
 				overflow: hidden;
 				box-sizing: border-box;
 				padding: ${paddingMm};
+				box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 			}
 			.item-name { font-size: ${nameSize}; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 95%; line-height: 1.1; flex-shrink: 0; }
 			.barcode-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; overflow: hidden; flex-shrink: 1; flex-grow: 1; min-height: 0; padding: 0 1mm; }
@@ -638,6 +669,10 @@ export function useBarcodePrintOutput() {
 			.uom-label { font-size: ${uomSize}; line-height: 1.1; flex-shrink: 0; }
 			.batch-serial { font-size: ${metaSize}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 95%; flex-shrink: 0; line-height: 1.1; }
 			img.barcode { max-width: 100%; height: auto; max-height: ${dims.heightPx}px; object-fit: contain; display: block; }
+			@media print {
+				html, body { width: ${size.width}mm !important; height: auto !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
+				.label { width: ${size.width}mm !important; height: ${size.height}mm !important; margin: 0 !important; box-shadow: none !important; page-break-after: always !important; break-after: page !important; page-break-inside: avoid !important; break-inside: avoid !important; }
+			}
 		`;
 	};
 

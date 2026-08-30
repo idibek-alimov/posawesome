@@ -314,13 +314,19 @@ const imageFitStyle = (_obj: any) => ({
 const resolveContent = (content: string): string => {
 	return content.replace(/\{(\w+)\}/g, (_, key) => {
 		const demoValues: Record<string, string> = {
-			item_code: "ITEM-001",
-			item_name: "Sample Item",
-			barcode: "5901234123457",
-			price: "10.50",
+			company: "Radolfa",
+			currency: "TJS",
+			short_code: "1957",
+			item_code: "1957",
+			item_name: "Кепки восьмиклинки (хулиганки) 05",
+			barcode: "2001957000004",
+			price: "90.00",
+			old_price: "120.00",
+			discount: "25%",
+			promo: "1+1",
 			qty: "1",
-			uom: "Nos",
-			date: "2026-01-15",
+			uom: "Шт",
+			date: "2026-08-30",
 		};
 		return demoValues[key] || `{${key}}`;
 	});
