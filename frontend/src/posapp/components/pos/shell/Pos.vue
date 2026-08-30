@@ -313,6 +313,7 @@ import { isCounterGridTemplate } from "../../../utils/posUiTemplate";
 import { collectUnavailableCartItems } from "../../../utils/alternateCart";
 import { shouldRedirectPosTabToItemSearch } from "../../../utils/keyboardNavigation";
 import { shouldFocusCartQtyAfterItemAdd } from "../../../utils/cartFocusSettings";
+import { useAutoDraftPersistence } from "../../../composables/pos/invoice/useAutoDraftPersistence";
 
 export default {
 	setup() {
@@ -723,6 +724,10 @@ export default {
 			posProfile,
 			eventBus,
 		});
+
+		// Auto-save the active cart to localStorage and restore it on the next
+		// page load. Must be called inside setup() so Vue lifecycle hooks work.
+		useAutoDraftPersistence({ eventBus });
 
 		onMounted(() => {
 			document.addEventListener("keydown", handlePosTabFocus, true);

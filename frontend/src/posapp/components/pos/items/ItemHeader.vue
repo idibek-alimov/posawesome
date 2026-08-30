@@ -293,6 +293,9 @@ const handleSearchKeydown = (event) => {
 		return;
 	}
 	if (event?.key === "Enter") {
+		if (typeof event.preventDefault === "function") {
+			event.preventDefault();
+		}
 		emit("enter", event);
 		return;
 	}

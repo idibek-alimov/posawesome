@@ -254,7 +254,12 @@ export const useItemsSelectorSearch = ({
 			}
 
 			try {
-				await vm.add_item(new_item, { suppressNegativeWarning: true });
+				await vm.add_item(new_item, {
+					suppressNegativeWarning: true,
+					// Tell ItemsSelector to keep focus on the search bar
+					// instead of redirecting focus to the cart qty field.
+					keepSearchFocus: true,
+				});
 				if (fromScanner) {
 					scannerInput.playScanTone("success");
 					vm.scannerLocked = false;
