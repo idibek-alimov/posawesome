@@ -817,6 +817,12 @@ export default {
 				invoice_doc.update_stock = 1;
 				invoice_doc.pos_profile = this.pos_profile.name;
 				invoice_doc.company = this.company;
+				invoice_doc.sales_team = Array.isArray(return_doc.sales_team)
+					? return_doc.sales_team.map((st) => ({
+							sales_person: st.sales_person,
+							allocated_percentage: st.allocated_percentage || 100,
+						}))
+					: [];
 
 				const data = { invoice_doc, return_doc };
 

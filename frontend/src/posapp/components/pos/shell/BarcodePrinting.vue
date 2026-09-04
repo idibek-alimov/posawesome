@@ -398,7 +398,12 @@
 								<span v-else class="text-caption text-medium-emphasis">-</span>
 							</template>
 							<template v-slot:item.price="{ item }">
-								<span class="text-caption">{{ formatCurrency(item.price) }}</span>
+								<div class="d-flex flex-column">
+									<span class="text-caption font-weight-bold">{{ formatCurrency(item.price) }}</span>
+									<span v-if="item.old_price" class="text-caption text-decoration-line-through text-medium-emphasis" style="font-size: 11px !important;">
+										{{ formatCurrency(item.old_price) }}
+									</span>
+								</div>
 							</template>
 							<template v-slot:item.qty="{ item }">
 								<div class="pos-table__qty-counter">
@@ -736,6 +741,46 @@
 						class="mb-2"
 						clearable
 					></v-autocomplete>
+					<v-divider class="my-3"></v-divider>
+					<div class="text-caption font-weight-bold mb-2">{{ __("Price & Discount (Optional)") }}</div>
+					<div class="d-flex ga-2">
+						<v-text-field
+							v-model.number="variableDataItem.price"
+							:label="__('Sale Price (TJS)')"
+							type="number"
+							variant="outlined"
+							density="compact"
+							class="mb-2"
+							hide-details
+						></v-text-field>
+						<v-text-field
+							v-model.number="variableDataItem.old_price"
+							:label="__('Old / Reg. Price (TJS)')"
+							type="number"
+							variant="outlined"
+							density="compact"
+							class="mb-2"
+							hide-details
+						></v-text-field>
+					</div>
+					<div class="d-flex ga-2 mt-2">
+						<v-text-field
+							v-model="variableDataItem.discount"
+							:label="__('Discount (e.g. 30%)')"
+							variant="outlined"
+							density="compact"
+							class="mb-2"
+							hide-details
+						></v-text-field>
+						<v-text-field
+							v-model="variableDataItem.promo"
+							:label="__('Promo Tag (e.g. АКЦИЯ!)')"
+							variant="outlined"
+							density="compact"
+							class="mb-2"
+							hide-details
+						></v-text-field>
+					</div>
 				</v-card-text>
 				<v-card-actions class="justify-end">
 					<v-btn variant="text" @click="closeVariableDataDialog">{{ __("Cancel") }}</v-btn>
@@ -939,6 +984,7 @@ import { computed, watch, onMounted, onUnmounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import ItemsSelector from "../items/ItemsSelector.vue";
 import { useItemsStore } from "../../../stores/itemsStore";
+import { usePricingRulesStore } from "../../../stores/pricingRulesStore";
 import { useUIStore } from "../../../stores/uiStore";
 import { useToastStore } from "../../../stores/toastStore";
 import { useBarcodePrintQueue } from "../../../composables/pos/items/useBarcodePrintQueue";
@@ -1148,14 +1194,20 @@ const processBulkImport = async () => {
 			if (found) {
 				added++;
 				const qty = entry.qty || 1;
+				const targetUom = found.uom || found.stock_uom || "";
+				const pricingRes = await printQueue.resolveItemPricingAndDiscount(found, targetUom, qty);
 				addOrMergePrintableItem(
 					{
 						...found,
+						price: pricingRes.price,
+						old_price: pricingRes.old_price,
+						discount: pricingRes.discount,
+						promo: pricingRes.promo,
 						barcode:
 							found.barcode ||
 							(Array.isArray(found.item_barcode) && found.item_barcode[0]?.barcode) ||
 							"",
-						uom: found.uom || found.stock_uom || "",
+						uom: targetUom,
 						qty,
 						_prices_by_uom: found._prices_by_uom || {},
 						item_barcode: found.item_barcode || [],
@@ -1179,14 +1231,20 @@ const processBulkImport = async () => {
 					if (details) {
 						added++;
 						const qty = entry.qty || 1;
+						const targetUom = details.uom || details.stock_uom || "";
+						const pricingRes = await printQueue.resolveItemPricingAndDiscount(details, targetUom, qty);
 						addOrMergePrintableItem(
 							{
 								...details,
+								price: pricingRes.price,
+								old_price: pricingRes.old_price,
+								discount: pricingRes.discount,
+								promo: pricingRes.promo,
 								barcode:
 									details.barcode ||
 									(Array.isArray(details.item_barcode) && details.item_barcode[0]?.barcode) ||
 									"",
-								uom: details.uom || details.stock_uom || "",
+								uom: targetUom,
 								qty,
 								_prices_by_uom: details._prices_by_uom || {},
 								item_barcode: details.item_barcode || [],
@@ -1382,9 +1440,11 @@ const loadAvailableTemplates = async (autoApplyDefault = false) => {
 		});
 		availableTemplates.value = res.message || [];
 		if (autoApplyDefault && availableTemplates.value.length) {
-			const radolfaDefault = availableTemplates.value.find((t: any) => String(t.title).includes("Radolfa Standard")) || availableTemplates.value[0];
-			if (radolfaDefault) {
-				await onSelectTemplateDoc(radolfaDefault);
+			const default58x40 = availableTemplates.value.find((t: any) => t.label_size === "58x40mm" && String(t.title).includes("Radolfa Standard (58x40mm)"))
+				|| availableTemplates.value.find((t: any) => t.label_size === "58x40mm")
+				|| availableTemplates.value[0];
+			if (default58x40) {
+				await onSelectTemplateDoc(default58x40);
 			}
 		}
 	} catch (e) {
@@ -1400,10 +1460,25 @@ const onSelectTemplateDoc = async (tmplDoc: any) => {
 		printOutput.clearDesignerTemplate();
 		return;
 	}
+	const templateName = typeof tmplDoc === "string" ? tmplDoc : tmplDoc.name || tmplDoc.title;
+	if (!templateName) {
+		printOutput.clearDesignerTemplate();
+		return;
+	}
+	if (tmplDoc.layout_json) {
+		designer.importLayout(tmplDoc.layout_json);
+		printOutput.setDesignerTemplate(tmplDoc.layout_json);
+		if (tmplDoc.label_size && tmplDoc.label_size !== pageFormat.value) {
+			pageFormat.value = tmplDoc.label_size;
+			syncDesignerLabelSize();
+		}
+		useToastStore().show({ title: __("Template applied: {0}", [tmplDoc.title || templateName]), color: "success" });
+		return;
+	}
 	try {
 		const res = await frappe.call({
 			method: "posawesome.posawesome.api.label_templates.get_label_template_detail",
-			args: { name: tmplDoc.name },
+			args: { name: templateName },
 			silent: true,
 		});
 		if (res.message && res.message.layout_json) {
@@ -1448,7 +1523,12 @@ watch(pageFormat, () => {
 	}
 });
 
-const sizeWarnings = computed(() => getLabelSizeWarnings());
+const sizeWarnings = computed(() => {
+	if (hasActiveTemplate.value) {
+		return [];
+	}
+	return getLabelSizeWarnings();
+});
 
 const previewDialog = ref(false);
 const previewContent = ref("");
@@ -1550,6 +1630,16 @@ onMounted(async () => {
 	fetchPrinterProfiles();
 	await loadAvailableTemplates(true);
 
+	const pricingRulesStore = usePricingRulesStore();
+	if (uiStore.posProfile?.company && uiStore.posProfile?.selling_price_list) {
+		pricingRulesStore.ensureActiveRules({
+			company: uiStore.posProfile.company,
+			price_list: uiStore.posProfile.selling_price_list,
+			currency: uiStore.posProfile.currency || "TJS",
+			date: new Date().toISOString().slice(0, 10),
+		});
+	}
+
 	if (route?.query?.item_code) {
 		const itemCode = String(route.query.item_code).trim();
 		const qty = parseInt(String(route.query.qty || "1"), 10) || 1;
@@ -1565,11 +1655,17 @@ onMounted(async () => {
 			});
 			const itemData = res?.message?.[0];
 			if (itemData) {
+				const targetUom = itemData.uom || itemData.stock_uom || "";
+				const pricingRes = await printQueue.resolveItemPricingAndDiscount(itemData, targetUom, qty);
 				addOrMergePrintableItem(
 					{
 						...itemData,
+						price: pricingRes.price,
+						old_price: pricingRes.old_price,
+						discount: pricingRes.discount,
+						promo: pricingRes.promo,
 						barcode: itemData.barcode || (Array.isArray(itemData.item_barcode) && itemData.item_barcode[0]?.barcode) || "",
-						uom: itemData.uom || itemData.stock_uom || "",
+						uom: targetUom,
 						qty: qty,
 						_prices_by_uom: itemData._prices_by_uom || {},
 						item_barcode: itemData.item_barcode || [],

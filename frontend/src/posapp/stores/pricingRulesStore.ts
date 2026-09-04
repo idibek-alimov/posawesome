@@ -372,6 +372,7 @@ export const usePricingRulesStore = defineStore("pricing-rules", () => {
 		isStale,
 		ensureActiveRules,
 		invalidateIfContextChanges,
+		setSnapshot,
 		clearSnapshot,
 		getIndexes,
 	};

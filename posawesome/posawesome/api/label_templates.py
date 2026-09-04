@@ -11,67 +11,150 @@ BUILTIN_LABEL_TEMPLATES = [
     {
         "title": "Radolfa Standard (58x40mm)",
         "label_size": "58x40mm",
-        "description": "Standard retail label with Radolfa badge, short code, Cyrillic item name, barcode, and bold price (Xprinter XP-365B)",
+        "description": "Standard retail label with safe printer margins, Radolfa header, clean divider, centered item name, barcode, short code, and large price (58x40mm)",
         "layout": [
-            {"id": "border_1", "type": "shape", "shapeType": "rect", "x": 1, "y": 1, "width": 56, "height": 38, "borderWidth": 0.5, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
-            {"id": "header_bg", "type": "shape", "shapeType": "rect", "x": 1.5, "y": 1.5, "width": 55, "height": 6.5, "borderWidth": 0.3, "borderColor": "#666666", "color": "#e0e0e0", "zIndex": 2, "content": ""},
-            {"id": "company_text", "type": "text", "x": 3, "y": 1.8, "width": 26, "height": 6, "fontSize": 10, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "{company}"},
-            {"id": "code_text", "type": "text", "x": 30, "y": 1.8, "width": 25, "height": 6, "fontSize": 10, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "{short_code}"},
-            {"id": "name_text", "type": "text", "x": 2, "y": 8.5, "width": 54, "height": 8.5, "fontSize": 10, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 3, "content": "{item_name}"},
-            {"id": "barcode_obj", "type": "barcode", "x": 4, "y": 17.5, "width": 50, "height": 13.5, "symbology": "EAN13", "humanReadable": True, "zIndex": 3, "content": "{barcode}"},
-            {"id": "price_text", "type": "text", "x": 2, "y": 31.5, "width": 54, "height": 7, "fontSize": 15, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 3, "content": "{price}"}
+            {"id": "border_outer", "type": "shape", "shapeType": "rect", "x": 2.5, "y": 2.0, "width": 53.0, "height": 36.0, "borderWidth": 0.8, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
+            {"id": "company_header", "type": "text", "x": 3.0, "y": 2.5, "width": 52.0, "height": 5.0, "fontSize": 11.5, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 2, "content": "{company}"},
+            {"id": "header_divider", "type": "line", "lineDirection": "horizontal", "x": 2.5, "y": 7.6, "width": 53.0, "height": 0.8, "borderWidth": 0.8, "borderColor": "#000000", "color": "#000000", "zIndex": 2, "content": ""},
+            {"id": "item_name", "type": "text", "x": 3.0, "y": 8.5, "width": 52.0, "height": 5.8, "fontSize": 10.0, "fontBold": False, "textAlign": "center", "color": "#000000", "zIndex": 2, "content": "{item_name}"},
+            {"id": "barcode_center", "type": "barcode", "x": 4.0, "y": 14.8, "width": 50.0, "height": 14.0, "symbology": "EAN13", "humanReadable": True, "zIndex": 2, "content": "{barcode}"},
+            {"id": "short_code_val", "type": "text", "x": 4.5, "y": 29.5, "width": 14.0, "height": 7.0, "fontSize": 11.5, "fontBold": False, "textAlign": "left", "color": "#000000", "zIndex": 2, "content": "{short_code}"},
+            {"id": "price_val", "type": "text", "x": 18.0, "y": 29.0, "width": 36.0, "height": 8.0, "fontSize": 21, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 2, "content": "{price_formatted}"}
         ]
     },
     {
         "title": "Radolfa Discount / Sale (58x40mm)",
         "label_size": "58x40mm",
-        "description": "Discount / Sale promo label with Radolfa header, old price strikethrough, and big sale price",
+        "description": "Discount / sale promotion label with safe printer margins, Radolfa header, date, item name, АКЦИЯ! badge, strikethrough old price, short code with barcode, and bold sale price (58x40mm)",
         "layout": [
-            {"id": "border_1", "type": "shape", "shapeType": "rect", "x": 1, "y": 1, "width": 56, "height": 38, "borderWidth": 0.5, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
-            {"id": "sale_bg", "type": "shape", "shapeType": "rect", "x": 1.5, "y": 1.5, "width": 55, "height": 6.5, "borderWidth": 0, "borderColor": "#000000", "color": "#222222", "zIndex": 2, "content": ""},
-            {"id": "company_sale", "type": "text", "x": 3, "y": 1.8, "width": 24, "height": 6, "fontSize": 10, "fontBold": True, "textAlign": "left", "color": "#ffffff", "zIndex": 3, "content": "{company}"},
-            {"id": "sale_tag", "type": "text", "x": 28, "y": 1.8, "width": 27, "height": 6, "fontSize": 10, "fontBold": True, "textAlign": "right", "color": "#ffffff", "zIndex": 3, "content": "★ СКИДКА ★"},
-            {"id": "name_sale", "type": "text", "x": 2, "y": 8.5, "width": 54, "height": 7.5, "fontSize": 9.5, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 3, "content": "{item_name}"},
-            {"id": "barcode_sale", "type": "barcode", "x": 4, "y": 16.5, "width": 50, "height": 13, "symbology": "EAN13", "humanReadable": True, "zIndex": 3, "content": "{barcode}"},
-            {"id": "old_price_text", "type": "text", "x": 3, "y": 30.5, "width": 24, "height": 6, "fontSize": 8.5, "fontBold": False, "textAlign": "left", "color": "#777777", "zIndex": 3, "content": "{old_price}"},
-            {"id": "strike_line", "type": "line", "lineDirection": "horizontal", "x": 3, "y": 33.5, "width": 22, "height": 1, "borderWidth": 1, "borderColor": "#000000", "zIndex": 4, "content": ""},
-            {"id": "new_price_text", "type": "text", "x": 28, "y": 30, "width": 28, "height": 8.5, "fontSize": 15, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "{price}"}
+            {"id": "border_outer", "type": "shape", "shapeType": "rect", "x": 2.5, "y": 2.0, "width": 53.0, "height": 36.0, "borderWidth": 0.8, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
+            {"id": "company_header", "type": "text", "x": 3.0, "y": 2.4, "width": 52.0, "height": 4.8, "fontSize": 11.5, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 2, "content": "{company}"},
+            {"id": "header_divider", "type": "line", "lineDirection": "horizontal", "x": 2.5, "y": 7.4, "width": 53.0, "height": 0.8, "borderWidth": 0.8, "borderColor": "#000000", "color": "#000000", "zIndex": 2, "content": ""},
+            {"id": "date_header", "type": "text", "x": 31.0, "y": 7.8, "width": 23.5, "height": 4.2, "fontSize": 8.5, "fontBold": False, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "{date:DD.MM.YYYY}"},
+            {"id": "item_name", "type": "text", "x": 4.0, "y": 8.8, "width": 30.0, "height": 6.8, "fontSize": 10.0, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "{item_name}"},
+            {"id": "promo_badge_bg", "type": "shape", "shapeType": "rect", "x": 4.0, "y": 16.5, "width": 22.0, "height": 6.8, "borderWidth": 0.5, "borderColor": "#000000", "color": "#000000", "zIndex": 2, "content": "", "condition": "{old_price} != ''"},
+            {"id": "promo_badge_text", "type": "text", "x": 4.0, "y": 16.5, "width": 22.0, "height": 6.8, "fontSize": 10.5, "fontBold": True, "textAlign": "center", "color": "#ffffff", "zIndex": 3, "content": "АКЦИЯ!", "condition": "{old_price} != ''"},
+            {"id": "old_price_label", "type": "text", "x": 28.0, "y": 11.0, "width": 26.5, "height": 4.2, "fontSize": 8.5, "fontBold": False, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "Старая цена:", "condition": "{old_price} != ''"},
+            {"id": "old_price_val", "type": "text", "x": 28.0, "y": 14.5, "width": 26.5, "height": 5.5, "fontSize": 13.0, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "{old_price_spaced}", "condition": "{old_price} != ''"},
+            {"id": "old_price_strike", "type": "line", "lineDirection": "horizontal", "x": 27.5, "y": 17.2, "width": 27.5, "height": 0.8, "borderWidth": 0.8, "borderColor": "#000000", "color": "#000000", "zIndex": 4, "content": "", "condition": "{old_price} != ''"},
+            {"id": "short_code_text", "type": "text", "x": 4.0, "y": 24.8, "width": 23.0, "height": 4.2, "fontSize": 9.5, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "Код: {short_code}"},
+            {"id": "barcode_small", "type": "barcode", "x": 4.0, "y": 29.5, "width": 23.0, "height": 7.5, "symbology": "CODE128", "humanReadable": False, "zIndex": 3, "content": "{barcode}"},
+            {"id": "new_sale_price", "type": "text", "x": 27.0, "y": 20.8, "width": 27.5, "height": 9.5, "fontSize": 21.0, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "{price_spaced}"},
+            {"id": "uom_text", "type": "text", "x": 27.0, "y": 32.0, "width": 27.5, "height": 4.8, "fontSize": 9.0, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "Цена за: {uom}"}
+        ]
+    },
+    {
+        "title": "Radolfa Sale & Discount (58x40mm)",
+        "label_size": "58x40mm",
+        "description": "Discount / sale promotion label with safe printer margins, Radolfa header, date, item name, АКЦИЯ! badge, strikethrough old price, short code with barcode, and bold sale price (58x40mm)",
+        "layout": [
+            {"id": "border_outer", "type": "shape", "shapeType": "rect", "x": 2.5, "y": 2.0, "width": 53.0, "height": 36.0, "borderWidth": 0.8, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
+            {"id": "company_header", "type": "text", "x": 3.0, "y": 2.4, "width": 52.0, "height": 4.8, "fontSize": 11.5, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 2, "content": "{company}"},
+            {"id": "header_divider", "type": "line", "lineDirection": "horizontal", "x": 2.5, "y": 7.4, "width": 53.0, "height": 0.8, "borderWidth": 0.8, "borderColor": "#000000", "color": "#000000", "zIndex": 2, "content": ""},
+            {"id": "date_header", "type": "text", "x": 31.0, "y": 7.8, "width": 23.5, "height": 4.2, "fontSize": 8.5, "fontBold": False, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "{date:DD.MM.YYYY}"},
+            {"id": "item_name", "type": "text", "x": 4.0, "y": 8.8, "width": 30.0, "height": 6.8, "fontSize": 10.0, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "{item_name}"},
+            {"id": "promo_badge_bg", "type": "shape", "shapeType": "rect", "x": 4.0, "y": 16.5, "width": 22.0, "height": 6.8, "borderWidth": 0.5, "borderColor": "#000000", "color": "#000000", "zIndex": 2, "content": "", "condition": "{old_price} != ''"},
+            {"id": "promo_badge_text", "type": "text", "x": 4.0, "y": 16.5, "width": 22.0, "height": 6.8, "fontSize": 10.5, "fontBold": True, "textAlign": "center", "color": "#ffffff", "zIndex": 3, "content": "АКЦИЯ!", "condition": "{old_price} != ''"},
+            {"id": "old_price_label", "type": "text", "x": 28.0, "y": 11.0, "width": 26.5, "height": 4.2, "fontSize": 8.5, "fontBold": False, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "Старая цена:", "condition": "{old_price} != ''"},
+            {"id": "old_price_val", "type": "text", "x": 28.0, "y": 14.5, "width": 26.5, "height": 5.5, "fontSize": 13.0, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "{old_price_spaced}", "condition": "{old_price} != ''"},
+            {"id": "old_price_strike", "type": "line", "lineDirection": "horizontal", "x": 27.5, "y": 17.2, "width": 27.5, "height": 0.8, "borderWidth": 0.8, "borderColor": "#000000", "color": "#000000", "zIndex": 4, "content": "", "condition": "{old_price} != ''"},
+            {"id": "short_code_text", "type": "text", "x": 4.0, "y": 24.8, "width": 23.0, "height": 4.2, "fontSize": 9.5, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "Код: {short_code}"},
+            {"id": "barcode_small", "type": "barcode", "x": 4.0, "y": 29.5, "width": 23.0, "height": 7.5, "symbology": "CODE128", "humanReadable": False, "zIndex": 3, "content": "{barcode}"},
+            {"id": "new_sale_price", "type": "text", "x": 27.0, "y": 20.8, "width": 27.5, "height": 9.5, "fontSize": 21.0, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "{price_spaced}"},
+            {"id": "uom_text", "type": "text", "x": 27.0, "y": 32.0, "width": 27.5, "height": 4.8, "fontSize": 9.0, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "Цена за: {uom}"}
+        ]
+    },
+    {
+        "title": "Radolfa Black Box Price (58x40mm)",
+        "label_size": "58x40mm",
+        "description": "High-contrast retail tag with top header, short code, item name, barcode, and solid black price box (58x40mm)",
+        "layout": [
+            {"id": "border_outer", "type": "shape", "shapeType": "rect", "x": 2.5, "y": 2.0, "width": 53.0, "height": 36.0, "borderWidth": 0.8, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
+            {"id": "company_text", "type": "text", "x": 3.5, "y": 2.5, "width": 26.0, "height": 5.0, "fontSize": 11, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "{company}"},
+            {"id": "short_code_text", "type": "text", "x": 30.0, "y": 2.5, "width": 24.0, "height": 5.0, "fontSize": 11, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "КОД: {short_code}"},
+            {"id": "header_divider", "type": "line", "lineDirection": "horizontal", "x": 2.5, "y": 7.6, "width": 53.0, "height": 0.8, "borderWidth": 0.8, "color": "#000000", "zIndex": 2, "content": ""},
+            {"id": "item_name", "type": "text", "x": 3.0, "y": 8.5, "width": 52.0, "height": 6.5, "fontSize": 9.5, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 3, "content": "{item_name}"},
+            {"id": "barcode_obj", "type": "barcode", "x": 4.0, "y": 15.5, "width": 50.0, "height": 12.0, "symbology": "EAN13", "humanReadable": True, "zIndex": 3, "content": "{barcode}"},
+            {"id": "price_bg_box", "type": "shape", "shapeType": "rect", "x": 2.5, "y": 28.5, "width": 53.0, "height": 9.5, "borderWidth": 0, "color": "#000000", "zIndex": 2, "content": ""},
+            {"id": "white_price_text", "type": "text", "x": 3.0, "y": 29.5, "width": 52.0, "height": 8.0, "fontSize": 18, "fontBold": True, "textAlign": "center", "color": "#ffffff", "zIndex": 3, "content": "{price_formatted}"}
         ]
     },
     {
         "title": "Radolfa Promo 1+1 (58x40mm)",
         "label_size": "58x40mm",
-        "description": "Buy 1 Get 1 Free promotion label with Radolfa branding and promo highlight",
+        "description": "Buy 1 Get 1 Free promotion label with company branding, short code, and promo highlight (58x40mm)",
         "layout": [
-            {"id": "border_1", "type": "shape", "shapeType": "rect", "x": 1, "y": 1, "width": 56, "height": 38, "borderWidth": 0.5, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
-            {"id": "company_promo", "type": "text", "x": 3, "y": 1.8, "width": 26, "height": 6, "fontSize": 10, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "{company}"},
-            {"id": "promo_rect", "type": "shape", "shapeType": "rect", "x": 31, "y": 1.5, "width": 25, "height": 6.5, "borderWidth": 0, "color": "#000000", "zIndex": 2, "content": ""},
-            {"id": "promo_tag", "type": "text", "x": 31, "y": 1.8, "width": 25, "height": 6, "fontSize": 9.5, "fontBold": True, "textAlign": "center", "color": "#ffffff", "zIndex": 3, "content": "АКЦИЯ 1+1"},
-            {"id": "name_promo", "type": "text", "x": 2, "y": 8.5, "width": 54, "height": 7.5, "fontSize": 9.5, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 3, "content": "{item_name}"},
-            {"id": "barcode_promo", "type": "barcode", "x": 4, "y": 16.5, "width": 50, "height": 13, "symbology": "EAN13", "humanReadable": True, "zIndex": 3, "content": "{barcode}"},
-            {"id": "promo_desc", "type": "text", "x": 3, "y": 30.5, "width": 28, "height": 7, "fontSize": 8.5, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "1+1 В ПОДАРОК"},
-            {"id": "price_promo", "type": "text", "x": 32, "y": 30, "width": 24, "height": 8.5, "fontSize": 14, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "{price}"}
+            {"id": "border_outer", "type": "shape", "shapeType": "rect", "x": 2.5, "y": 2.0, "width": 53.0, "height": 36.0, "borderWidth": 0.8, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
+            {"id": "header_company_bg", "type": "shape", "shapeType": "rect", "x": 2.5, "y": 2.0, "width": 28.0, "height": 5.8, "borderWidth": 0, "color": "#e8e8e8", "zIndex": 2, "content": ""},
+            {"id": "promo_company", "type": "text", "x": 3.5, "y": 2.5, "width": 26.0, "height": 5.0, "fontSize": 10, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "{company}"},
+            {"id": "promo_banner_bg", "type": "shape", "shapeType": "rect", "x": 30.5, "y": 2.0, "width": 25.0, "height": 5.8, "borderWidth": 0, "color": "#000000", "zIndex": 2, "content": ""},
+            {"id": "promo_badge_text", "type": "text", "x": 30.5, "y": 2.5, "width": 25.0, "height": 5.0, "fontSize": 9.5, "fontBold": True, "textAlign": "center", "color": "#ffffff", "zIndex": 3, "content": "АКЦИЯ 1+1"},
+            {"id": "promo_item_name", "type": "text", "x": 3.0, "y": 8.5, "width": 52.0, "height": 6.5, "fontSize": 9.5, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 3, "content": "#{short_code} · {item_name}"},
+            {"id": "promo_barcode", "type": "barcode", "x": 4.0, "y": 15.5, "width": 50.0, "height": 12.0, "symbology": "EAN13", "humanReadable": True, "zIndex": 3, "content": "{barcode}"},
+            {"id": "promo_tagline", "type": "text", "x": 3.5, "y": 29.5, "width": 26.0, "height": 7.0, "fontSize": 9.5, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "1+1 В ПОДАРОК"},
+            {"id": "promo_price", "type": "text", "x": 30.0, "y": 29.0, "width": 24.0, "height": 8.0, "fontSize": 17, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "{price_formatted}"}
         ]
     },
     {
-        "title": "Radolfa Compact (40x30mm)",
-        "label_size": "40x30mm",
-        "description": "Compact thermal label for small products with Radolfa header and barcode",
+        "title": "Radolfa Minimalist (58x40mm)",
+        "label_size": "58x40mm",
+        "description": "Minimalist dual-divider retail layout with header, short code, item name, barcode, and 19px big price (58x40mm)",
         "layout": [
-            {"id": "border_1", "type": "shape", "shapeType": "rect", "x": 1, "y": 1, "width": 38, "height": 28, "borderWidth": 0.5, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
-            {"id": "compact_header", "type": "text", "x": 2, "y": 1.5, "width": 36, "height": 4.5, "fontSize": 8.5, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 2, "content": "Radolfa · {short_code}"},
-            {"id": "compact_name", "type": "text", "x": 2, "y": 6, "width": 36, "height": 5.5, "fontSize": 7.5, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 2, "content": "{item_name}"},
-            {"id": "compact_barcode", "type": "barcode", "x": 2.5, "y": 12, "width": 35, "height": 10.5, "symbology": "EAN13", "humanReadable": True, "zIndex": 2, "content": "{barcode}"},
-            {"id": "compact_price", "type": "text", "x": 2, "y": 23, "width": 36, "height": 5.5, "fontSize": 11, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 2, "content": "{price}"}
+            {"id": "border_outer", "type": "shape", "shapeType": "rect", "x": 2.5, "y": 2.0, "width": 53.0, "height": 36.0, "borderWidth": 0.7, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
+            {"id": "company_name", "type": "text", "x": 3.5, "y": 2.5, "width": 26.0, "height": 5.0, "fontSize": 11, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "{company}"},
+            {"id": "short_code", "type": "text", "x": 30.0, "y": 2.5, "width": 24.0, "height": 5.0, "fontSize": 11, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "#{short_code}"},
+            {"id": "top_divider", "type": "line", "lineDirection": "horizontal", "x": 2.5, "y": 7.6, "width": 53.0, "height": 0.5, "borderWidth": 0.5, "color": "#000000", "zIndex": 2, "content": ""},
+            {"id": "item_name", "type": "text", "x": 3.0, "y": 8.5, "width": 52.0, "height": 6.5, "fontSize": 10, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 3, "content": "{item_name}"},
+            {"id": "barcode_obj", "type": "barcode", "x": 4.0, "y": 15.5, "width": 50.0, "height": 12.5, "symbology": "EAN13", "humanReadable": True, "zIndex": 3, "content": "{barcode}"},
+            {"id": "bottom_divider", "type": "line", "lineDirection": "horizontal", "x": 2.5, "y": 29.0, "width": 53.0, "height": 0.5, "borderWidth": 0.5, "color": "#000000", "zIndex": 2, "content": ""},
+            {"id": "price_text", "type": "text", "x": 3.0, "y": 29.8, "width": 52.0, "height": 7.5, "fontSize": 19, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 3, "content": "{price_formatted}"}
+        ]
+    },
+    {
+        "title": "Radolfa Boutique Frame (58x40mm)",
+        "label_size": "58x40mm",
+        "description": "Double frame boutique tag with boxed short code, item name, crisp barcode, and 18px bold price (58x40mm)",
+        "layout": [
+            {"id": "border_outer", "type": "shape", "shapeType": "rect", "x": 2.5, "y": 2.0, "width": 53.0, "height": 36.0, "borderWidth": 0.8, "borderColor": "#000000", "color": "transparent", "zIndex": 1, "content": ""},
+            {"id": "border_inner", "type": "shape", "shapeType": "rect", "x": 3.2, "y": 2.7, "width": 51.6, "height": 34.6, "borderWidth": 0.3, "borderColor": "#888888", "color": "transparent", "zIndex": 1, "content": ""},
+            {"id": "company_name", "type": "text", "x": 4.0, "y": 3.0, "width": 26.0, "height": 4.8, "fontSize": 10.5, "fontBold": True, "textAlign": "left", "color": "#000000", "zIndex": 3, "content": "{company}"},
+            {"id": "short_code", "type": "text", "x": 31.0, "y": 3.0, "width": 22.0, "height": 4.8, "fontSize": 10.5, "fontBold": True, "textAlign": "right", "color": "#000000", "zIndex": 3, "content": "№ {short_code}"},
+            {"id": "item_name", "type": "text", "x": 4.0, "y": 8.5, "width": 50.0, "height": 6.5, "fontSize": 10, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 3, "content": "{item_name}"},
+            {"id": "barcode_obj", "type": "barcode", "x": 4.0, "y": 15.5, "width": 50.0, "height": 12.0, "symbology": "EAN13", "humanReadable": True, "zIndex": 3, "content": "{barcode}"},
+            {"id": "price_text", "type": "text", "x": 4.0, "y": 29.0, "width": 50.0, "height": 7.0, "fontSize": 18, "fontBold": True, "textAlign": "center", "color": "#000000", "zIndex": 3, "content": "{price_formatted}"}
         ]
     }
 ]
 
 
-def ensure_default_templates():
-    """Seed built-in label templates into Barcode Label Template DocType if not present."""
+def ensure_default_templates(force_update=False):
+    """Seed or update built-in label templates into Barcode Label Template DocType."""
+    current_titles = {tmpl["title"] for tmpl in BUILTIN_LABEL_TEMPLATES}
+
+    if force_update:
+        # Delete obsolete built-in templates that are not in current BUILTIN_LABEL_TEMPLATES
+        try:
+            all_templates = frappe.get_all("Barcode Label Template", fields=["name", "title"])
+            for t in all_templates:
+                if t.title not in current_titles and (t.title.startswith("Radolfa") or t.name.startswith("Radolfa")):
+                    frappe.delete_doc("Barcode Label Template", t.name, force=True, ignore_permissions=True)
+        except Exception:
+            frappe.log_error("Failed to clean up obsolete barcode label templates")
+
     for tmpl in BUILTIN_LABEL_TEMPLATES:
-        if not frappe.db.exists("Barcode Label Template", {"title": tmpl["title"]}):
+        if frappe.db.exists("Barcode Label Template", {"title": tmpl["title"]}):
+            if force_update:
+                try:
+                    doc = frappe.get_doc("Barcode Label Template", {"title": tmpl["title"]})
+                    doc.label_size = tmpl["label_size"]
+                    doc.description = tmpl["description"]
+                    doc.layout_json = json.dumps(tmpl["layout"])
+                    doc.flags.ignore_permissions = True
+                    doc.flags.ignore_links = True
+                    doc.save()
+                except Exception:
+                    frappe.log_error(f"Failed to update barcode template {tmpl['title']}")
+        else:
             try:
                 doc = frappe.get_doc({
                     "doctype": "Barcode Label Template",
@@ -97,8 +180,8 @@ def get_label_templates(label_size=None):
     templates = frappe.get_all(
         "Barcode Label Template",
         filters=filters,
-        fields=["name", "title", "label_size", "description", "modified", "thumbnail"],
-        order_by="modified desc",
+        fields=["name", "title", "label_size", "description", "modified", "thumbnail", "layout_json"],
+        order_by="title asc",
     )
     return templates
 
@@ -108,6 +191,12 @@ def get_label_template_detail(name):
     """Return full template including layout_json."""
     if not name:
         frappe.throw(_("Template name is required"))
+    if not frappe.db.exists("Barcode Label Template", name):
+        doc_name = frappe.db.get_value("Barcode Label Template", {"title": name}, "name")
+        if doc_name:
+            name = doc_name
+        else:
+            frappe.throw(_("Template {0} not found").format(name))
     doc = frappe.get_doc("Barcode Label Template", name)
     return {
         "name": doc.name,

@@ -45,7 +45,7 @@
 				</div>
 				<div class="panel-section px-3 py-2">
 					<div class="d-flex ga-2">
-						<v-text-field v-model.number="obj.fontSize" :label="__('Size (mm)')" type="number" hide-details density="compact" variant="outlined" :min="1" :max="50" @update:modelValue="onChange" class="flex-grow-1"></v-text-field>
+						<v-text-field v-model.number="obj.fontSize" :label="__('Font Size (px)')" type="number" hide-details density="compact" variant="outlined" :min="6" :max="72" @update:modelValue="onChange" class="flex-grow-1"></v-text-field>
 						<v-btn-toggle v-model="textAlignVal" density="compact" variant="outlined" @update:modelValue="onTextAlignChange" mandatory class="flex-shrink-0">
 							<v-btn value="left" icon="mdi-format-align-left" size="small"></v-btn>
 							<v-btn value="center" icon="mdi-format-align-center" size="small"></v-btn>
@@ -65,8 +65,16 @@
 				</div>
 				<div class="panel-section px-3 py-2">
 					<div class="d-flex ga-2 align-center">
-						<span class="text-caption mr-2">{{ __("Color") }}</span>
-						<input type="color" :value="obj.color || '#000000'" @input="onColorChange($event, 'color')" class="color-picker" />
+						<span class="text-caption mr-1">{{ __("Color") }}</span>
+						<input type="color" :value="obj.color || '#000000'" @input="onColorChange($event, 'color')" class="color-picker mr-2" />
+						<span class="text-caption mr-1">{{ __("Background") }}</span>
+						<input type="color" :value="obj.backgroundColor || '#ffffff'" @input="onColorChange($event, 'backgroundColor')" class="color-picker" />
+					</div>
+				</div>
+				<div class="panel-section px-3 py-2">
+					<div class="d-flex ga-2">
+						<v-text-field v-model.number="obj.borderWidth" :label="__('Border (px)')" type="number" hide-details density="compact" variant="outlined" :min="0" :max="10" @update:modelValue="onChange"></v-text-field>
+						<v-text-field v-model.number="obj.borderRadius" :label="__('Radius (px)')" type="number" hide-details density="compact" variant="outlined" :min="0" :max="50" @update:modelValue="onChange"></v-text-field>
 					</div>
 				</div>
 			</template>
@@ -194,6 +202,8 @@ const onChange = () => {
 		backgroundColor: obj.value.backgroundColor,
 		borderColor: obj.value.borderColor,
 		borderWidth: obj.value.borderWidth,
+		borderRadius: obj.value.borderRadius,
+		letterSpacing: obj.value.letterSpacing,
 		symbology: obj.value.symbology,
 		humanReadable: obj.value.humanReadable,
 		shapeType: obj.value.shapeType,

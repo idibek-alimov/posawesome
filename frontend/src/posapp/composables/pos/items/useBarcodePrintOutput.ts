@@ -179,16 +179,18 @@ export const calculateBarcodeDimensions = (symbology: string, context: PrintCont
 			}
 		}
 	} else {
-		const targetModuleMm = 0.33;
-		const targetModulePx = Math.round((targetModuleMm * dpi) / 25.4);
-		const approxChars = dataLength || 20;
+		const targetModuleMm = 0.264;
+		const targetModulePx = Math.max(1, Math.round((targetModuleMm * dpi) / 25.4));
+		const approxChars = dataLength || 13;
 		const approxModules = (approxChars * (spec.modulesPerChar ?? 11)) + 35;
 		const approxTotalMm = pxToMm(approxModules * targetModulePx, dpi) + spec.quietZoneLeftMm + spec.quietZoneRightMm;
 		if (approxTotalMm > labelWidthMm && labelWidthMm > 0) {
 			const scale = (labelWidthMm - spec.quietZoneLeftMm - spec.quietZoneRightMm) / approxTotalMm;
 			moduleWidthPx = Math.max(1, Math.floor(targetModulePx * scale));
-			warnings.push(`Barcode scaled down to fit ${labelWidthMm}mm label`);
-			compliance = 'below_minimum';
+			if (pxToMm(moduleWidthPx, dpi) < 0.20) {
+				warnings.push(`Barcode scaled down to fit ${labelWidthMm}mm label`);
+				compliance = 'below_minimum';
+			}
 		} else {
 			moduleWidthPx = Math.max(2, targetModulePx);
 		}
@@ -317,30 +319,90 @@ export function resolveTemplateVars(template: string, item: any): string {
 
 	const companyName = item.company || (typeof frappe !== "undefined" && frappe.defaults?.get_default?.("company")) || "Radolfa";
 	const currency = item.currency || (typeof frappe !== "undefined" && frappe.defaults?.get_default?.("currency")) || "TJS";
-	const shortCode = item.short_code || item.retailmind_short_name || item.item_code || "";
-	const oldPrice = item.old_price != null ? String(item.old_price) : (item.standard_rate != null && item.price != null && Number(item.standard_rate) > Number(item.price) ? String(item.standard_rate) : "");
+	const shortCode = item.short_code || item.custom_short_code || item.retailmind_short_name || item.item_code || "";
+
+	const formatPriceVal = (val: any) => {
+		if (val == null || val === "") return "";
+		const n = Number(val);
+		if (isNaN(n)) return String(val);
+		const formatted = n.toLocaleString("en-US", {
+			minimumFractionDigits: n % 1 === 0 ? 0 : 2,
+			maximumFractionDigits: 2,
+		});
+		return currency ? `${formatted} ${currency}` : formatted;
+	};
+
+	const formatPricePlain = (val: any) => {
+		if (val == null || val === "") return "";
+		const n = Number(val);
+		if (isNaN(n)) return String(val);
+		return n.toLocaleString("en-US", {
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2,
+		});
+	};
+
+	const formatPriceSpaced = (val: any) => {
+		if (val == null || val === "") return "";
+		const n = Number(val);
+		if (isNaN(n)) return String(val);
+		const parts = n.toFixed(2).split(".");
+		const intFormatted = Number(parts[0]).toLocaleString("en-US");
+		const cents = parts[1] || "00";
+		return `${intFormatted} ${cents}`;
+	};
+
+	const formattedPrice = formatPriceVal(item.price);
+	const formattedPricePlain = formatPricePlain(item.price);
+	const formattedPriceSpaced = formatPriceSpaced(item.price);
+
+	const oldPriceVal = item.old_price != null && item.old_price !== ""
+		? item.old_price
+		: (item.standard_rate != null && item.price != null && Number(item.standard_rate) > Number(item.price)
+			? item.standard_rate
+			: (item.custom_old_price || item.compare_at_price || ""));
+	const formattedOldPrice = oldPriceVal ? formatPriceVal(oldPriceVal) : "";
+	const formattedOldPricePlain = oldPriceVal ? formatPricePlain(oldPriceVal) : "";
+	const formattedOldPriceSpaced = oldPriceVal ? formatPriceSpaced(oldPriceVal) : "";
+
 	const discount = item.discount != null ? String(item.discount) : (item.discount_percentage != null ? `${item.discount_percentage}%` : "");
-	const promo = item.promo || item.posa_offer || "1+1";
+	const promo = item.promo || item.posa_offer || "АКЦИЯ!";
+
+	const rawUom = String(item.uom || "").trim();
+	const resolvedUom = rawUom === "" || rawUom === "Nos" || rawUom === "Unit" || rawUom === "Pcs" || rawUom === "Units"
+		? "шт"
+		: rawUom.toLowerCase() === "nos"
+		? "шт"
+		: rawUom;
 
 	return template
 		.replace(/\{company\}/g, companyName)
 		.replace(/\{currency\}/g, currency)
 		.replace(/\{short_code\}/g, shortCode)
-		.replace(/\{old_price\}/g, oldPrice)
+		.replace(/\{old_price_formatted\}/g, formattedOldPricePlain)
+		.replace(/\{old_price_plain\}/g, formattedOldPricePlain)
+		.replace(/\{old_price_spaced\}/g, formattedOldPriceSpaced)
+		.replace(/\{old_price_space_cents\}/g, formattedOldPriceSpaced)
+		.replace(/\{old_price\}/g, formattedOldPrice)
 		.replace(/\{discount\}/g, discount)
 		.replace(/\{promo\}/g, promo)
 		.replace(/\{item_code\}/g, item.item_code || "")
 		.replace(/\{item_name\}/g, item.item_name || "")
 		.replace(/\{barcode\}/g, item.barcode || "")
-		.replace(/\{price\}/g, item.price != null ? String(item.price) : "")
-		.replace(/\{uom\}/g, item.uom || "")
+		.replace(/\{price_formatted\}/g, formattedPricePlain)
+		.replace(/\{price_plain\}/g, formattedPricePlain)
+		.replace(/\{price_spaced\}/g, formattedPriceSpaced)
+		.replace(/\{price_space_cents\}/g, formattedPriceSpaced)
+		.replace(/\{price\}/g, formattedPrice)
+		.replace(/\{raw_price\}/g, item.price != null ? String(item.price) : "")
+		.replace(/\{uom\}/g, resolvedUom)
 		.replace(/\{qty\}/g, item.qty != null ? String(item.qty) : "")
 		.replace(/\{batch_no\}/g, item.batch_no || "")
 		.replace(/\{serial_no\}/g, item.serial_no || "")
 		.replace(/\{warehouse\}/g, item.warehouse || "")
 		.replace(/\{warehouse_location\}/g, item.warehouseLocation || "")
 		.replace(/\{grams\}/g, item.grams != null ? String(item.grams) : "")
-		.replace(/\{date(?::([^}]+))?\}/g, (_, fmt) => formatDate(fmt || "YYYY-MM-DD"))
+		.replace(/\{date(?::([^}]+))?\}/g, (_, fmt) => formatDate(fmt || "DD.MM.YYYY"))
 		.replace(/\{time(?::([^}]+))?\}/g, (_, fmt) => formatDate(fmt || "HH:mm"));
 }
 
@@ -533,12 +595,13 @@ export function useBarcodePrintOutput() {
 		if (value == null || value === "") return "0";
 		const num = Number(value);
 		if (isNaN(num)) return String(value);
-		const formatted = num.toLocaleString(undefined, {
-			minimumFractionDigits: 2,
+		const formatted = num.toLocaleString("en-US", {
+			minimumFractionDigits: num % 1 === 0 ? 0 : 2,
 			maximumFractionDigits: 2,
 		});
-		if (profile?.currency) {
-			return `${formatted} ${profile.currency}`;
+		const currency = profile?.currency || (typeof frappe !== "undefined" && frappe.defaults?.get_default?.("currency")) || "TJS";
+		if (currency) {
+			return `${formatted} ${currency}`;
 		}
 		return formatted;
 	};
@@ -572,10 +635,11 @@ export function useBarcodePrintOutput() {
 			const rowHeight = Math.floor((availableHeight - totalGapSpace) / rows);
 			return `
 				@page { size: A4; margin: 10mm; }
-				body { font-family: sans-serif; margin: 0; padding: 0; }
+				* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+				body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; padding: 0; background: #fff; }
 				.label-container { display: grid; grid-template-columns: repeat(${cols}, 1fr); gap: 3mm; page-break-after: always; }
-				.label { border: 1px dashed #ccc; padding: 0; width: 100%; height: ${rowHeight}mm; page-break-inside: avoid; box-sizing: border-box; overflow: hidden; }
-				img.barcode { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+				.label { border: 1px dashed #999; padding: 0; width: 100%; height: ${rowHeight}mm; page-break-inside: avoid; box-sizing: border-box; overflow: hidden; position: relative; }
+				svg.barcode, img.barcode { max-width: 100%; max-height: 100%; object-fit: contain; display: block; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; }
 			`;
 		}
 		return `
@@ -583,7 +647,7 @@ export function useBarcodePrintOutput() {
 			* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 			html, body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; padding: 5px 0; background: #f0f0f0; }
 			.label { width: ${size.width}mm; height: ${size.height}mm; background: #fff; margin: 0 auto 6px auto; page-break-after: always; break-after: page; page-break-inside: avoid; break-inside: avoid; overflow: hidden; box-sizing: border-box; position: relative; box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
-			img.barcode { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+			svg.barcode, img.barcode { max-width: 100%; max-height: 100%; object-fit: contain; display: block; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; }
 			@media print {
 				html, body { width: ${size.width}mm !important; height: auto !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
 				.label { width: ${size.width}mm !important; height: ${size.height}mm !important; margin: 0 !important; box-shadow: none !important; page-break-after: always !important; break-after: page !important; page-break-inside: avoid !important; break-inside: avoid !important; }
@@ -612,33 +676,106 @@ export function useBarcodePrintOutput() {
 					page-break-after: always;
 				}
 				.label {
-					border: 1px dashed #ccc;
-					padding: 2mm;
+					border: 1px solid #222;
+					border-radius: 3px;
+					padding: 2mm 2.5mm;
 					text-align: center;
 					height: ${rowHeight}mm;
 					display: flex;
 					flex-direction: column;
-					justify-content: center;
+					justify-content: space-between;
 					align-items: center;
 					page-break-inside: avoid;
 					box-sizing: border-box;
 					overflow: hidden;
 				}
-				.item-name { font-size: 11px; font-weight: bold; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 95%; margin-bottom: 1px; line-height: 1.2; }
-				.barcode-wrapper { width: 100%; display: flex; justify-content: center; align-items: center; flex-grow: 1; overflow: hidden; padding: 0 1mm; }
-				.price { font-size: 11px; font-weight: bold; margin-top: 2px; line-height: 1.2; }
-				.uom-label { font-size: 10px; margin-top: 1px; line-height: 1.2; }
-				.batch-serial { font-size: 9px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 95%; line-height: 1.2; }
-				img.barcode { max-width: 100%; height: auto; max-height: 100%; object-fit: contain; display: block; }
+				.label-header {
+					width: 100%;
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					border-bottom: 0.8px solid #444;
+					padding-bottom: 1.5px;
+					margin-bottom: 2px;
+					font-size: 10px;
+					font-weight: 700;
+					line-height: 1.1;
+				}
+				.company-name {
+					text-align: left;
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					max-width: 60%;
+					letter-spacing: 0.3px;
+					font-weight: 800;
+					text-transform: uppercase;
+				}
+				.short-code {
+					text-align: right;
+					white-space: nowrap;
+					font-weight: 800;
+					color: #000;
+					background: #f0f0f0;
+					padding: 0 4px;
+					border-radius: 2px;
+					font-size: 10px;
+				}
+				.item-name {
+					font-size: 11px;
+					font-weight: bold;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					max-width: 98%;
+					margin-bottom: 1px;
+					line-height: 1.2;
+				}
+				.barcode-wrapper {
+					width: 100%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					flex-grow: 1;
+					min-height: 0;
+					overflow: hidden;
+					padding: 0 1mm;
+				}
+				.price {
+					font-size: 15px;
+					font-weight: 900;
+					margin-top: 2px;
+					line-height: 1.1;
+					letter-spacing: -0.2px;
+				}
+				.batch-serial {
+					font-size: 8.5px;
+					margin-top: 1px;
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					max-width: 95%;
+					line-height: 1.1;
+				}
+				svg.barcode, img.barcode {
+					max-width: 100%;
+					height: auto;
+					max-height: 100%;
+					object-fit: contain;
+					display: block;
+					image-rendering: -webkit-optimize-contrast;
+					image-rendering: crisp-edges;
+				}
 			`;
 		}
 
-		const isTiny = (size.height ?? 25) < 35;
-		const nameSize = isTiny ? "8px" : "10px";
-		const priceSize = isTiny ? "8px" : "11px";
-		const metaSize = isTiny ? "7px" : "8px";
-		const uomSize = isTiny ? "7px" : "9px";
-		const paddingMm = isTiny ? "0.5mm" : "1.5mm";
+		const isTiny = (size.height ?? 25) < 28;
+		const isSmall = (size.height ?? 25) < 35;
+		const headerSize = isTiny ? "7px" : isSmall ? "8.5px" : "10px";
+		const nameSize = isTiny ? "7.5px" : isSmall ? "9px" : "11px";
+		const priceSize = isTiny ? "9.5px" : isSmall ? "13px" : "16px";
+		const metaSize = isTiny ? "6.5px" : "8px";
+		const paddingMm = isTiny ? "0.8mm 1mm" : isSmall ? "1.2mm 1.5mm" : "1.8mm 2mm";
 
 		return `
 			@page { size: ${size.width}mm ${size.height}mm; margin: 0; }
@@ -652,7 +789,7 @@ export function useBarcodePrintOutput() {
 				text-align: center;
 				display: flex;
 				flex-direction: column;
-				justify-content: flex-start;
+				justify-content: space-between;
 				align-items: center;
 				page-break-after: always;
 				break-after: page;
@@ -661,14 +798,91 @@ export function useBarcodePrintOutput() {
 				overflow: hidden;
 				box-sizing: border-box;
 				padding: ${paddingMm};
+				border: 1px solid #222;
+				border-radius: 2px;
 				box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 			}
-			.item-name { font-size: ${nameSize}; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 95%; line-height: 1.1; flex-shrink: 0; }
-			.barcode-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; overflow: hidden; flex-shrink: 1; flex-grow: 1; min-height: 0; padding: 0 1mm; }
-			.price { font-size: ${priceSize}; font-weight: bold; line-height: 1.1; flex-shrink: 0; }
-			.uom-label { font-size: ${uomSize}; line-height: 1.1; flex-shrink: 0; }
-			.batch-serial { font-size: ${metaSize}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 95%; flex-shrink: 0; line-height: 1.1; }
-			img.barcode { max-width: 100%; height: auto; max-height: ${dims.heightPx}px; object-fit: contain; display: block; }
+			.label-header {
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				border-bottom: 0.8px solid #333;
+				padding-bottom: 1px;
+				margin-bottom: 1.5px;
+				font-size: ${headerSize};
+				font-weight: 700;
+				line-height: 1.1;
+				flex-shrink: 0;
+			}
+			.company-name {
+				text-align: left;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				max-width: 58%;
+				letter-spacing: 0.3px;
+				font-weight: 800;
+				text-transform: uppercase;
+			}
+			.short-code {
+				text-align: right;
+				white-space: nowrap;
+				font-weight: 800;
+				color: #000;
+				background: #f0f0f0;
+				padding: 0 3px;
+				border-radius: 2px;
+				font-size: ${headerSize};
+			}
+			.item-name {
+				font-size: ${nameSize};
+				font-weight: bold;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				max-width: 98%;
+				line-height: 1.15;
+				margin-bottom: 1px;
+				flex-shrink: 0;
+			}
+			.barcode-wrapper {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+				overflow: hidden;
+				flex-shrink: 1;
+				flex-grow: 1;
+				min-height: 0;
+				padding: 0 1mm;
+			}
+			.price {
+				font-size: ${priceSize};
+				font-weight: 900;
+				line-height: 1.1;
+				flex-shrink: 0;
+				letter-spacing: -0.2px;
+				color: #000;
+			}
+			.batch-serial {
+				font-size: ${metaSize};
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				max-width: 95%;
+				flex-shrink: 0;
+				line-height: 1.1;
+			}
+			svg.barcode, img.barcode {
+				max-width: 100%;
+				height: auto;
+				max-height: ${dims.heightPx}px;
+				object-fit: contain;
+				display: block;
+				image-rendering: -webkit-optimize-contrast;
+				image-rendering: crisp-edges;
+			}
 			@media print {
 				html, body { width: ${size.width}mm !important; height: auto !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
 				.label { width: ${size.width}mm !important; height: ${size.height}mm !important; margin: 0 !important; box-shadow: none !important; page-break-after: always !important; break-after: page !important; page-break-inside: avoid !important; break-inside: avoid !important; }
@@ -755,6 +969,7 @@ export function useBarcodePrintOutput() {
 		let html = "";
 		const size = parseLabelSize();
 		const ctx = getPrintContext(false);
+		const defaultCompany = uiStore.posProfile?.company || (typeof frappe !== "undefined" && frappe.defaults?.get_default?.("company")) || "Radolfa";
 
 		if (size.type === "A4") html += '<div class="label-container">';
 
@@ -767,7 +982,10 @@ export function useBarcodePrintOutput() {
 			const labelsCount = Math.max(1, Math.round(Number(item.qty) || 1));
 			const safeItemName = escapeHtml(item.item_name || item.item_code || "");
 			const safeBarcode = escapeHtml(item.barcode || "");
-			const safeUom = escapeHtml(item.uom || "");
+			const companyName = item.company || defaultCompany;
+			const safeCompany = escapeHtml(companyName);
+			const shortCode = item.short_code || item.custom_short_code || item.retailmind_short_name || item.item_code || "";
+			const safeShortCode = shortCode ? escapeHtml(shortCode.startsWith("#") ? shortCode : `#${shortCode}`) : "";
 
 			for (let i = 0; i < labelsCount; i++) {
 				let batchSerialHtml = "";
@@ -788,22 +1006,27 @@ export function useBarcodePrintOutput() {
 
 				let priceHtml = "";
 				if (includePrice.value) {
-					priceHtml = `<div class="price">Price: ${escapeHtml(formatCurrency(item.price))}</div>`;
+					priceHtml = `<div class="price">${escapeHtml(formatCurrency(item.price))}</div>`;
 				}
-
-				let uomHtml = safeUom ? `<div class="uom-label">${safeUom}</div>` : "";
 
 				let warehouseHtml = "";
 				if (includeWarehouseLocation.value && item.warehouseLocation) {
 					warehouseHtml = `<div class="batch-serial">Loc: ${escapeHtml(item.warehouseLocation)}</div>`;
 				}
 
+				const headerHtml = safeCompany || safeShortCode
+					? `<div class="label-header">
+							<div class="company-name">${safeCompany}</div>
+							<div class="short-code">${safeShortCode}</div>
+						</div>`
+					: "";
+
 				html += `
 					<div class="label">
+						${headerHtml}
 						<div class="item-name">${safeItemName}</div>
-						${uomHtml}
 						<div class="barcode-wrapper">
-							<img class="barcode"
+							<svg class="barcode"
 								jsbarcode-format="${jsBarcode.format}"
 								jsbarcode-value="${safeBarcode}"
 								jsbarcode-textmargin="0"
@@ -812,7 +1035,7 @@ export function useBarcodePrintOutput() {
 								jsbarcode-width="${dims.moduleWidthPx}"
 								jsbarcode-margin="${dims.quietZonePx}"
 								jsbarcode-displayValue="true"
-								jsbarcode-fontSize="${dims.fontSize}"${ean128Attr}>
+								jsbarcode-fontSize="${dims.fontSize}"${ean128Attr}></svg>
 						</div>
 						${warehouseHtml}
 						${batchSerialHtml}
@@ -832,6 +1055,29 @@ export function useBarcodePrintOutput() {
 		catch { return ""; }
 		if (!Array.isArray(objects) || !objects.length) return "";
 
+		const shouldShowObject = (obj: LabelObject, copyItem: any): boolean => {
+			if (obj.hidden) return false;
+			if (!obj.condition || !obj.condition.trim()) return true;
+			const cond = obj.condition.trim();
+			if (cond.includes("{old_price}")) {
+				const op = copyItem.old_price ?? copyItem.custom_old_price ?? copyItem.compare_at_price ?? (copyItem.standard_rate && copyItem.price && Number(copyItem.standard_rate) > Number(copyItem.price) ? copyItem.standard_rate : "");
+				if (!op || op === "" || op === 0 || op === "0") return false;
+			}
+			const resolvedCondition = resolveTemplateVars(cond, copyItem).trim();
+			if (resolvedCondition === "" || resolvedCondition === "false" || resolvedCondition === "0" || resolvedCondition === "null" || resolvedCondition === "undefined") return false;
+			if (resolvedCondition.includes("!=") || resolvedCondition.includes("==")) {
+				const parts = resolvedCondition.split(/!=|==/);
+				if (parts.length === 2) {
+					const [p0 = "", p1 = ""] = parts;
+					const left = p0.trim().replace(/^['"]|['"]$/g, "");
+					const right = p1.trim().replace(/^['"]|['"]$/g, "");
+					if (resolvedCondition.includes("!=")) return left !== right;
+					if (resolvedCondition.includes("==")) return left === right;
+				}
+			}
+			return true;
+		};
+
 		const ctx = getPrintContext(false);
 		let html = "";
 		items.forEach((item) => {
@@ -841,9 +1087,7 @@ export function useBarcodePrintOutput() {
 				const copyItem = itemSerials.length > c ? { ...item, serial_no: itemSerials[c] } : item;
 				html += '<div class="label" style="position:relative;overflow:hidden;">';
 				objects.forEach((obj) => {
-					if (obj.hidden) return;
-					const resolvedCondition = resolveTemplateVars(obj.condition || "", copyItem);
-					if (resolvedCondition === "" || resolvedCondition === "false" || resolvedCondition === "0") return;
+					if (!shouldShowObject(obj, copyItem)) return;
 					const baseStyle = `position:absolute;left:${obj.x}mm;top:${obj.y}mm;width:${obj.width}mm;height:${obj.height}mm;`;
 					switch (obj.type) {
 						case "text": {
@@ -852,10 +1096,16 @@ export function useBarcodePrintOutput() {
 							const fi = obj.fontItalic ? "font-style:italic;" : "";
 							const fu = obj.fontUnderline ? "text-decoration:underline;" : "";
 							const align = obj.textAlign || "left";
+							const justify = align === "center" ? "center" : align === "right" ? "flex-end" : "flex-start";
 							const color = obj.color || "#000";
+							const bg = obj.backgroundColor ? `background-color:${obj.backgroundColor};` : "";
+							const bc = obj.borderColor ? `border-color:${obj.borderColor};` : "";
+							const bw = obj.borderWidth != null && obj.borderWidth > 0 ? `border:${obj.borderWidth}px solid ${obj.borderColor || '#000'};` : (bc ? `border:1px solid ${obj.borderColor};` : "");
+							const br = (obj as any).borderRadius ? `border-radius:${(obj as any).borderRadius}px;` : "";
+							const letterSpacing = (obj as any).letterSpacing ? `letter-spacing:${(obj as any).letterSpacing};` : "";
 							const fontSize = (obj.fontSize || 10) + "px";
 							const fontFamily = obj.fontFamily || "sans-serif";
-							html += `<div style="${baseStyle}font-family:${fontFamily};font-size:${fontSize};${fs}${fi}${fu}color:${color};text-align:${align};overflow:hidden;display:flex;align-items:center;">${escapeHtml(content)}</div>`;
+							html += `<div style="${baseStyle}font-family:${fontFamily};font-size:${fontSize};${fs}${fi}${fu}color:${color};text-align:${align};justify-content:${justify};${bg}${bw}${br}${letterSpacing}overflow:hidden;display:flex;align-items:center;box-sizing:border-box;">${escapeHtml(content)}</div>`;
 							break;
 						}
 						case "barcode": {
@@ -865,23 +1115,25 @@ export function useBarcodePrintOutput() {
 							const jsb = getSymbologyForJsBarcode(sym);
 							const dims = calculateBarcodeDimensions(sym, ctx, bd.length);
 							const ean128 = jsb.ean128 ? ' jsbarcode-ean128="true"' : "";
-							html += `<div style="${baseStyle}display:flex;align-items:center;justify-content:center;overflow:hidden;"><img class="barcode" jsbarcode-format="${jsb.format}" jsbarcode-value="${escapeHtml(bd)}" jsbarcode-textmargin="0" jsbarcode-fontoptions="bold" jsbarcode-height="${dims.heightPx}" jsbarcode-width="${dims.moduleWidthPx}" jsbarcode-margin="${dims.quietZonePx}" jsbarcode-displayValue="true" jsbarcode-fontSize="${dims.fontSize}"${ean128} style="max-width:100%;max-height:100%;"></div>`;
+							const showDisplayValue = obj.humanReadable !== false;
+							const targetHeight = obj.height ? Math.max(10, Math.round(mmToPx(obj.height - (showDisplayValue ? 4 : 1), ctx.dpi))) : dims.heightPx;
+							html += `<div style="${baseStyle}display:flex;align-items:center;justify-content:center;overflow:hidden;"><svg class="barcode" jsbarcode-format="${jsb.format}" jsbarcode-value="${escapeHtml(bd)}" jsbarcode-textmargin="0" jsbarcode-fontoptions="bold" jsbarcode-height="${targetHeight}" jsbarcode-width="${dims.moduleWidthPx}" jsbarcode-margin="${dims.quietZonePx}" jsbarcode-displayValue="${showDisplayValue}" jsbarcode-fontSize="${dims.fontSize}"${ean128} style="max-width:100%;max-height:100%;"></svg></div>`;
 							break;
 						}
 						case "shape": {
 							const bg = obj.color || "#ccc";
 							const bc = obj.borderColor || "#000";
-							const bw = obj.borderWidth || 0;
+							const bw = obj.borderWidth != null ? obj.borderWidth : 0;
 							if (obj.shapeType === "ellipse") {
-								html += `<div style="${baseStyle}background:${bg};border:${bw}px solid ${bc};border-radius:50%;"></div>`;
+								html += `<div style="${baseStyle}background:${bg};border:${bw}px solid ${bc};border-radius:50%;box-sizing:border-box;"></div>`;
 							} else {
-								html += `<div style="${baseStyle}background:${bg};border:${bw}px solid ${bc};"></div>`;
+								html += `<div style="${baseStyle}background:${bg};border:${bw}px solid ${bc};box-sizing:border-box;"></div>`;
 							}
 							break;
 						}
 						case "line": {
-							const lc = obj.color || "#000";
-							const th = obj.borderWidth || 1;
+							const lc = obj.color || obj.borderColor || "#000";
+							const th = obj.borderWidth != null ? obj.borderWidth : 1;
 							if (obj.lineDirection === "vertical") {
 								html += `<div style="position:absolute;left:${obj.x + obj.width / 2}mm;top:${obj.y}mm;width:${th}px;height:${obj.height}mm;background:${lc};"></div>`;
 							} else {

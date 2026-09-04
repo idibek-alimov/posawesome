@@ -2,7 +2,7 @@ import { ref, computed, reactive } from "vue";
 
 const generateId = (): string => {
 	if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-		return generateId();
+		return crypto.randomUUID();
 	}
 	return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
 		const r = (Math.random() * 16) | 0;
@@ -42,6 +42,8 @@ export interface LabelObject {
 	condition?: string;
 	dateFormat?: string;
 	fontUnderline?: boolean;
+	borderRadius?: number;
+	letterSpacing?: string;
 }
 
 export interface LabelSize {
@@ -62,10 +64,10 @@ export interface LabelDesignerState {
 export function useLabelDesigner() {
 	const objects = ref<LabelObject[]>([]);
 	const selectedId = ref<string | null>(null);
-	const labelSize = ref<LabelSize>({ widthMm: 100, heightMm: 75 });
-	const zoom = ref(1);
+	const labelSize = ref<LabelSize>({ widthMm: 58, heightMm: 40 });
+	const zoom = ref(2.5);
 	const gridEnabled = ref(true);
-	const gridSize = ref(5);
+	const gridSize = ref(1);
 	const snapEnabled = ref(true);
 	const isDragging = ref(false);
 	const dragOffset = reactive({ x: 0, y: 0 });

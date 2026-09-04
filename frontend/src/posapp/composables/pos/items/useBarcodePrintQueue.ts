@@ -1,6 +1,9 @@
 import { ref, nextTick } from "vue";
 import { useToastStore } from "../../../stores/toastStore";
 import { useItemsStore } from "../../../stores/itemsStore";
+import { useUIStore } from "../../../stores/uiStore";
+import { usePricingRulesStore } from "../../../stores/pricingRulesStore";
+import { evaluatePricingRules } from "../../../../lib/pricingEngine";
 import { useScaleBarcodeSettings } from "./useScaleBarcodeSettings";
 import { useSerializationEngine } from "./useSerializationEngine";
 
@@ -27,6 +30,11 @@ export interface BarcodePrintItem {
 	barcode: string;
 	qty: number;
 	price: number;
+	old_price?: number | string;
+	standard_rate?: number;
+	discount?: string | number;
+	discount_percentage?: number;
+	promo?: string;
 	item_barcode: any[];
 	item_uoms: any[];
 	uom: string;
@@ -58,6 +66,7 @@ export function useBarcodePrintQueue() {
 
 	const toastStore = useToastStore();
 	const itemsStore = useItemsStore();
+	const uiStore = useUIStore();
 	const scaleBarcode = useScaleBarcodeSettings();
 	const variableDataDialog = ref(false);
 	const variableDataItem = ref<BarcodePrintItem | null>(null);
@@ -67,7 +76,7 @@ export function useBarcodePrintQueue() {
 	const fetchWarehouseOptions = async () => {
 		warehouseLoading.value = true;
 		try {
-			const company = itemsStore.posProfile?.company;
+			const company = uiStore.posProfile?.company || itemsStore.posProfile?.company;
 			const { message } = await frappe.call({
 				method: "posawesome.posawesome.api.utils.get_warehouses",
 				args: { company },
@@ -121,6 +130,133 @@ export function useBarcodePrintQueue() {
 		if (barcodeRows.length > 0 && barcodeRows[0]?.barcode) return barcodeRows[0].barcode;
 		if (Array.isArray(item.barcodes) && item.barcodes.length > 0) return item.barcodes[0];
 		return "";
+	};
+
+	const resolveItemPricingAndDiscount = async (item: any, uom?: string, qty = 1) => {
+		const profile: any =
+			(uiStore.posProfile && (uiStore.posProfile as any).name ? uiStore.posProfile : null) ||
+			(itemsStore.posProfile && (itemsStore.posProfile as any).name ? itemsStore.posProfile : null) ||
+			{};
+		const company = item.company || profile.company || (typeof frappe !== "undefined" && frappe.defaults?.get_default?.("company")) || "Radolfa";
+		const priceList = profile.selling_price_list || (typeof frappe !== "undefined" && frappe.defaults?.get_default?.("selling_price_list")) || "Standard Selling";
+		const currency = item.currency || profile.currency || (typeof frappe !== "undefined" && frappe.defaults?.get_default?.("currency")) || "TJS";
+		const pricingRulesStore = usePricingRulesStore();
+
+		const pricingCtx = {
+			company,
+			price_list: priceList,
+			currency,
+			date: new Date().toISOString().slice(0, 10),
+		};
+
+		if (company && priceList) {
+			try {
+				await pricingRulesStore.ensureActiveRules(pricingCtx);
+			} catch (e) {
+				console.warn("Failed to ensure active pricing rules in barcode queue", e);
+			}
+		}
+
+		// Resolve base catalog price
+		let basePrice = Number(
+			item.price_list_rate ??
+			item.base_price_list_rate ??
+			item.price ??
+			item.rate ??
+			item.standard_rate ??
+			0
+		);
+
+		// Handle UOM price or conversion factor if specified
+		const targetUom = uom || item.uom || item.stock_uom || "";
+		const uomPrices = item._prices_by_uom || {};
+		if (uomPrices[targetUom]?.price_list_rate != null) {
+			basePrice = Number(uomPrices[targetUom].price_list_rate);
+		} else if (targetUom && Array.isArray(item.item_uoms)) {
+			const uomEntry = item.item_uoms.find((u: any) => u.uom === targetUom);
+			if (uomEntry?.conversion_factor && uomEntry.conversion_factor !== 1) {
+				basePrice = basePrice * uomEntry.conversion_factor;
+			}
+		}
+
+		let resolvedPrice = basePrice;
+		let resolvedOldPrice: number | string = "";
+		let resolvedDiscount = "";
+		let resolvedPromo = item.promo || item.posa_offer || "АКЦИЯ!";
+
+		// 1. Check if Pricing Rule applies
+		if (pricingRulesStore.indexes) {
+			try {
+				const fullItem = {
+					...(typeof (itemsStore as any).getItemByCode === "function" ? (itemsStore as any).getItemByCode(item.item_code) : {}),
+					...item,
+				};
+				const { pricing } = evaluatePricingRules({
+					item: fullItem,
+					qty,
+					docQty: qty,
+					baseRate: basePrice,
+					ctx: pricingCtx,
+					indexes: pricingRulesStore.indexes,
+				});
+
+				if (pricing) {
+					const proposedRate = Number(pricing.rate);
+					const discountPerUnit = Number(pricing.discountPerUnit || 0);
+					const hasDiscount =
+						(Number.isFinite(proposedRate) && proposedRate < basePrice) ||
+						discountPerUnit > 0;
+
+					if (hasDiscount && Number.isFinite(proposedRate) && proposedRate >= 0) {
+						resolvedPrice = proposedRate;
+						resolvedOldPrice = basePrice;
+						const pct = basePrice > 0 ? Math.round(((basePrice - proposedRate) / basePrice) * 100) : 0;
+						resolvedDiscount = pct > 0 ? `${pct}%` : (discountPerUnit > 0 ? `${discountPerUnit}` : "");
+						if (pricing.applied?.[0]?.title || pricing.applied?.[0]?.name) {
+							resolvedPromo = pricing.applied[0].title || pricing.applied[0].name;
+						}
+					}
+				}
+			} catch (e) {
+				console.warn("Error evaluating pricing rules in barcode queue", e);
+			}
+		}
+
+		// 2. Check if item already has explicit price_list_rate > rate (e.g. from POS cart / invoice / SO import)
+		if (!resolvedOldPrice && item.price_list_rate && item.rate && Number(item.price_list_rate) > Number(item.rate)) {
+			resolvedOldPrice = Number(item.price_list_rate);
+			resolvedPrice = Number(item.rate);
+			resolvedDiscount = item.discount_percentage
+				? `${item.discount_percentage}%`
+				: `${Math.round(((Number(item.price_list_rate) - Number(item.rate)) / Number(item.price_list_rate)) * 100)}%`;
+			if (item.pricing_rules || item.posa_offer) {
+				resolvedPromo = item.pricing_rules || item.posa_offer;
+			}
+		}
+
+		// 3. Check if standard_rate > rate (catalog compare-at price)
+		if (!resolvedOldPrice && item.standard_rate && resolvedPrice && Number(item.standard_rate) > Number(resolvedPrice)) {
+			resolvedOldPrice = Number(item.standard_rate);
+			const pct = Math.round(((Number(item.standard_rate) - Number(resolvedPrice)) / Number(item.standard_rate)) * 100);
+			resolvedDiscount = `${pct}%`;
+		}
+
+		// 4. Custom fields (custom_old_price, old_price, compare_at_price)
+		if (!resolvedOldPrice && (item.old_price || item.custom_old_price || item.compare_at_price)) {
+			resolvedOldPrice = item.old_price ?? item.custom_old_price ?? item.compare_at_price;
+		}
+
+		// 5. Explicit manual discount field passed on item
+		if (item.discount && !resolvedDiscount) {
+			resolvedDiscount = String(item.discount);
+		}
+
+		return {
+			price: resolvedPrice,
+			old_price: resolvedOldPrice,
+			discount: resolvedDiscount,
+			promo: resolvedPromo,
+		};
 	};
 
 	const addOrMergePrintableItem = (item: any, qty: number, logPrefix = "addOrMergePrintableItem") => {
@@ -180,11 +316,26 @@ export function useBarcodePrintQueue() {
 	const serializationEngine = useSerializationEngine();
 	const serializationEnabled = ref(false);
 
-	const importItems = (importedItems: any[]) => {
+	const importItems = async (importedItems: any[]) => {
 		if (!Array.isArray(importedItems) || !importedItems.length) return;
-		importedItems.forEach((item) => {
-			addOrMergePrintableItem(item, Number(item.qty) || 1, "import");
-		});
+		for (const item of importedItems) {
+			let itemToProcess = { ...item };
+			if (itemToProcess.price === undefined || itemToProcess.old_price === undefined) {
+				const pricingRes = await resolveItemPricingAndDiscount(
+					itemToProcess,
+					itemToProcess.uom,
+					Number(itemToProcess.qty) || 1,
+				);
+				if (itemToProcess.price === undefined) itemToProcess.price = pricingRes.price;
+				if (itemToProcess.old_price === undefined) itemToProcess.old_price = pricingRes.old_price;
+				if (!itemToProcess.discount) itemToProcess.discount = pricingRes.discount;
+				if (!itemToProcess.promo) itemToProcess.promo = pricingRes.promo;
+			}
+			if (!itemToProcess._row_id) {
+				itemToProcess._row_id = nextRowId.value++;
+			}
+			addOrMergePrintableItem(itemToProcess, Number(itemToProcess.qty) || 1, "import");
+		}
 	};
 
 	const incrementQty = (item: any) => {
@@ -310,6 +461,12 @@ export function useBarcodePrintQueue() {
 				item.price = (item.price || 0) * uomEntry.conversion_factor;
 			}
 		}
+
+		const pricingRes = await resolveItemPricingAndDiscount(item, newUom, item.qty);
+		item.price = pricingRes.price;
+		item.old_price = pricingRes.old_price;
+		item.discount = pricingRes.discount;
+		if (pricingRes.promo) item.promo = pricingRes.promo;
 	};
 
 	const onPendingUomChange = async () => {
@@ -439,14 +596,7 @@ export function useBarcodePrintQueue() {
 					: null),
 		);
 
-		let initialPrice = item.rate || item.standard_rate || 0;
-		const uomPrices = item._prices_by_uom || {};
-		if (!uomPrices[defaultUom] && defaultUom) {
-			const uomEntry = (itemUoms || []).find((u: any) => u.uom === defaultUom);
-			if (uomEntry?.conversion_factor && uomEntry.conversion_factor !== 1) {
-				initialPrice = (initialPrice || 0) * uomEntry.conversion_factor;
-			}
-		}
+		const pricingRes = await resolveItemPricingAndDiscount(item, defaultUom, initialLabelQty);
 
 		const preparedItem: BarcodePrintItem = {
 			_row_id: nextRowId.value++,
@@ -454,10 +604,18 @@ export function useBarcodePrintQueue() {
 			item_name: item.item_name,
 			barcode: String(barcode || "").trim(),
 			qty: initialLabelQty,
-			price: initialPrice,
+			price: pricingRes.price,
+			old_price: pricingRes.old_price,
+			standard_rate: item.standard_rate,
+			discount: pricingRes.discount,
+			promo: pricingRes.promo,
 			item_barcode: itemBarcodes,
 			item_uoms: itemUoms,
 			uom: defaultUom || "",
+			short_code: item.short_code || item.custom_short_code || item.retailmind_short_name || item.item_code || "",
+			custom_short_code: item.custom_short_code || item.short_code || "",
+			company: item.company || itemsStore.posProfile?.company || "",
+			currency: item.currency || itemsStore.posProfile?.currency || "",
 			_is_scale_barcode: isScaleBarcode,
 			_scanned_barcode: scannedScaleBarcode,
 			_scale_template_barcode: scannedScaleBarcode || scaleTemplateFromRows || String(barcode || "").trim(),
@@ -679,6 +837,7 @@ export function useBarcodePrintQueue() {
 		getAvailableSerials,
 		onSelectBatch,
 		onSelectSerial,
+		resolveItemPricingAndDiscount,
 		cleanup,
 	};
 }

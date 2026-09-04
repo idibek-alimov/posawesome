@@ -242,11 +242,15 @@ const selectSlab = (rule: AnyRecord, qty: number): AnyRecord | null => {
 
 const applyMargin = (baseRate: number, rule: AnyRecord): number => {
 	const marginType = rule.margin_type || rule.discount_type;
+	const isExplicitMargin =
+		String(rule.discount_type || "").toLowerCase() === "margin" ||
+		String(rule.rate_or_discount_type || "").toLowerCase().includes("margin");
+
 	const marginValue = Number.parseFloat(
-		rule.margin_rate_or_amount || rule.rate_or_discount || 0,
+		rule.margin_rate_or_amount ?? (isExplicitMargin ? rule.rate_or_discount : 0) ?? 0,
 	);
 
-	if (!marginValue) {
+	if (!marginValue || !Number.isFinite(marginValue)) {
 		return baseRate;
 	}
 
@@ -286,13 +290,26 @@ const applyOneRule = (
 	const priceMode = String(rule.price_or_discount || "").toLowerCase();
 	const discountType = String(rule.discount_type || "").toLowerCase();
 
-	const isAmount = rawType === "discount amount" || discountType === "amount";
-	const isMargin = discountType === "margin" || !!rule.margin_type;
+	const isExplicitMargin =
+		discountType === "margin" ||
+		rawType === "margin" ||
+		rawType.startsWith("margin");
+	const marginRateOrAmt = Number.parseFloat(rule.margin_rate_or_amount || 0);
+	const hasMarginValue = Number.isFinite(marginRateOrAmt) && marginRateOrAmt > 0;
+	const isMargin =
+		isExplicitMargin ||
+		(hasMarginValue &&
+			rawType !== "discount percentage" &&
+			rawType !== "discount amount");
+
+	const isAmount =
+		rawType === "discount amount" ||
+		(discountType === "amount" && !isMargin);
 	const isPriceOverride =
 		priceMode === "price" &&
 		(rawType === "rate" ||
 			rawType === "price" ||
-			(!rawType && discountType === "rate"));
+			(!rawType && discountType === "rate" && !isMargin));
 
 	let type =
 		rule.discount_type ||

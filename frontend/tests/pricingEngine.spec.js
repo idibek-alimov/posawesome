@@ -338,6 +338,30 @@ describe("pricingEngine - applyLocalPricingRules", () => {
 		expect(result.discountPerUnit).toBeCloseTo(6);
 	});
 
+	it("correctly discounts base rate when ERPNext default margin_type is present on discount rule", () => {
+		const rule = {
+			name: "PRLE-0001",
+			price_or_discount: "Discount",
+			rate_or_discount_type: "Discount Percentage",
+			discount_type: "Rate",
+			rate_or_discount: 15,
+			margin_type: "Percentage",
+			margin_rate_or_amount: 0,
+			specificity: 3,
+			priority: 2,
+		};
+		const indexes = buildIndexes({ items: { "PV-01-BLU": [rule] } });
+		const result = applyLocalPricingRules({
+			item: { item_code: "PV-01-BLU" },
+			qty: 1,
+			baseRate: 100,
+			ctx: {},
+			indexes,
+		});
+		expect(result.rate).toBeCloseTo(85);
+		expect(result.discountPerUnit).toBeCloseTo(15);
+	});
+
 	it("continues to honour explicit price overrides", () => {
 		const rule = {
 			name: "PRICE-OVERRIDE",

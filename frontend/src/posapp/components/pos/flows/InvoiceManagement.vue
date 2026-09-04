@@ -3765,6 +3765,12 @@ export default {
 					update_stock: 1,
 					pos_profile: this.posProfile?.name,
 					company: this.posProfile?.company,
+					sales_team: Array.isArray(returnDoc.sales_team)
+						? returnDoc.sales_team.map((st) => ({
+								sales_person: st.sales_person,
+								allocated_percentage: st.allocated_percentage || 100,
+							}))
+						: [],
 				};
 				this.eventBus?.emit("load_return_invoice", {
 					invoice_doc: invoiceDoc,

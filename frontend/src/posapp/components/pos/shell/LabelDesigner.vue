@@ -14,45 +14,53 @@
 			<v-checkbox v-model="designer.gridEnabled.value" :label="__('Grid')" hide-details density="compact" class="mr-2"></v-checkbox>
 			<v-checkbox v-model="designer.snapEnabled.value" :label="__('Snap')" hide-details density="compact" class="mr-2"></v-checkbox>
 			<v-btn size="x-small" icon="mdi-magnify-minus" @click="zoomOut" :disabled="designer.zoom.value <= 0.25"></v-btn>
-			<span class="text-caption mx-1">{{ Math.round(designer.zoom.value * 100) }}%</span>
-			<v-btn size="x-small" icon="mdi-magnify-plus" @click="zoomIn" :disabled="designer.zoom.value >= 4"></v-btn>
+			<span class="text-caption mx-1 font-weight-medium" style="min-width: 44px; text-align: center;">{{ Math.round(designer.zoom.value * 100) }}%</span>
+			<v-btn size="x-small" icon="mdi-magnify-plus" @click="zoomIn" :disabled="designer.zoom.value >= 5"></v-btn>
 			<v-btn size="x-small" variant="text" class="ml-1" @click="resetZoom">{{ __("Fit") }}</v-btn>
 			<v-btn size="x-small" icon="mdi-delete" color="error" @click="designer.clearAll()" :title="__('Clear All')" class="ml-2"></v-btn>
 		</div>
 
-		<div class="designer-scroll" ref="scrollEl">
-			<div class="designer-stage" :style="stageStyle">
-				<div class="designer-canvas" :style="canvasStyle">
-					<svg class="ruler-top" :width="canvasPx.width" height="15">
-						<line v-for="mm in rulerTopMarks" :key="'rt'+mm"
-							:x1="mmToPx(mm)" y1="0"
-							:x2="mmToPx(mm)" y2="5"
-							stroke="#999" stroke-width="0.5" />
-						<text v-for="mm in rulerTopLabels" :key="'rtl'+mm"
-							:x="mmToPx(mm) + 1" y="12"
-							font-size="7" fill="#666">{{ mm }}</text>
-					</svg>
-					<svg class="ruler-left" :width="15" :height="canvasPx.height">
-						<line v-for="mm in rulerLeftMarks" :key="'rl'+mm"
-							x1="0" :y1="mmToPx(mm)"
-							x2="5" :y2="mmToPx(mm)"
-							stroke="#999" stroke-width="0.5" />
-						<text v-for="mm in rulerLeftLabels" :key="'rll'+mm"
-							x="7" :y="mmToPx(mm) + 10"
-							font-size="7" fill="#666" transform="rotate(90, 7, 0)">{{ mm }}</text>
-					</svg>
+		<div class="designer-scroll" ref="scrollEl" @mousedown.self="onDeselect">
+			<div class="designer-stage" :style="stageStyle" @mousedown.self="onDeselect">
+				<!-- Top Ruler -->
+				<svg class="ruler-top" :width="canvasPx.width" height="16">
+					<line v-for="mm in rulerTopMarks" :key="'rt'+mm"
+						:x1="mmToPx(mm)" y1="16"
+						:x2="mmToPx(mm)" :y2="mm % 10 === 0 ? 2 : (mm % 5 === 0 ? 7 : 11)"
+						stroke="#888" stroke-width="0.75" />
+					<text v-for="mm in rulerTopLabels" :key="'rtl'+mm"
+						:x="mmToPx(mm) + 2" y="10"
+						font-size="8" fill="#555" font-family="monospace">{{ mm }}</text>
+				</svg>
 
+				<!-- Left Ruler -->
+				<svg class="ruler-left" width="16" :height="canvasPx.height">
+					<line v-for="mm in rulerLeftMarks" :key="'rl'+mm"
+						x1="16" :y1="mmToPx(mm)"
+						:x2="mm % 10 === 0 ? 2 : (mm % 5 === 0 ? 7 : 11)" :y2="mmToPx(mm)"
+						stroke="#888" stroke-width="0.75" />
+					<text v-for="mm in rulerLeftLabels" :key="'rll'+mm"
+						x="2" :y="mmToPx(mm) - 2"
+						font-size="8" fill="#555" font-family="monospace">{{ mm }}</text>
+				</svg>
+
+				<!-- Label Canvas -->
+				<div class="designer-canvas" :style="canvasStyle" @mousedown.self="onDeselect">
+					<!-- Grid Overlay -->
 					<svg class="grid-overlay" v-if="designer.gridEnabled.value"
 						:width="canvasPx.width" :height="canvasPx.height">
 						<line v-for="i in gridLinesX" :key="'gx'+i"
 							:x1="mmToPx(i * designer.gridSize.value)" y1="0"
-							:x2="mmToPx(i * designer.gridSize.value)" y2="canvasPx.height"
-							stroke="#e0e0e0" stroke-width="0.5" />
+							:x2="mmToPx(i * designer.gridSize.value)" :y2="canvasPx.height"
+							:stroke="i % 5 === 0 ? '#d0d0d0' : '#ebebeb'" stroke-width="0.5" />
 						<line v-for="i in gridLinesY" :key="'gy'+i"
 							x1="0" :y1="mmToPx(i * designer.gridSize.value)"
 							:x2="canvasPx.width" :y2="mmToPx(i * designer.gridSize.value)"
-							stroke="#e0e0e0" stroke-width="0.5" />
+							:stroke="i % 5 === 0 ? '#d0d0d0' : '#ebebeb'" stroke-width="0.5" />
 					</svg>
+
+					<!-- Safe Print Margin Guide (2mm from edge) -->
+					<div class="safe-margin-guide" :style="marginGuideStyle" title="Safe Printable Area (2mm margin)"></div>
 
 					<div
 						v-for="obj in sortedObjects"
@@ -69,7 +77,7 @@
 						<template v-else-if="obj.type === 'barcode'">
 							<div class="designer-barcode-placeholder">
 								<div class="barcode-visual" :style="barcodeStyle(obj)"></div>
-								<div v-if="obj.humanReadable" class="barcode-hr">{{ resolveContent(obj.content) }}</div>
+								<div v-if="obj.humanReadable !== false" class="barcode-hr" :style="barcodeHrStyle(obj)">{{ resolveContent(obj.content) }}</div>
 							</div>
 						</template>
 						<template v-else-if="obj.type === 'shape'">
@@ -170,11 +178,14 @@ const canvasPx = computed(() => {
 });
 
 const stageStyle = computed(() => {
-	const vw = canvasPx.value.width + 40;
-	const vh = canvasPx.value.height + 40;
+	const vw = canvasPx.value.width + 48;
+	const vh = canvasPx.value.height + 48;
 	return {
 		width: `${vw}px`,
 		height: `${vh}px`,
+		position: "relative" as const,
+		padding: "24px 24px 24px 24px",
+		boxSizing: "border-box" as const,
 		display: "flex",
 		alignItems: "center",
 		justifyContent: "center",
@@ -186,10 +197,29 @@ const canvasStyle = computed(() => ({
 	height: `${canvasPx.value.height}px`,
 	position: "relative" as const,
 	background: "#fff",
-	border: "1px solid #ccc",
-	boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-	overflow: "hidden",
+	border: "1px solid #b0b0b0",
+	boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+	boxSizing: "border-box" as const,
 }));
+
+const marginGuideStyle = computed(() => {
+	const marginMm = 2.0;
+	const mx = mmToPx(marginMm);
+	const my = mmToPx(marginMm);
+	const mw = Math.max(0, canvasPx.value.width - mx * 2);
+	const mh = Math.max(0, canvasPx.value.height - my * 2);
+	return {
+		position: "absolute" as const,
+		left: `${mx}px`,
+		top: `${my}px`,
+		width: `${mw}px`,
+		height: `${mh}px`,
+		border: "1px dashed rgba(25, 118, 210, 0.35)",
+		pointerEvents: "none" as const,
+		boxSizing: "border-box" as const,
+		zIndex: 1,
+	};
+});
 
 const sortedObjects = computed(() => {
 	return [...props.designer.objects.value].sort((a, b) => a.zIndex - b.zIndex);
@@ -197,7 +227,7 @@ const sortedObjects = computed(() => {
 
 const rulerTopMarks = computed(() => {
 	const marks: number[] = [];
-	for (let i = 0; i <= props.designer.labelSize.value.widthMm; i += 5) {
+	for (let i = 0; i <= props.designer.labelSize.value.widthMm; i += 1) {
 		marks.push(i);
 	}
 	return marks;
@@ -205,7 +235,7 @@ const rulerTopMarks = computed(() => {
 
 const rulerTopLabels = computed(() => {
 	const labels: number[] = [];
-	for (let i = 0; i <= props.designer.labelSize.value.widthMm; i += 10) {
+	for (let i = 10; i < props.designer.labelSize.value.widthMm; i += 10) {
 		labels.push(i);
 	}
 	return labels;
@@ -213,7 +243,7 @@ const rulerTopLabels = computed(() => {
 
 const rulerLeftMarks = computed(() => {
 	const marks: number[] = [];
-	for (let i = 0; i <= props.designer.labelSize.value.heightMm; i += 5) {
+	for (let i = 0; i <= props.designer.labelSize.value.heightMm; i += 1) {
 		marks.push(i);
 	}
 	return marks;
@@ -221,19 +251,21 @@ const rulerLeftMarks = computed(() => {
 
 const rulerLeftLabels = computed(() => {
 	const labels: number[] = [];
-	for (let i = 0; i <= props.designer.labelSize.value.heightMm; i += 10) {
+	for (let i = 10; i < props.designer.labelSize.value.heightMm; i += 10) {
 		labels.push(i);
 	}
 	return labels;
 });
 
 const gridLinesX = computed(() => {
-	const count = Math.floor(props.designer.labelSize.value.widthMm / props.designer.gridSize.value);
+	const gs = props.designer.gridSize.value || 1;
+	const count = Math.floor(props.designer.labelSize.value.widthMm / gs);
 	return Array.from({ length: count }, (_, i) => i + 1);
 });
 
 const gridLinesY = computed(() => {
-	const count = Math.floor(props.designer.labelSize.value.heightMm / props.designer.gridSize.value);
+	const gs = props.designer.gridSize.value || 1;
+	const count = Math.floor(props.designer.labelSize.value.heightMm / gs);
 	return Array.from({ length: count }, (_, i) => i + 1);
 });
 
@@ -247,60 +279,93 @@ const objectStyle = (obj: any) => ({
 	height: `${mmToPx(obj.height)}px`,
 	transform: obj.rotation ? `rotate(${obj.rotation}deg)` : undefined,
 	cursor: "move",
+	boxSizing: "border-box" as const,
 });
 
-const textStyle = (obj: any) => ({
-	fontFamily: obj.fontFamily || "Arial",
-	fontSize: `${mmToPx(obj.fontSize || 8)}px`,
-	fontWeight: obj.fontBold ? "bold" : "normal",
-	fontStyle: obj.fontItalic ? "italic" : "normal",
-	textDecoration: obj.fontUnderline ? "underline" : "none",
-	textAlign: obj.textAlign || "left",
-	color: obj.color || "#000",
-	width: "100%",
-	height: "100%",
-	overflow: "hidden",
-	display: "flex",
-	alignItems: "center",
-	whiteSpace: "pre-wrap" as const,
-	wordBreak: "break-word" as const,
-});
+const textStyle = (obj: any) => {
+	const align = obj.textAlign || "left";
+	const justify = align === "center" ? "center" : align === "right" ? "flex-end" : "flex-start";
+	const scaledFontSize = Math.max(6, Math.round((obj.fontSize || 10) * props.designer.zoom.value));
+	const scaledBorderWidth = obj.borderWidth ? Math.max(1, Math.round(obj.borderWidth * props.designer.zoom.value)) : 0;
+	const scaledBorderRadius = obj.borderRadius ? Math.round(obj.borderRadius * props.designer.zoom.value) : 0;
+	return {
+		fontFamily: obj.fontFamily || "Arial, sans-serif",
+		fontSize: `${scaledFontSize}px`,
+		fontWeight: obj.fontBold ? "bold" : "normal",
+		fontStyle: obj.fontItalic ? "italic" : "normal",
+		textDecoration: obj.fontUnderline ? "underline" : "none",
+		textAlign: align,
+		justifyContent: justify,
+		color: obj.color || "#000",
+		backgroundColor: obj.backgroundColor || "transparent",
+		border: scaledBorderWidth ? `${scaledBorderWidth}px solid ${obj.borderColor || '#000'}` : (obj.borderColor ? `1px solid ${obj.borderColor}` : undefined),
+		borderRadius: scaledBorderRadius ? `${scaledBorderRadius}px` : undefined,
+		letterSpacing: obj.letterSpacing || undefined,
+		width: "100%",
+		height: "100%",
+		overflow: "hidden",
+		display: "flex",
+		alignItems: "center",
+		boxSizing: "border-box" as const,
+		whiteSpace: "pre-wrap" as const,
+		wordBreak: "break-word" as const,
+		lineHeight: "1.1",
+	};
+};
 
 const barcodeStyle = (obj: any) => ({
 	width: "100%",
-	height: obj.humanReadable ? "70%" : "100%",
+	height: obj.humanReadable !== false ? "70%" : "100%",
 	background: `repeating-linear-gradient(
 		90deg,
 		#000 0px,
-		#000 ${Math.max(1, mmToPx(0.25))}px,
-		#fff ${Math.max(1, mmToPx(0.25))}px,
-		#fff ${Math.max(2, mmToPx(0.5))}px
+		#000 ${Math.max(1, Math.round(1 * props.designer.zoom.value))}px,
+		#fff ${Math.max(1, Math.round(1 * props.designer.zoom.value))}px,
+		#fff ${Math.max(2, Math.round(2.5 * props.designer.zoom.value))}px
 	)`,
 	borderRadius: "1px",
 });
 
-const shapeStyle = (obj: any, type: "rect" | "ellipse") => ({
+const barcodeHrStyle = (_obj: any) => ({
+	fontSize: `${Math.max(7, Math.round(9 * props.designer.zoom.value))}px`,
+	fontFamily: "monospace",
+	fontWeight: "bold",
+	textAlign: "center" as const,
+	lineHeight: "1.1",
+	color: "#000",
+	marginTop: `${Math.max(1, Math.round(1 * props.designer.zoom.value))}px`,
+	overflow: "hidden",
+	textOverflow: "ellipsis",
+	whiteSpace: "nowrap" as const,
 	width: "100%",
-	height: "100%",
-	borderRadius: type === "ellipse" ? "50%" : "0",
-	border: `${obj.borderWidth || 0.5}mm solid ${obj.borderColor || "#000"}`,
-	background: obj.color || "transparent",
-	boxSizing: "border-box" as const,
 });
 
+const shapeStyle = (obj: any, type: "rect" | "ellipse") => {
+	const scaledBw = obj.borderWidth != null && obj.borderWidth > 0 ? Math.max(1, Math.round(obj.borderWidth * props.designer.zoom.value)) : 0;
+	return {
+		width: "100%",
+		height: "100%",
+		borderRadius: type === "ellipse" ? "50%" : (obj.borderRadius ? `${Math.round(obj.borderRadius * props.designer.zoom.value)}px` : "0"),
+		border: scaledBw > 0 ? `${scaledBw}px solid ${obj.borderColor || "#000"}` : (obj.borderColor ? `1px solid ${obj.borderColor}` : undefined),
+		background: obj.color || "transparent",
+		boxSizing: "border-box" as const,
+	};
+};
+
 const lineStyle = (obj: any) => {
+	const scaledBw = Math.max(1, Math.round((obj.borderWidth || 1) * props.designer.zoom.value));
 	if (obj.lineDirection === "vertical") {
 		return {
-			width: `${mmToPx(obj.borderWidth || 0.5)}px`,
+			width: `${scaledBw}px`,
 			height: "100%",
-			background: obj.borderColor || "#000",
+			background: obj.borderColor || obj.color || "#000",
 			margin: "0 auto",
 		};
 	}
 	return {
-		height: `${mmToPx(obj.borderWidth || 0.5)}px`,
+		height: `${scaledBw}px`,
 		width: "100%",
-		background: obj.borderColor || "#000",
+		background: obj.borderColor || obj.color || "#000",
 		margin: "auto 0",
 	};
 };
@@ -312,24 +377,41 @@ const imageFitStyle = (_obj: any) => ({
 });
 
 const resolveContent = (content: string): string => {
-	return content.replace(/\{(\w+)\}/g, (_, key) => {
+	return (content || "").replace(/\{([^}]+)\}/g, (match, key) => {
+		if (key.startsWith("date")) {
+			return "26.11.2025";
+		}
 		const demoValues: Record<string, string> = {
-			company: "Radolfa",
+			company: "RADOLFA",
 			currency: "TJS",
-			short_code: "1957",
-			item_code: "1957",
-			item_name: "Кепки восьмиклинки (хулиганки) 05",
-			barcode: "2001957000004",
-			price: "90.00",
-			old_price: "120.00",
-			discount: "25%",
-			promo: "1+1",
+			short_code: "1923",
+			item_code: "1923",
+			item_name: "Gabbiacci",
+			barcode: "2001923000007",
+			price: "365.00 TJS",
+			price_formatted: "365.00",
+			price_plain: "365.00",
+			price_spaced: "115 00",
+			price_space_cents: "115 00",
+			raw_price: "365",
+			old_price: "185.00 TJS",
+			old_price_formatted: "185.00",
+			old_price_plain: "185.00",
+			old_price_spaced: "185 00",
+			old_price_space_cents: "185 00",
+			discount: "38%",
+			promo: "АКЦИЯ!",
 			qty: "1",
-			uom: "Шт",
-			date: "2026-08-30",
+			uom: "шт",
+			date: "26.11.2025",
 		};
-		return demoValues[key] || `{${key}}`;
+		return demoValues[key] !== undefined ? demoValues[key] : match;
 	});
+};
+
+const onDeselect = () => {
+	props.designer.selectObject(null);
+	emit("select", null);
 };
 
 let dragState: {
@@ -383,14 +465,25 @@ const onDragMove = (e: MouseEvent) => {
 	if (!dragState) return;
 	const dxPx = e.clientX - dragState.startX;
 	const dyPx = e.clientY - dragState.startY;
-	const dxMm = dxPx / PX_PER_MM / props.designer.zoom.value;
-	const dyMm = dyPx / PX_PER_MM / props.designer.zoom.value;
+	const dxMm = dxPx / (PX_PER_MM * props.designer.zoom.value);
+	const dyMm = dyPx / (PX_PER_MM * props.designer.zoom.value);
 	if (Math.abs(dxMm) > 0.1 || Math.abs(dyMm) > 0.1) {
 		dragState.moved = true;
 	}
-	props.designer.moveObjectDelta(dragState.objId, dxMm, dyMm);
-	dragState.startX = e.clientX;
-	dragState.startY = e.clientY;
+	let newX = dragState.origX + dxMm;
+	let newY = dragState.origY + dyMm;
+	if (props.designer.snapEnabled.value) {
+		const gs = props.designer.gridSize.value || 1;
+		newX = Math.round(newX / gs) * gs;
+		newY = Math.round(newY / gs) * gs;
+	}
+	const obj = props.designer.objects.value.find((o) => o.id === dragState!.objId);
+	if (obj) {
+		const maxX = Math.max(0, props.designer.labelSize.value.widthMm - obj.width);
+		const maxY = Math.max(0, props.designer.labelSize.value.heightMm - obj.height);
+		obj.x = Math.max(0, Math.min(maxX, Math.round(newX * 10) / 10));
+		obj.y = Math.max(0, Math.min(maxY, Math.round(newY * 10) / 10));
+	}
 };
 
 const onDragEnd = () => {
@@ -424,8 +517,8 @@ const onResizeMove = (e: MouseEvent) => {
 	if (!resizeState) return;
 	const dxPx = e.clientX - resizeState.startX;
 	const dyPx = e.clientY - resizeState.startY;
-	const dxMm = dxPx / PX_PER_MM / props.designer.zoom.value;
-	const dyMm = dyPx / PX_PER_MM / props.designer.zoom.value;
+	const dxMm = dxPx / (PX_PER_MM * props.designer.zoom.value);
+	const dyMm = dyPx / (PX_PER_MM * props.designer.zoom.value);
 	const h = resizeState.handle;
 	let dw = 0, dh = 0, dx = 0, dy = 0;
 	if (h.includes("r")) { dw = dxMm; }
@@ -434,10 +527,21 @@ const onResizeMove = (e: MouseEvent) => {
 	if (h.includes("t")) { dh = -dyMm; dy = dyMm; }
 	const obj = props.designer.objects.value.find((o) => o.id === resizeState!.objId);
 	if (!obj) return;
-	obj.width = Math.max(3, resizeState.origW + dw);
-	obj.height = Math.max(3, resizeState.origH + dh);
-	if (h.includes("l")) obj.x = resizeState.origX + dx;
-	if (h.includes("t")) obj.y = resizeState.origY + dy;
+	let newW = resizeState.origW + dw;
+	let newH = resizeState.origH + dh;
+	let newX = resizeState.origX + dx;
+	let newY = resizeState.origY + dy;
+	if (props.designer.snapEnabled.value) {
+		const gs = props.designer.gridSize.value || 1;
+		newW = Math.round(newW / gs) * gs;
+		newH = Math.round(newH / gs) * gs;
+		if (h.includes("l")) newX = Math.round(newX / gs) * gs;
+		if (h.includes("t")) newY = Math.round(newY / gs) * gs;
+	}
+	obj.width = Math.max(2, Math.round(newW * 10) / 10);
+	obj.height = Math.max(2, Math.round(newH * 10) / 10);
+	if (h.includes("l")) obj.x = Math.max(0, Math.round(newX * 10) / 10);
+	if (h.includes("t")) obj.y = Math.max(0, Math.round(newY * 10) / 10);
 };
 
 const onResizeEnd = () => {
@@ -524,55 +628,57 @@ const onKeydown = (e: KeyboardEvent) => {
 };
 
 const zoomIn = () => {
-	props.designer.zoom.value = Math.min(4, Math.round((props.designer.zoom.value + 0.1) * 10) / 10);
+	props.designer.zoom.value = Math.min(5, Math.round((props.designer.zoom.value + 0.25) * 100) / 100);
 };
 
 const zoomOut = () => {
-	props.designer.zoom.value = Math.max(0.25, Math.round((props.designer.zoom.value - 0.1) * 10) / 10);
+	props.designer.zoom.value = Math.max(0.25, Math.round((props.designer.zoom.value - 0.25) * 100) / 100);
 };
 
 const resetZoom = () => {
-	if (scrollEl.value) {
-		const availW = scrollEl.value.clientWidth - 40;
-		const availH = scrollEl.value.clientHeight - 40;
-		const zw = availW / (props.designer.labelSize.value.widthMm * PX_PER_MM);
-		const zh = availH / (props.designer.labelSize.value.heightMm * PX_PER_MM);
-		props.designer.zoom.value = Math.min(1, Math.round(Math.min(zw, zh) * 10) / 10);
+	if (scrollEl.value && scrollEl.value.clientWidth > 0 && scrollEl.value.clientHeight > 0) {
+		const availW = scrollEl.value.clientWidth - 80;
+		const availH = scrollEl.value.clientHeight - 80;
+		if (availW > 100 && availH > 100) {
+			const zw = availW / (props.designer.labelSize.value.widthMm * PX_PER_MM);
+			const zh = availH / (props.designer.labelSize.value.heightMm * PX_PER_MM);
+			const fitZoom = Math.round(Math.min(zw, zh) * 10) / 10;
+			props.designer.zoom.value = Math.min(4.0, Math.max(0.5, fitZoom || 2.5));
+			return;
+		}
 	}
+	props.designer.zoom.value = 2.5;
 };
 
 const addTextObject = () => {
 	const cx = props.designer.labelSize.value.widthMm / 2 - 15;
 	const cy = props.designer.labelSize.value.heightMm / 2 - 3;
-	props.designer.addText(cx, cy);
+	props.designer.addText(Math.round(cx * 10) / 10, Math.round(cy * 10) / 10);
 };
 
 const addBarcodeObject = () => {
 	const cx = props.designer.labelSize.value.widthMm / 2 - 25;
 	const cy = props.designer.labelSize.value.heightMm / 2 - 10;
-	props.designer.addBarcode(cx, cy);
+	props.designer.addBarcode(Math.round(cx * 10) / 10, Math.round(cy * 10) / 10);
 };
 
 const addRectObject = () => {
-	const cx = 5;
-	const cy = 5;
-	props.designer.addRectangle(cx, cy);
+	props.designer.addRectangle(2.5, 2.0);
 };
 
 const addLineObject = () => {
-	const cx = 10;
 	const cy = props.designer.labelSize.value.heightMm / 2;
-	props.designer.addLine(cx, cy, "horizontal");
+	props.designer.addLine(2.5, Math.round(cy * 10) / 10, "horizontal");
 };
 
 const addDateTimeObject = () => {
 	const cx = props.designer.labelSize.value.widthMm / 2 - 15;
 	const cy = props.designer.labelSize.value.heightMm / 2 - 3;
-	props.designer.addDateTime(cx, cy);
+	props.designer.addDateTime(Math.round(cx * 10) / 10, Math.round(cy * 10) / 10);
 };
 
 onMounted(() => {
-	resetZoom();
+	setTimeout(resetZoom, 50);
 });
 
 onUnmounted(() => {
@@ -608,8 +714,9 @@ watch(() => props.designer.labelSize.value, () => {
 	flex-grow: 1;
 	overflow: auto;
 	display: flex;
+	align-items: center;
 	justify-content: center;
-	background: var(--pos-background, #f0f0f0);
+	background: var(--pos-background, #f5f5f5);
 }
 
 .designer-stage {
@@ -618,28 +725,37 @@ watch(() => props.designer.labelSize.value, () => {
 
 .designer-canvas {
 	position: relative;
+	background: #ffffff;
 }
 
 .ruler-top {
 	position: absolute;
-	top: -15px;
-	left: 15px;
+	top: 8px;
+	left: 24px;
 	z-index: 10;
 	pointer-events: none;
+	overflow: visible;
 }
 
 .ruler-left {
 	position: absolute;
-	top: 0;
-	left: -15px;
+	top: 24px;
+	left: 8px;
 	z-index: 10;
 	pointer-events: none;
+	overflow: visible;
 }
 
 .grid-overlay {
 	position: absolute;
 	top: 0;
 	left: 0;
+	pointer-events: none;
+	z-index: 1;
+}
+
+.safe-margin-guide {
+	position: absolute;
 	pointer-events: none;
 	z-index: 1;
 }
@@ -653,19 +769,19 @@ watch(() => props.designer.labelSize.value, () => {
 }
 
 .designer-object.selected {
-	outline: 1px dashed #1565c0;
+	outline: 1.5px dashed #1565c0;
 	outline-offset: 1px;
 }
 
 .designer-object:hover {
-	outline: 1px dashed rgba(21, 101, 192, 0.5);
+	outline: 1.5px dashed rgba(21, 101, 192, 0.5);
 	outline-offset: 1px;
 }
 
 .designer-text {
 	overflow: hidden;
 	text-overflow: ellipsis;
-	line-height: 1.2;
+	line-height: 1.1;
 }
 
 .designer-barcode-placeholder {
@@ -684,8 +800,9 @@ watch(() => props.designer.labelSize.value, () => {
 .barcode-hr {
 	font-size: 8px;
 	font-family: monospace;
+	font-weight: bold;
 	text-align: center;
-	color: #333;
+	color: #000;
 	margin-top: 1px;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -724,10 +841,10 @@ watch(() => props.designer.labelSize.value, () => {
 
 .selection-handle {
 	position: absolute;
-	width: 7px;
-	height: 7px;
+	width: 8px;
+	height: 8px;
 	background: #1565c0;
-	border: 1px solid #fff;
+	border: 1.5px solid #fff;
 	z-index: 5;
 }
 
@@ -738,7 +855,7 @@ watch(() => props.designer.labelSize.value, () => {
 
 .rotation-handle {
 	position: absolute;
-	top: -20px;
+	top: -22px;
 	left: 50%;
 	margin-left: -6px;
 	width: 12px;

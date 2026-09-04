@@ -255,6 +255,16 @@ def get_invoice_for_return(invoice_name, pos_profile=None, doctype="Sales Invoic
             }
             for payment in (invoice_doc.get("payments") or [])
         ],
+        "sales_team": [
+            {
+                "sales_person": st.get("sales_person"),
+                "allocated_percentage": flt(st.get("allocated_percentage")),
+                "allocated_amount": flt(st.get("allocated_amount")),
+                "incentives": flt(st.get("incentives")),
+            }
+            for st in (invoice_doc.get("sales_team") or [])
+            if st.get("sales_person")
+        ],
     }
 
     meta = frappe.get_meta(doctype)
