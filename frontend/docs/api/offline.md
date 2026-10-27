@@ -12,7 +12,7 @@
 
 > **beginItemCatalogGeneration**(`scope`): `Promise`\<\{ `generation`: `string`; `scope`: `string`; \}\>
 
-Defined in: [offline/cache.ts:455](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L455)
+Defined in: [offline/cache.ts:455](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L455)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: [offline/cache.ts:455](https://github.com/idibek-alimov/posawesome/b
 
 > **buildSyncStateStorageKey**(`resourceId`): `string`
 
-Defined in: [offline/sync/syncState.ts:11](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/syncState.ts#L11)
+Defined in: [offline/sync/syncState.ts:11](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/syncState.ts#L11)
 
 #### Parameters
 
@@ -48,7 +48,7 @@ Defined in: [offline/sync/syncState.ts:11](https://github.com/idibek-alimov/posa
 
 > **checkDbHealth**(): `Promise`\<`boolean`\>
 
-Defined in: [offline/db.ts:1541](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1541)
+Defined in: [offline/db.ts:1541](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1541)
 
 #### Returns
 
@@ -60,7 +60,7 @@ Defined in: [offline/db.ts:1541](https://github.com/idibek-alimov/posawesome/blo
 
 > **claimRetryableQueueEntries**(`entityType`): `Promise`\<[`OfflineQueueEntry`](#offlinequeueentry)[]\>
 
-Defined in: [offline/writeQueue.ts:443](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L443)
+Defined in: [offline/writeQueue.ts:443](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L443)
 
 #### Parameters
 
@@ -78,7 +78,7 @@ Defined in: [offline/writeQueue.ts:443](https://github.com/idibek-alimov/posawes
 
 > **clearAllCache**(): `Promise`\<`void`\>
 
-Defined in: [offline/db.ts:1328](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1328)
+Defined in: [offline/db.ts:1328](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1328)
 
 #### Returns
 
@@ -90,7 +90,7 @@ Defined in: [offline/db.ts:1328](https://github.com/idibek-alimov/posawesome/blo
 
 > **clearCoupons**(): `void`
 
-Defined in: [offline/cache.ts:1923](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1923)
+Defined in: [offline/cache.ts:1923](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1923)
 
 #### Returns
 
@@ -102,7 +102,7 @@ Defined in: [offline/cache.ts:1923](https://github.com/idibek-alimov/posawesome/
 
 > **clearCustomerBalanceCache**(): `void`
 
-Defined in: [offline/customers.ts:469](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L469)
+Defined in: [offline/customers.ts:469](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L469)
 
 #### Returns
 
@@ -114,7 +114,7 @@ Defined in: [offline/customers.ts:469](https://github.com/idibek-alimov/posaweso
 
 > **clearCustomerStorage**(): `Promise`\<`void`\>
 
-Defined in: [offline/cache.ts:1774](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1774)
+Defined in: [offline/cache.ts:1774](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1774)
 
 #### Returns
 
@@ -126,7 +126,7 @@ Defined in: [offline/cache.ts:1774](https://github.com/idibek-alimov/posawesome/
 
 > **clearDerivedOfflineCaches**(): `Promise`\<`void`\>
 
-Defined in: [offline/db.ts:1394](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1394)
+Defined in: [offline/db.ts:1394](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1394)
 
 #### Returns
 
@@ -138,7 +138,7 @@ Defined in: [offline/db.ts:1394](https://github.com/idibek-alimov/posawesome/blo
 
 > **clearExpiredCustomerBalances**(): `void`
 
-Defined in: [offline/customers.ts:478](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L478)
+Defined in: [offline/customers.ts:478](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L478)
 
 #### Returns
 
@@ -150,7 +150,7 @@ Defined in: [offline/customers.ts:478](https://github.com/idibek-alimov/posaweso
 
 > **clearGiftCardSnapshotCache**(): `void`
 
-Defined in: [offline/customers.ts:425](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L425)
+Defined in: [offline/customers.ts:425](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L425)
 
 #### Returns
 
@@ -162,7 +162,7 @@ Defined in: [offline/customers.ts:425](https://github.com/idibek-alimov/posaweso
 
 > **clearItemDetailsCache**(): `void`
 
-Defined in: [offline/cache.ts:1415](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1415)
+Defined in: [offline/cache.ts:1415](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1415)
 
 #### Returns
 
@@ -174,7 +174,7 @@ Defined in: [offline/cache.ts:1415](https://github.com/idibek-alimov/posawesome/
 
 > **clearItemGroups**(): `void`
 
-Defined in: [offline/cache.ts:1948](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1948)
+Defined in: [offline/cache.ts:1948](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1948)
 
 #### Returns
 
@@ -186,7 +186,7 @@ Defined in: [offline/cache.ts:1948](https://github.com/idibek-alimov/posawesome/
 
 > **clearLocalStockCache**(): `void`
 
-Defined in: [offline/stock.ts:181](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/stock.ts#L181)
+Defined in: [offline/stock.ts:181](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/stock.ts#L181)
 
 #### Returns
 
@@ -198,7 +198,7 @@ Defined in: [offline/stock.ts:181](https://github.com/idibek-alimov/posawesome/b
 
 > **clearOfflineCashMovements**(): `Promise`\<`void`\>
 
-Defined in: [offline/cash\_movements.ts:39](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cash_movements.ts#L39)
+Defined in: [offline/cash\_movements.ts:39](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cash_movements.ts#L39)
 
 #### Returns
 
@@ -210,7 +210,7 @@ Defined in: [offline/cash\_movements.ts:39](https://github.com/idibek-alimov/pos
 
 > **clearOfflineCustomers**(): `Promise`\<`void`\>
 
-Defined in: [offline/customers.ts:63](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L63)
+Defined in: [offline/customers.ts:63](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L63)
 
 #### Returns
 
@@ -222,7 +222,7 @@ Defined in: [offline/customers.ts:63](https://github.com/idibek-alimov/posawesom
 
 > **clearOfflineInvoices**(): `Promise`\<`void`\>
 
-Defined in: [offline/invoices.ts:238](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoices.ts#L238)
+Defined in: [offline/invoices.ts:238](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoices.ts#L238)
 
 #### Returns
 
@@ -234,7 +234,7 @@ Defined in: [offline/invoices.ts:238](https://github.com/idibek-alimov/posawesom
 
 > **clearOfflinePayments**(): `Promise`\<`void`\>
 
-Defined in: [offline/payments.ts:55](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/payments.ts#L55)
+Defined in: [offline/payments.ts:55](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/payments.ts#L55)
 
 #### Returns
 
@@ -246,7 +246,7 @@ Defined in: [offline/payments.ts:55](https://github.com/idibek-alimov/posawesome
 
 > **clearOpeningStorage**(): `void`
 
-Defined in: [offline/cache.ts:1659](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1659)
+Defined in: [offline/cache.ts:1659](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1659)
 
 #### Returns
 
@@ -258,7 +258,7 @@ Defined in: [offline/cache.ts:1659](https://github.com/idibek-alimov/posawesome/
 
 > **clearPriceListCache**(): `void`
 
-Defined in: [offline/cache.ts:1102](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1102)
+Defined in: [offline/cache.ts:1102](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1102)
 
 #### Returns
 
@@ -270,7 +270,7 @@ Defined in: [offline/cache.ts:1102](https://github.com/idibek-alimov/posawesome/
 
 > **clearPricingRulesSnapshot**(): `void`
 
-Defined in: [offline/cache.ts:1829](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1829)
+Defined in: [offline/cache.ts:1829](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1829)
 
 #### Returns
 
@@ -282,7 +282,7 @@ Defined in: [offline/cache.ts:1829](https://github.com/idibek-alimov/posawesome/
 
 > **clearStoredItems**(`scope?`): `Promise`\<`void`\>
 
-Defined in: [offline/cache.ts:917](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L917)
+Defined in: [offline/cache.ts:917](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L917)
 
 #### Parameters
 
@@ -300,7 +300,7 @@ Defined in: [offline/cache.ts:917](https://github.com/idibek-alimov/posawesome/b
 
 > **clearStoredValueSnapshotCache**(): `void`
 
-Defined in: [offline/customers.ts:374](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L374)
+Defined in: [offline/customers.ts:374](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L374)
 
 #### Returns
 
@@ -312,7 +312,7 @@ Defined in: [offline/customers.ts:374](https://github.com/idibek-alimov/posaweso
 
 > **clearSyncResourceState**(`resourceId`): `Promise`\<`void`\>
 
-Defined in: [offline/sync/syncState.ts:96](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/syncState.ts#L96)
+Defined in: [offline/sync/syncState.ts:96](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/syncState.ts#L96)
 
 #### Parameters
 
@@ -330,7 +330,7 @@ Defined in: [offline/sync/syncState.ts:96](https://github.com/idibek-alimov/posa
 
 > **clearWriteQueueEntries**(`entityType`, `options?`): `Promise`\<`void`\>
 
-Defined in: [offline/writeQueue.ts:422](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L422)
+Defined in: [offline/writeQueue.ts:422](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L422)
 
 #### Parameters
 
@@ -354,7 +354,7 @@ Defined in: [offline/writeQueue.ts:422](https://github.com/idibek-alimov/posawes
 
 > **createDefaultSyncCoordinator**(): [`SyncCoordinator`](#synccoordinator)
 
-Defined in: [offline/sync/SyncCoordinator.ts:467](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/SyncCoordinator.ts#L467)
+Defined in: [offline/sync/SyncCoordinator.ts:467](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/SyncCoordinator.ts#L467)
 
 Creates a [SyncCoordinator](#synccoordinator) pre-loaded with the full default resource registry.
 This is the standard factory used by `useSyncCoordinator` at app startup.
@@ -369,7 +369,7 @@ This is the standard factory used by `useSyncCoordinator` at app startup.
 
 > **deleteCustomerStorageByNames**(`names`): `Promise`\<`void`\>
 
-Defined in: [offline/customers.ts:293](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L293)
+Defined in: [offline/customers.ts:293](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L293)
 
 #### Parameters
 
@@ -387,7 +387,7 @@ Defined in: [offline/customers.ts:293](https://github.com/idibek-alimov/posaweso
 
 > **deleteOfflineCashMovement**(`index`): `Promise`\<`void`\>
 
-Defined in: [offline/cash\_movements.ts:43](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cash_movements.ts#L43)
+Defined in: [offline/cash\_movements.ts:43](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cash_movements.ts#L43)
 
 #### Parameters
 
@@ -405,7 +405,7 @@ Defined in: [offline/cash\_movements.ts:43](https://github.com/idibek-alimov/pos
 
 > **deleteOfflineCustomer**(`index`): `Promise`\<`void`\>
 
-Defined in: [offline/customers.ts:67](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L67)
+Defined in: [offline/customers.ts:67](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L67)
 
 #### Parameters
 
@@ -423,7 +423,7 @@ Defined in: [offline/customers.ts:67](https://github.com/idibek-alimov/posawesom
 
 > **deleteOfflineInvoice**(`index`): `Promise`\<`void`\>
 
-Defined in: [offline/invoices.ts:242](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoices.ts#L242)
+Defined in: [offline/invoices.ts:242](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoices.ts#L242)
 
 #### Parameters
 
@@ -441,7 +441,7 @@ Defined in: [offline/invoices.ts:242](https://github.com/idibek-alimov/posawesom
 
 > **deleteOfflinePayment**(`index`): `Promise`\<`void`\>
 
-Defined in: [offline/payments.ts:59](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/payments.ts#L59)
+Defined in: [offline/payments.ts:59](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/payments.ts#L59)
 
 #### Parameters
 
@@ -459,7 +459,7 @@ Defined in: [offline/payments.ts:59](https://github.com/idibek-alimov/posawesome
 
 > **deleteStoredItemsByCodes**(`itemCodes?`, `scope?`): `Promise`\<`void`\>
 
-Defined in: [offline/cache.ts:996](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L996)
+Defined in: [offline/cache.ts:996](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L996)
 
 #### Parameters
 
@@ -481,7 +481,7 @@ Defined in: [offline/cache.ts:996](https://github.com/idibek-alimov/posawesome/b
 
 > **deleteWriteQueueEntry**(`entityType`, `queueId`): `Promise`\<`void`\>
 
-Defined in: [offline/writeQueue.ts:401](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L401)
+Defined in: [offline/writeQueue.ts:401](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L401)
 
 #### Parameters
 
@@ -503,7 +503,7 @@ Defined in: [offline/writeQueue.ts:401](https://github.com/idibek-alimov/posawes
 
 > **deleteWriteQueueEntryByIndex**(`entityType`, `index`): `Promise`\<`void`\>
 
-Defined in: [offline/writeQueue.ts:410](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L410)
+Defined in: [offline/writeQueue.ts:410](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L410)
 
 #### Parameters
 
@@ -525,7 +525,7 @@ Defined in: [offline/writeQueue.ts:410](https://github.com/idibek-alimov/posawes
 
 > **deriveItemSearchFields**(`item`): `object`
 
-Defined in: [offline/cache.ts:117](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L117)
+Defined in: [offline/cache.ts:117](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L117)
 
 #### Parameters
 
@@ -599,7 +599,7 @@ Defined in: [offline/cache.ts:117](https://github.com/idibek-alimov/posawesome/b
 
 > **discardItemCatalogGeneration**(`scope`, `generation`): `Promise`\<`void`\>
 
-Defined in: [offline/cache.ts:535](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L535)
+Defined in: [offline/cache.ts:535](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L535)
 
 #### Parameters
 
@@ -621,7 +621,7 @@ Defined in: [offline/cache.ts:535](https://github.com/idibek-alimov/posawesome/b
 
 > **enqueueInvoiceOutboxEntry**(`entry`): `Promise`\<`any`\>
 
-Defined in: [offline/invoiceOutbox.ts:144](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L144)
+Defined in: [offline/invoiceOutbox.ts:144](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L144)
 
 #### Parameters
 
@@ -639,7 +639,7 @@ Defined in: [offline/invoiceOutbox.ts:144](https://github.com/idibek-alimov/posa
 
 > **enqueueWriteQueueEntry**(`entityType`, `payload`, `options?`): `Promise`\<`any`\>
 
-Defined in: [offline/writeQueue.ts:392](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L392)
+Defined in: [offline/writeQueue.ts:392](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L392)
 
 #### Parameters
 
@@ -667,7 +667,7 @@ Defined in: [offline/writeQueue.ts:392](https://github.com/idibek-alimov/posawes
 
 > **ensureOfflineQueueReady**(): `Promise`\<`void`\>
 
-Defined in: [offline/writeQueue.ts:625](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L625)
+Defined in: [offline/writeQueue.ts:625](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L625)
 
 #### Returns
 
@@ -679,7 +679,7 @@ Defined in: [offline/writeQueue.ts:625](https://github.com/idibek-alimov/posawes
 
 > **exportOfflineRecoveryData**(): `Promise`\<\{ `database`: `any`; `exportedAt`: `string`; `invoiceIntentJournal`: `Record`\<`string`, `unknown`\>; `invoiceOutbox`: `any`; `legacyQueue`: `any`; `version`: `any`; `writeQueue`: `any`; \}\>
 
-Defined in: [offline/db.ts:1502](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1502)
+Defined in: [offline/db.ts:1502](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1502)
 
 #### Returns
 
@@ -691,7 +691,7 @@ Defined in: [offline/db.ts:1502](https://github.com/idibek-alimov/posawesome/blo
 
 > **fetchItemStockQuantities**(`items`, `pos_profile`, `chunkSize?`): `Promise`\<`AnyRecord`[] \| `null`\>
 
-Defined in: [offline/stock.ts:6](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/stock.ts#L6)
+Defined in: [offline/stock.ts:6](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/stock.ts#L6)
 
 #### Parameters
 
@@ -717,7 +717,7 @@ Defined in: [offline/stock.ts:6](https://github.com/idibek-alimov/posawesome/blo
 
 > **flushPersistQueue**(): `Promise`\<`void`\>
 
-Defined in: [offline/db.ts:1032](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1032)
+Defined in: [offline/db.ts:1032](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1032)
 
 #### Returns
 
@@ -729,7 +729,7 @@ Defined in: [offline/db.ts:1032](https://github.com/idibek-alimov/posawesome/blo
 
 > **forceClearAllCache**(): `Promise`\<`void`\>
 
-Defined in: [offline/db.ts:1378](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1378)
+Defined in: [offline/db.ts:1378](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1378)
 
 #### Returns
 
@@ -741,7 +741,7 @@ Defined in: [offline/db.ts:1378](https://github.com/idibek-alimov/posawesome/blo
 
 > **getActiveItemCatalogGeneration**(`scope`): `Promise`\<`string` \| `null`\>
 
-Defined in: [offline/cache.ts:362](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L362)
+Defined in: [offline/cache.ts:362](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L362)
 
 #### Parameters
 
@@ -759,7 +759,7 @@ Defined in: [offline/cache.ts:362](https://github.com/idibek-alimov/posawesome/b
 
 > **getAllStoredItems**(`scope?`): `Promise`\<`any`\>
 
-Defined in: [offline/cache.ts:809](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L809)
+Defined in: [offline/cache.ts:809](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L809)
 
 #### Parameters
 
@@ -777,7 +777,7 @@ Defined in: [offline/cache.ts:809](https://github.com/idibek-alimov/posawesome/b
 
 > **getBootstrapLimitedMode**(): `boolean`
 
-Defined in: [offline/cache.ts:1579](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1579)
+Defined in: [offline/cache.ts:1579](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1579)
 
 #### Returns
 
@@ -789,7 +789,7 @@ Defined in: [offline/cache.ts:1579](https://github.com/idibek-alimov/posawesome/
 
 > **getBootstrapSnapshot**(): `any`
 
-Defined in: [offline/cache.ts:1518](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1518)
+Defined in: [offline/cache.ts:1518](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1518)
 
 #### Returns
 
@@ -801,7 +801,7 @@ Defined in: [offline/cache.ts:1518](https://github.com/idibek-alimov/posawesome/
 
 > **getBootstrapSnapshotStatus**(): `any`
 
-Defined in: [offline/cache.ts:1564](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1564)
+Defined in: [offline/cache.ts:1564](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1564)
 
 #### Returns
 
@@ -813,7 +813,7 @@ Defined in: [offline/cache.ts:1564](https://github.com/idibek-alimov/posawesome/
 
 > **getCachedCoupons**(): `any`
 
-Defined in: [offline/cache.ts:1919](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1919)
+Defined in: [offline/cache.ts:1919](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1919)
 
 #### Returns
 
@@ -825,7 +825,7 @@ Defined in: [offline/cache.ts:1919](https://github.com/idibek-alimov/posawesome/
 
 > **getCachedCurrencyOptions**(`profileName`, `ttlMs?`): `any`
 
-Defined in: [offline/cache.ts:2030](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L2030)
+Defined in: [offline/cache.ts:2030](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L2030)
 
 #### Parameters
 
@@ -847,7 +847,7 @@ Defined in: [offline/cache.ts:2030](https://github.com/idibek-alimov/posawesome/
 
 > **getCachedCustomerAddresses**(`customer`, `ttlMs?`): `any`
 
-Defined in: [offline/cache.ts:2160](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L2160)
+Defined in: [offline/cache.ts:2160](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L2160)
 
 #### Parameters
 
@@ -869,7 +869,7 @@ Defined in: [offline/cache.ts:2160](https://github.com/idibek-alimov/posawesome/
 
 > **getCachedCustomerBalance**(`customer`): `any`
 
-Defined in: [offline/customers.ts:453](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L453)
+Defined in: [offline/customers.ts:453](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L453)
 
 #### Parameters
 
@@ -887,7 +887,7 @@ Defined in: [offline/customers.ts:453](https://github.com/idibek-alimov/posaweso
 
 > **getCachedDeliveryCharges**(`profileName`, `customer`, `ttlMs?`): `any`
 
-Defined in: [offline/cache.ts:1989](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1989)
+Defined in: [offline/cache.ts:1989](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1989)
 
 #### Parameters
 
@@ -913,7 +913,7 @@ Defined in: [offline/cache.ts:1989](https://github.com/idibek-alimov/posawesome/
 
 > **getCachedExchangeRate**(`entry?`, `ttlMs?`): `any`
 
-Defined in: [offline/cache.ts:2075](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L2075)
+Defined in: [offline/cache.ts:2075](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L2075)
 
 #### Parameters
 
@@ -935,7 +935,7 @@ Defined in: [offline/cache.ts:2075](https://github.com/idibek-alimov/posawesome/
 
 > **getCachedGiftCardSnapshot**(`giftCardCode`): `any`
 
-Defined in: [offline/customers.ts:406](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L406)
+Defined in: [offline/customers.ts:406](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L406)
 
 #### Parameters
 
@@ -953,7 +953,7 @@ Defined in: [offline/customers.ts:406](https://github.com/idibek-alimov/posaweso
 
 > **getCachedItemDetails**(`profileName`, `priceList`, `itemCodes`, `ttl?`): `Promise`\<\{ `cached`: `any`[]; `missing`: `string`[]; \}\>
 
-Defined in: [offline/cache.ts:1371](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1371)
+Defined in: [offline/cache.ts:1371](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1371)
 
 Returns cached item details, split into `cached` (fresh) and `missing` (absent or stale)
 groups so callers know exactly which items need a network fetch.
@@ -1002,7 +1002,7 @@ Cache TTL in milliseconds. Defaults to 15 minutes.
 
 > **getCachedItemGroups**(): `any`
 
-Defined in: [offline/cache.ts:1944](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1944)
+Defined in: [offline/cache.ts:1944](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1944)
 
 #### Returns
 
@@ -1014,7 +1014,7 @@ Defined in: [offline/cache.ts:1944](https://github.com/idibek-alimov/posawesome/
 
 > **getCachedOffers**(): `any`
 
-Defined in: [offline/cache.ts:1056](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1056)
+Defined in: [offline/cache.ts:1056](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1056)
 
 #### Returns
 
@@ -1026,7 +1026,7 @@ Defined in: [offline/cache.ts:1056](https://github.com/idibek-alimov/posawesome/
 
 > **getCachedPaymentMethodCurrencyMap**(`company`, `ttlMs?`): `any`
 
-Defined in: [offline/cache.ts:2200](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L2200)
+Defined in: [offline/cache.ts:2200](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L2200)
 
 #### Parameters
 
@@ -1048,7 +1048,7 @@ Defined in: [offline/cache.ts:2200](https://github.com/idibek-alimov/posawesome/
 
 > **getCachedPriceListItems**(`priceList`): `any`
 
-Defined in: [offline/cache.ts:1086](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1086)
+Defined in: [offline/cache.ts:1086](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1086)
 
 #### Parameters
 
@@ -1066,7 +1066,7 @@ Defined in: [offline/cache.ts:1086](https://github.com/idibek-alimov/posawesome/
 
 > **getCachedPriceListMeta**(`profileName`, `ttlMs?`): `any`
 
-Defined in: [offline/cache.ts:2120](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L2120)
+Defined in: [offline/cache.ts:2120](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L2120)
 
 #### Parameters
 
@@ -1088,7 +1088,7 @@ Defined in: [offline/cache.ts:2120](https://github.com/idibek-alimov/posawesome/
 
 > **getCachedPricingRulesSnapshot**(): `object`
 
-Defined in: [offline/cache.ts:1818](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1818)
+Defined in: [offline/cache.ts:1818](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1818)
 
 #### Returns
 
@@ -1116,7 +1116,7 @@ Defined in: [offline/cache.ts:1818](https://github.com/idibek-alimov/posawesome/
 
 > **getCachedStoredValueSnapshot**(`customer`, `company`): `any`
 
-Defined in: [offline/customers.ts:354](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L354)
+Defined in: [offline/customers.ts:354](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L354)
 
 #### Parameters
 
@@ -1138,7 +1138,7 @@ Defined in: [offline/customers.ts:354](https://github.com/idibek-alimov/posaweso
 
 > **getCacheUsageEstimate**(): `Promise`\<\{ `indexedDB`: `number`; `localStorage`: `number`; `percentage`: `number`; `total`: `number`; \}\>
 
-Defined in: [offline/cache.ts:2217](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L2217)
+Defined in: [offline/cache.ts:2217](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L2217)
 
 #### Returns
 
@@ -1150,7 +1150,7 @@ Defined in: [offline/cache.ts:2217](https://github.com/idibek-alimov/posawesome/
 
 > **getCustomersLastSync**(): `any`
 
-Defined in: [offline/cache.ts:1760](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1760)
+Defined in: [offline/cache.ts:1760](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1760)
 
 #### Returns
 
@@ -1162,7 +1162,7 @@ Defined in: [offline/cache.ts:1760](https://github.com/idibek-alimov/posawesome/
 
 > **getCustomerStorage**(): `any`
 
-Defined in: [offline/customers.ts:133](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L133)
+Defined in: [offline/customers.ts:133](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L133)
 
 #### Returns
 
@@ -1174,7 +1174,7 @@ Defined in: [offline/customers.ts:133](https://github.com/idibek-alimov/posaweso
 
 > **getCustomerStorageCount**(): `Promise`\<`any`\>
 
-Defined in: [offline/cache.ts:1764](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1764)
+Defined in: [offline/cache.ts:1764](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1764)
 
 #### Returns
 
@@ -1186,7 +1186,7 @@ Defined in: [offline/cache.ts:1764](https://github.com/idibek-alimov/posawesome/
 
 > **getInvoiceOutboxMode**(): [`InvoiceOutboxMode`](#invoiceoutboxmode)
 
-Defined in: [offline/invoiceOutbox.ts:74](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L74)
+Defined in: [offline/invoiceOutbox.ts:74](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L74)
 
 #### Returns
 
@@ -1198,7 +1198,7 @@ Defined in: [offline/invoiceOutbox.ts:74](https://github.com/idibek-alimov/posaw
 
 > **getInvoiceOutboxRows**(`options?`): `Promise`\<[`InvoiceOutboxEntry`](#invoiceoutboxentry)[]\>
 
-Defined in: [offline/invoiceOutbox.ts:190](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L190)
+Defined in: [offline/invoiceOutbox.ts:190](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L190)
 
 #### Parameters
 
@@ -1218,7 +1218,7 @@ Defined in: [offline/invoiceOutbox.ts:190](https://github.com/idibek-alimov/posa
 
 > **getItemsLastSync**(): `any`
 
-Defined in: [offline/cache.ts:1751](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1751)
+Defined in: [offline/cache.ts:1751](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1751)
 
 #### Returns
 
@@ -1230,7 +1230,7 @@ Defined in: [offline/cache.ts:1751](https://github.com/idibek-alimov/posawesome/
 
 > **getItemUOMs**(`itemCode`): `any`
 
-Defined in: [offline/cache.ts:975](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L975)
+Defined in: [offline/cache.ts:975](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L975)
 
 #### Parameters
 
@@ -1248,7 +1248,7 @@ Defined in: [offline/cache.ts:975](https://github.com/idibek-alimov/posawesome/b
 
 > **getLastSyncTotals**(): `any`
 
-Defined in: [offline/invoices.ts:267](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoices.ts#L267)
+Defined in: [offline/invoices.ts:267](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoices.ts#L267)
 
 #### Returns
 
@@ -1260,7 +1260,7 @@ Defined in: [offline/invoices.ts:267](https://github.com/idibek-alimov/posawesom
 
 > **getLocalStock**(`itemCode`): `any`
 
-Defined in: [offline/stock.ts:150](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/stock.ts#L150)
+Defined in: [offline/stock.ts:150](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/stock.ts#L150)
 
 #### Parameters
 
@@ -1278,7 +1278,7 @@ Defined in: [offline/stock.ts:150](https://github.com/idibek-alimov/posawesome/b
 
 > **getLocalStockCache**(): `any`
 
-Defined in: [offline/stock.ts:254](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/stock.ts#L254)
+Defined in: [offline/stock.ts:254](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/stock.ts#L254)
 
 #### Returns
 
@@ -1290,7 +1290,7 @@ Defined in: [offline/stock.ts:254](https://github.com/idibek-alimov/posawesome/b
 
 > **getOfflineCashMovements**(): `any`[]
 
-Defined in: [offline/cash\_movements.ts:35](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cash_movements.ts#L35)
+Defined in: [offline/cash\_movements.ts:35](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cash_movements.ts#L35)
 
 #### Returns
 
@@ -1302,7 +1302,7 @@ Defined in: [offline/cash\_movements.ts:35](https://github.com/idibek-alimov/pos
 
 > **getOfflineCustomers**(): `any`[]
 
-Defined in: [offline/customers.ts:59](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L59)
+Defined in: [offline/customers.ts:59](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L59)
 
 #### Returns
 
@@ -1314,7 +1314,7 @@ Defined in: [offline/customers.ts:59](https://github.com/idibek-alimov/posawesom
 
 > **getOfflineInvoices**(): `any`[]
 
-Defined in: [offline/invoices.ts:234](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoices.ts#L234)
+Defined in: [offline/invoices.ts:234](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoices.ts#L234)
 
 #### Returns
 
@@ -1326,7 +1326,7 @@ Defined in: [offline/invoices.ts:234](https://github.com/idibek-alimov/posawesom
 
 > **getOfflinePayments**(): `any`[]
 
-Defined in: [offline/payments.ts:51](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/payments.ts#L51)
+Defined in: [offline/payments.ts:51](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/payments.ts#L51)
 
 #### Returns
 
@@ -1338,7 +1338,7 @@ Defined in: [offline/payments.ts:51](https://github.com/idibek-alimov/posawesome
 
 > **getOfflineStorageDiagnostics**(): `Promise`\<\{ `database`: `any`; `quota`: `number` \| `null`; `tableCounts`: \{\[`k`: `string`\]: `any`; \}; `usage`: `number` \| `null`; `version`: `any`; \}\>
 
-Defined in: [offline/db.ts:1471](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1471)
+Defined in: [offline/db.ts:1471](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1471)
 
 #### Returns
 
@@ -1350,7 +1350,7 @@ Defined in: [offline/db.ts:1471](https://github.com/idibek-alimov/posawesome/blo
 
 > **getOpeningDialogStorage**(): `any`
 
-Defined in: [offline/cache.ts:1672](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1672)
+Defined in: [offline/cache.ts:1672](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1672)
 
 #### Returns
 
@@ -1362,7 +1362,7 @@ Defined in: [offline/cache.ts:1672](https://github.com/idibek-alimov/posawesome/
 
 > **getOpeningStorage**(): `any`
 
-Defined in: [offline/cache.ts:1514](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1514)
+Defined in: [offline/cache.ts:1514](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1514)
 
 #### Returns
 
@@ -1374,7 +1374,7 @@ Defined in: [offline/cache.ts:1514](https://github.com/idibek-alimov/posawesome/
 
 > **getPendingInvoiceOutboxCount**(): `Promise`\<`number`\>
 
-Defined in: [offline/invoiceOutbox.ts:203](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L203)
+Defined in: [offline/invoiceOutbox.ts:203](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L203)
 
 #### Returns
 
@@ -1386,7 +1386,7 @@ Defined in: [offline/invoiceOutbox.ts:203](https://github.com/idibek-alimov/posa
 
 > **getPendingOfflineCashMovementCount**(): `any`
 
-Defined in: [offline/cash\_movements.ts:47](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cash_movements.ts#L47)
+Defined in: [offline/cash\_movements.ts:47](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cash_movements.ts#L47)
 
 #### Returns
 
@@ -1398,7 +1398,7 @@ Defined in: [offline/cash\_movements.ts:47](https://github.com/idibek-alimov/pos
 
 > **getPendingOfflineCustomerCount**(): `any`
 
-Defined in: [offline/customers.ts:71](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L71)
+Defined in: [offline/customers.ts:71](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L71)
 
 #### Returns
 
@@ -1410,7 +1410,7 @@ Defined in: [offline/customers.ts:71](https://github.com/idibek-alimov/posawesom
 
 > **getPendingOfflineInvoiceCount**(): `any`
 
-Defined in: [offline/invoices.ts:246](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoices.ts#L246)
+Defined in: [offline/invoices.ts:246](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoices.ts#L246)
 
 #### Returns
 
@@ -1422,7 +1422,7 @@ Defined in: [offline/invoices.ts:246](https://github.com/idibek-alimov/posawesom
 
 > **getPendingOfflinePaymentCount**(): `any`
 
-Defined in: [offline/payments.ts:63](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/payments.ts#L63)
+Defined in: [offline/payments.ts:63](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/payments.ts#L63)
 
 #### Returns
 
@@ -1434,7 +1434,7 @@ Defined in: [offline/payments.ts:63](https://github.com/idibek-alimov/posawesome
 
 > **getPrintTemplate**(): `any`
 
-Defined in: [offline/cache.ts:1866](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1866)
+Defined in: [offline/cache.ts:1866](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1866)
 
 #### Returns
 
@@ -1446,7 +1446,7 @@ Defined in: [offline/cache.ts:1866](https://github.com/idibek-alimov/posawesome/
 
 > **getQueuedPayloadCount**(`entityType`): `any`
 
-Defined in: [offline/writeQueue.ts:647](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L647)
+Defined in: [offline/writeQueue.ts:647](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L647)
 
 #### Parameters
 
@@ -1464,7 +1464,7 @@ Defined in: [offline/writeQueue.ts:647](https://github.com/idibek-alimov/posawes
 
 > **getQueuedPayloadSnapshots**(`entityType`): `any`[]
 
-Defined in: [offline/writeQueue.ts:640](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L640)
+Defined in: [offline/writeQueue.ts:640](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L640)
 
 #### Parameters
 
@@ -1482,7 +1482,7 @@ Defined in: [offline/writeQueue.ts:640](https://github.com/idibek-alimov/posawes
 
 > **getQueueEntries**(`entityType`, `options?`): `Promise`\<[`OfflineQueueEntry`](#offlinequeueentry)[]\>
 
-Defined in: [offline/writeQueue.ts:303](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L303)
+Defined in: [offline/writeQueue.ts:303](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L303)
 
 #### Parameters
 
@@ -1510,7 +1510,7 @@ Defined in: [offline/writeQueue.ts:303](https://github.com/idibek-alimov/posawes
 
 > **getSalesPersonsStorage**(): `any`
 
-Defined in: [offline/cache.ts:1498](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1498)
+Defined in: [offline/cache.ts:1498](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1498)
 
 #### Returns
 
@@ -1522,7 +1522,7 @@ Defined in: [offline/cache.ts:1498](https://github.com/idibek-alimov/posawesome/
 
 > **getStoredCustomer**(`customerName`): `Promise`\<`any`\>
 
-Defined in: [offline/customers.ts:162](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L162)
+Defined in: [offline/customers.ts:162](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L162)
 
 #### Parameters
 
@@ -1540,7 +1540,7 @@ Defined in: [offline/customers.ts:162](https://github.com/idibek-alimov/posaweso
 
 > **getStoredItems**(): `Promise`\<`any`\>
 
-Defined in: [offline/cache.ts:715](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L715)
+Defined in: [offline/cache.ts:715](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L715)
 
 #### Returns
 
@@ -1556,7 +1556,7 @@ Avoid unscoped reads. Prefer `getAllStoredItems(scope)` with an explicit scope.
 
 > **getStoredItemsCount**(): `Promise`\<`any`\>
 
-Defined in: [offline/cache.ts:781](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L781)
+Defined in: [offline/cache.ts:781](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L781)
 
 #### Returns
 
@@ -1568,7 +1568,7 @@ Defined in: [offline/cache.ts:781](https://github.com/idibek-alimov/posawesome/b
 
 > **getStoredItemsCountByScope**(`scope?`): `Promise`\<`any`\>
 
-Defined in: [offline/cache.ts:792](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L792)
+Defined in: [offline/cache.ts:792](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L792)
 
 #### Parameters
 
@@ -1586,7 +1586,7 @@ Defined in: [offline/cache.ts:792](https://github.com/idibek-alimov/posawesome/b
 
 > **getSyncResourceDefinitions**(): [`SyncResourceDefinition`](#syncresourcedefinition)[]
 
-Defined in: [offline/sync/resourceRegistry.ts:204](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/resourceRegistry.ts#L204)
+Defined in: [offline/sync/resourceRegistry.ts:204](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/resourceRegistry.ts#L204)
 
 Returns a shallow copy of all resource definitions with cloned `triggers` arrays.
 Callers receive mutable copies so that the frozen registry cannot be accidentally mutated.
@@ -1601,7 +1601,7 @@ Callers receive mutable copies so that the frozen registry cannot be accidentall
 
 > **getSyncResourcesByPriority**(`priority`): [`SyncResourceDefinition`](#syncresourcedefinition)[]
 
-Defined in: [offline/sync/resourceRegistry.ts:216](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/resourceRegistry.ts#L216)
+Defined in: [offline/sync/resourceRegistry.ts:216](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/resourceRegistry.ts#L216)
 
 Returns all resource definitions with the given `priority`.
 Used by `SyncCoordinator` to process resources in priority order
@@ -1623,7 +1623,7 @@ Used by `SyncCoordinator` to process resources in priority order
 
 > **getSyncResourcesForTrigger**(`trigger`): [`SyncResourceDefinition`](#syncresourcedefinition)[]
 
-Defined in: [offline/sync/resourceRegistry.ts:229](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/resourceRegistry.ts#L229)
+Defined in: [offline/sync/resourceRegistry.ts:229](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/resourceRegistry.ts#L229)
 
 Returns all resource definitions whose `triggers` array includes `trigger`.
 Used by `SyncCoordinator` at the start of each trigger run to build
@@ -1645,7 +1645,7 @@ the work list for that event.
 
 > **getSyncResourceState**(`resourceId`): `Promise`\<[`SyncResourceState`](#syncresourcestate) \| `null`\>
 
-Defined in: [offline/sync/syncState.ts:74](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/syncState.ts#L74)
+Defined in: [offline/sync/syncState.ts:74](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/syncState.ts#L74)
 
 #### Parameters
 
@@ -1663,7 +1663,7 @@ Defined in: [offline/sync/syncState.ts:74](https://github.com/idibek-alimov/posa
 
 > **getTaxInclusiveSetting**(): `boolean`
 
-Defined in: [offline/cache.ts:1685](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1685)
+Defined in: [offline/cache.ts:1685](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1685)
 
 #### Returns
 
@@ -1675,7 +1675,7 @@ Defined in: [offline/cache.ts:1685](https://github.com/idibek-alimov/posawesome/
 
 > **getTaxTemplate**(`name`): `any`
 
-Defined in: [offline/cache.ts:1488](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1488)
+Defined in: [offline/cache.ts:1488](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1488)
 
 #### Parameters
 
@@ -1693,7 +1693,7 @@ Defined in: [offline/cache.ts:1488](https://github.com/idibek-alimov/posawesome/
 
 > **getTermsAndConditions**(): `any`
 
-Defined in: [offline/cache.ts:1886](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1886)
+Defined in: [offline/cache.ts:1886](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1886)
 
 #### Returns
 
@@ -1705,7 +1705,7 @@ Defined in: [offline/cache.ts:1886](https://github.com/idibek-alimov/posawesome/
 
 > **getTranslationsCache**(`lang`): `any`
 
-Defined in: [offline/cache.ts:1845](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1845)
+Defined in: [offline/cache.ts:1845](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1845)
 
 #### Parameters
 
@@ -1723,7 +1723,7 @@ Defined in: [offline/cache.ts:1845](https://github.com/idibek-alimov/posawesome/
 
 > **hydrateMemoryKeys**(`keys`): `Promise`\<`void`\>
 
-Defined in: [offline/db.ts:530](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L530)
+Defined in: [offline/db.ts:530](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L530)
 
 #### Parameters
 
@@ -1741,7 +1741,7 @@ readonly `string`[]
 
 > **initializeStockCache**(`items`, `pos_profile`): `Promise`\<`boolean`\>
 
-Defined in: [offline/stock.ts:48](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/stock.ts#L48)
+Defined in: [offline/stock.ts:48](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/stock.ts#L48)
 
 #### Parameters
 
@@ -1763,7 +1763,7 @@ Defined in: [offline/stock.ts:48](https://github.com/idibek-alimov/posawesome/bl
 
 > **isManualOffline**(): `any`
 
-Defined in: [offline/db.ts:1315](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1315)
+Defined in: [offline/db.ts:1315](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1315)
 
 #### Returns
 
@@ -1775,7 +1775,7 @@ Defined in: [offline/db.ts:1315](https://github.com/idibek-alimov/posawesome/blo
 
 > **isOffline**(): `any`
 
-Defined in: [offline/db.ts:1283](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1283)
+Defined in: [offline/db.ts:1283](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1283)
 
 #### Returns
 
@@ -1787,7 +1787,7 @@ Defined in: [offline/db.ts:1283](https://github.com/idibek-alimov/posawesome/blo
 
 > **isStockCacheReady**(): `any`
 
-Defined in: [offline/stock.ts:109](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/stock.ts#L109)
+Defined in: [offline/stock.ts:109](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/stock.ts#L109)
 
 #### Returns
 
@@ -1799,7 +1799,7 @@ Defined in: [offline/stock.ts:109](https://github.com/idibek-alimov/posawesome/b
 
 > **listSyncResourceStates**(): `Promise`\<[`SyncResourceState`](#syncresourcestate)[]\>
 
-Defined in: [offline/sync/syncState.ts:87](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/syncState.ts#L87)
+Defined in: [offline/sync/syncState.ts:87](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/syncState.ts#L87)
 
 #### Returns
 
@@ -1811,7 +1811,7 @@ Defined in: [offline/sync/syncState.ts:87](https://github.com/idibek-alimov/posa
 
 > **markWriteQueueEntryFailed**(`entityType`, `queueId`, `error`, `expectedLastAttemptAt`): `Promise`\<`any`\>
 
-Defined in: [offline/writeQueue.ts:543](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L543)
+Defined in: [offline/writeQueue.ts:543](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L543)
 
 #### Parameters
 
@@ -1841,7 +1841,7 @@ Defined in: [offline/writeQueue.ts:543](https://github.com/idibek-alimov/posawes
 
 > **markWriteQueueEntrySynced**(`entityType`, `queueId`, `expectedLastAttemptAt`): `Promise`\<`any`\>
 
-Defined in: [offline/writeQueue.ts:521](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L521)
+Defined in: [offline/writeQueue.ts:521](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L521)
 
 #### Parameters
 
@@ -1867,7 +1867,7 @@ Defined in: [offline/writeQueue.ts:521](https://github.com/idibek-alimov/posawes
 
 > **mergeCachedPriceListItems**(`priceList`, `items?`): `void`
 
-Defined in: [offline/cache.ts:1111](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1111)
+Defined in: [offline/cache.ts:1111](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1111)
 
 #### Parameters
 
@@ -1889,7 +1889,7 @@ Defined in: [offline/cache.ts:1111](https://github.com/idibek-alimov/posawesome/
 
 > **migrateLegacyOfflineQueues**(): `Promise`\<`void`\>
 
-Defined in: [offline/writeQueue.ts:603](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L603)
+Defined in: [offline/writeQueue.ts:603](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L603)
 
 #### Returns
 
@@ -1901,7 +1901,7 @@ Defined in: [offline/writeQueue.ts:603](https://github.com/idibek-alimov/posawes
 
 > **persist**(`key`, `value?`): `void`
 
-Defined in: [offline/db.ts:1267](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1267)
+Defined in: [offline/db.ts:1267](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1267)
 
 #### Parameters
 
@@ -1923,7 +1923,7 @@ Defined in: [offline/db.ts:1267](https://github.com/idibek-alimov/posawesome/blo
 
 > **persistInvoiceIntentJournal**(`entry`): `string`
 
-Defined in: [offline/invoiceOutbox.ts:101](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L101)
+Defined in: [offline/invoiceOutbox.ts:101](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L101)
 
 #### Parameters
 
@@ -1941,7 +1941,7 @@ Defined in: [offline/invoiceOutbox.ts:101](https://github.com/idibek-alimov/posa
 
 > **promoteItemCatalogGeneration**(`scope`, `generation`, `options?`): `Promise`\<\{ `generation`: `string`; `previousGeneration`: `string`; `rowCount`: `number`; \}\>
 
-Defined in: [offline/cache.ts:566](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L566)
+Defined in: [offline/cache.ts:566](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L566)
 
 #### Parameters
 
@@ -1973,7 +1973,7 @@ Defined in: [offline/cache.ts:566](https://github.com/idibek-alimov/posawesome/b
 
 > **pruneOfflineStorage**(`options?`): `Promise`\<[`OfflinePruneResult`](#offlinepruneresult)\>
 
-Defined in: [offline/db.ts:1221](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1221)
+Defined in: [offline/db.ts:1221](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1221)
 
 #### Parameters
 
@@ -1997,7 +1997,7 @@ Defined in: [offline/db.ts:1221](https://github.com/idibek-alimov/posawesome/blo
 
 > **purgeOldQueueEntries**(`options?`): `number`
 
-Defined in: [offline/db.ts:1596](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1596)
+Defined in: [offline/db.ts:1596](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1596)
 
 #### Parameters
 
@@ -2021,7 +2021,7 @@ Defined in: [offline/db.ts:1596](https://github.com/idibek-alimov/posawesome/blo
 
 > **queueHealthCheck**(): `boolean`
 
-Defined in: [offline/db.ts:1549](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1549)
+Defined in: [offline/db.ts:1549](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1549)
 
 #### Returns
 
@@ -2033,7 +2033,7 @@ Defined in: [offline/db.ts:1549](https://github.com/idibek-alimov/posawesome/blo
 
 > **quickDbHealthCheck**(): `Promise`\<`boolean`\>
 
-Defined in: [offline/db.ts:1435](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1435)
+Defined in: [offline/db.ts:1435](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1435)
 
 #### Returns
 
@@ -2045,7 +2045,7 @@ Defined in: [offline/db.ts:1435](https://github.com/idibek-alimov/posawesome/blo
 
 > **reduceCacheUsage**(): `void`
 
-Defined in: [offline/cache.ts:1708](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1708)
+Defined in: [offline/cache.ts:1708](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1708)
 
 Clears all `memory`-tier caches to free up localStorage space under memory pressure.
 
@@ -2067,7 +2067,7 @@ the relevant sync adapter re-populates the cache.
 
 > **refreshAllQueueMemory**(): `Promise`\<`void`\>
 
-Defined in: [offline/writeQueue.ts:336](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L336)
+Defined in: [offline/writeQueue.ts:336](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L336)
 
 #### Returns
 
@@ -2079,7 +2079,7 @@ Defined in: [offline/writeQueue.ts:336](https://github.com/idibek-alimov/posawes
 
 > **refreshBootstrapSnapshotFromCacheState**(`cacheState?`): `void`
 
-Defined in: [offline/cache.ts:1536](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1536)
+Defined in: [offline/cache.ts:1536](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1536)
 
 Re-evaluates the stored bootstrap snapshot against the current cache state and
 persists the updated snapshot.
@@ -2108,7 +2108,7 @@ Partial cache state describing what was just written.
 
 > **refreshQueueMemory**(`entityType`): `Promise`\<`void`\>
 
-Defined in: [offline/writeQueue.ts:329](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L329)
+Defined in: [offline/writeQueue.ts:329](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L329)
 
 #### Parameters
 
@@ -2126,7 +2126,7 @@ Defined in: [offline/writeQueue.ts:329](https://github.com/idibek-alimov/posawes
 
 > **registerPostHydrationTask**(`task`): () => `boolean`
 
-Defined in: [offline/db.ts:648](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L648)
+Defined in: [offline/db.ts:648](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L648)
 
 #### Parameters
 
@@ -2144,7 +2144,7 @@ Defined in: [offline/db.ts:648](https://github.com/idibek-alimov/posawesome/blob
 
 > **removeCachedPriceListItems**(`itemCodes?`, `priceList?`): `void`
 
-Defined in: [offline/cache.ts:1154](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1154)
+Defined in: [offline/cache.ts:1154](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1154)
 
 #### Parameters
 
@@ -2166,7 +2166,7 @@ Defined in: [offline/cache.ts:1154](https://github.com/idibek-alimov/posawesome/
 
 > **removeInvoiceIntentJournal**(`clientRequestId`): `void`
 
-Defined in: [offline/invoiceOutbox.ts:116](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L116)
+Defined in: [offline/invoiceOutbox.ts:116](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L116)
 
 #### Parameters
 
@@ -2184,7 +2184,7 @@ Defined in: [offline/invoiceOutbox.ts:116](https://github.com/idibek-alimov/posa
 
 > **removeInvoiceOutboxEntry**(`clientRequestId`): `Promise`\<`any`\>
 
-Defined in: [offline/invoiceOutbox.ts:207](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L207)
+Defined in: [offline/invoiceOutbox.ts:207](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L207)
 
 #### Parameters
 
@@ -2202,7 +2202,7 @@ Defined in: [offline/invoiceOutbox.ts:207](https://github.com/idibek-alimov/posa
 
 > **removeItemDetailsCacheEntries**(`profileName`, `itemCodes?`, `priceList?`): `void`
 
-Defined in: [offline/cache.ts:1424](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1424)
+Defined in: [offline/cache.ts:1424](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1424)
 
 #### Parameters
 
@@ -2228,7 +2228,7 @@ Defined in: [offline/cache.ts:1424](https://github.com/idibek-alimov/posawesome/
 
 > **removeLocalStockEntries**(`itemCodes`): `void`
 
-Defined in: [offline/stock.ts:187](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/stock.ts#L187)
+Defined in: [offline/stock.ts:187](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/stock.ts#L187)
 
 #### Parameters
 
@@ -2246,7 +2246,7 @@ Defined in: [offline/stock.ts:187](https://github.com/idibek-alimov/posawesome/b
 
 > **repairDbAfterFailedHealthCheck**(`error?`): `Promise`\<`boolean`\>
 
-Defined in: [offline/db.ts:1448](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1448)
+Defined in: [offline/db.ts:1448](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1448)
 
 #### Parameters
 
@@ -2264,7 +2264,7 @@ Defined in: [offline/db.ts:1448](https://github.com/idibek-alimov/posawesome/blo
 
 > **resetOfflineState**(): `void`
 
-Defined in: [offline/invoices.ts:250](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoices.ts#L250)
+Defined in: [offline/invoices.ts:250](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoices.ts#L250)
 
 #### Returns
 
@@ -2276,7 +2276,7 @@ Defined in: [offline/invoices.ts:250](https://github.com/idibek-alimov/posawesom
 
 > **resetSyncCoordinatorForTests**(): `void`
 
-Defined in: [offline/sync/useSyncCoordinator.ts:15](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/useSyncCoordinator.ts#L15)
+Defined in: [offline/sync/useSyncCoordinator.ts:15](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/useSyncCoordinator.ts#L15)
 
 #### Returns
 
@@ -2288,7 +2288,7 @@ Defined in: [offline/sync/useSyncCoordinator.ts:15](https://github.com/idibek-al
 
 > **safeBulkDelete**(`tableName`, `keys`): `Promise`\<`void`\>
 
-Defined in: [offline/db.ts:1040](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1040)
+Defined in: [offline/db.ts:1040](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1040)
 
 #### Parameters
 
@@ -2310,7 +2310,7 @@ Defined in: [offline/db.ts:1040](https://github.com/idibek-alimov/posawesome/blo
 
 > **safeBulkPut**\<`T`\>(`tableName`, `rows`): `Promise`\<`void`\>
 
-Defined in: [offline/db.ts:718](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L718)
+Defined in: [offline/db.ts:718](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L718)
 
 #### Type Parameters
 
@@ -2338,7 +2338,7 @@ Defined in: [offline/db.ts:718](https://github.com/idibek-alimov/posawesome/blob
 
 > **saveCoupons**(`coupons`): `void`
 
-Defined in: [offline/cache.ts:1907](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1907)
+Defined in: [offline/cache.ts:1907](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1907)
 
 #### Parameters
 
@@ -2356,7 +2356,7 @@ Defined in: [offline/cache.ts:1907](https://github.com/idibek-alimov/posawesome/
 
 > **saveCurrencyOptionsCache**(`profileName`, `currencies`): `void`
 
-Defined in: [offline/cache.ts:2007](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L2007)
+Defined in: [offline/cache.ts:2007](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L2007)
 
 #### Parameters
 
@@ -2378,7 +2378,7 @@ Defined in: [offline/cache.ts:2007](https://github.com/idibek-alimov/posawesome/
 
 > **saveCustomerAddressesCache**(`customer`, `addresses`): `void`
 
-Defined in: [offline/cache.ts:2137](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L2137)
+Defined in: [offline/cache.ts:2137](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L2137)
 
 #### Parameters
 
@@ -2400,7 +2400,7 @@ Defined in: [offline/cache.ts:2137](https://github.com/idibek-alimov/posawesome/
 
 > **saveCustomerBalance**(`customer`, `balance`, `currency?`): `void`
 
-Defined in: [offline/customers.ts:434](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L434)
+Defined in: [offline/customers.ts:434](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L434)
 
 #### Parameters
 
@@ -2426,7 +2426,7 @@ Defined in: [offline/customers.ts:434](https://github.com/idibek-alimov/posaweso
 
 > **saveDeliveryChargesCache**(`profileName`, `customer`, `deliveryCharges`): `void`
 
-Defined in: [offline/cache.ts:1962](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1962)
+Defined in: [offline/cache.ts:1962](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1962)
 
 #### Parameters
 
@@ -2452,7 +2452,7 @@ Defined in: [offline/cache.ts:1962](https://github.com/idibek-alimov/posawesome/
 
 > **saveExchangeRateCache**(`entry?`): `void`
 
-Defined in: [offline/cache.ts:2047](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L2047)
+Defined in: [offline/cache.ts:2047](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L2047)
 
 #### Parameters
 
@@ -2470,7 +2470,7 @@ Defined in: [offline/cache.ts:2047](https://github.com/idibek-alimov/posawesome/
 
 > **saveGiftCardSnapshot**(`giftCardCode`, `snapshot`): `void`
 
-Defined in: [offline/customers.ts:383](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L383)
+Defined in: [offline/customers.ts:383](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L383)
 
 #### Parameters
 
@@ -2492,7 +2492,7 @@ Defined in: [offline/customers.ts:383](https://github.com/idibek-alimov/posaweso
 
 > **saveItemDetailsCache**(`profileName`, `priceList`, `items`): `void`
 
-Defined in: [offline/cache.ts:1195](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1195)
+Defined in: [offline/cache.ts:1195](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1195)
 
 #### Parameters
 
@@ -2518,7 +2518,7 @@ Defined in: [offline/cache.ts:1195](https://github.com/idibek-alimov/posawesome/
 
 > **saveItemGroups**(`groups`): `void`
 
-Defined in: [offline/cache.ts:1932](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1932)
+Defined in: [offline/cache.ts:1932](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1932)
 
 #### Parameters
 
@@ -2536,7 +2536,7 @@ Defined in: [offline/cache.ts:1932](https://github.com/idibek-alimov/posawesome/
 
 > **saveItems**(`items`, `scope?`): `Promise`\<`void`\>
 
-Defined in: [offline/cache.ts:832](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L832)
+Defined in: [offline/cache.ts:832](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L832)
 
 #### Parameters
 
@@ -2558,7 +2558,7 @@ Defined in: [offline/cache.ts:832](https://github.com/idibek-alimov/posawesome/b
 
 > **saveItemsBulk**(`items`, `scope?`): `Promise`\<`void`\>
 
-Defined in: [offline/cache.ts:828](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L828)
+Defined in: [offline/cache.ts:828](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L828)
 
 #### Parameters
 
@@ -2580,7 +2580,7 @@ Defined in: [offline/cache.ts:828](https://github.com/idibek-alimov/posawesome/b
 
 > **saveItemUOMs**(`itemCode`, `uoms`): `void`
 
-Defined in: [offline/cache.ts:963](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L963)
+Defined in: [offline/cache.ts:963](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L963)
 
 #### Parameters
 
@@ -2602,7 +2602,7 @@ Defined in: [offline/cache.ts:963](https://github.com/idibek-alimov/posawesome/b
 
 > **saveOffers**(`offers`): `void`
 
-Defined in: [offline/cache.ts:984](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L984)
+Defined in: [offline/cache.ts:984](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L984)
 
 #### Parameters
 
@@ -2620,7 +2620,7 @@ Defined in: [offline/cache.ts:984](https://github.com/idibek-alimov/posawesome/b
 
 > **saveOfflineCashMovement**(`entry`): `Promise`\<`any`\>
 
-Defined in: [offline/cash\_movements.ts:23](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cash_movements.ts#L23)
+Defined in: [offline/cash\_movements.ts:23](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cash_movements.ts#L23)
 
 #### Parameters
 
@@ -2638,7 +2638,7 @@ Defined in: [offline/cash\_movements.ts:23](https://github.com/idibek-alimov/pos
 
 > **saveOfflineCustomer**(`entry`): `Promise`\<`any`\>
 
-Defined in: [offline/customers.ts:25](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L25)
+Defined in: [offline/customers.ts:25](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L25)
 
 #### Parameters
 
@@ -2656,7 +2656,7 @@ Defined in: [offline/customers.ts:25](https://github.com/idibek-alimov/posawesom
 
 > **saveOfflineInvoice**(`entry`): `Promise`\<`any`\>
 
-Defined in: [offline/invoices.ts:214](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoices.ts#L214)
+Defined in: [offline/invoices.ts:214](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoices.ts#L214)
 
 #### Parameters
 
@@ -2674,7 +2674,7 @@ Defined in: [offline/invoices.ts:214](https://github.com/idibek-alimov/posawesom
 
 > **saveOfflinePayment**(`entry`): `Promise`\<`any`\>
 
-Defined in: [offline/payments.ts:41](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/payments.ts#L41)
+Defined in: [offline/payments.ts:41](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/payments.ts#L41)
 
 #### Parameters
 
@@ -2692,7 +2692,7 @@ Defined in: [offline/payments.ts:41](https://github.com/idibek-alimov/posawesome
 
 > **savePaymentMethodCurrencyCache**(`company`, `mapping`): `void`
 
-Defined in: [offline/cache.ts:2177](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L2177)
+Defined in: [offline/cache.ts:2177](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L2177)
 
 #### Parameters
 
@@ -2714,7 +2714,7 @@ Defined in: [offline/cache.ts:2177](https://github.com/idibek-alimov/posawesome/
 
 > **savePriceListItems**(`priceList`, `items`): `void`
 
-Defined in: [offline/cache.ts:1064](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1064)
+Defined in: [offline/cache.ts:1064](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1064)
 
 #### Parameters
 
@@ -2736,7 +2736,7 @@ Defined in: [offline/cache.ts:1064](https://github.com/idibek-alimov/posawesome/
 
 > **savePriceListMetaCache**(`profileName`, `metadata`): `void`
 
-Defined in: [offline/cache.ts:2098](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L2098)
+Defined in: [offline/cache.ts:2098](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L2098)
 
 #### Parameters
 
@@ -2758,7 +2758,7 @@ Defined in: [offline/cache.ts:2098](https://github.com/idibek-alimov/posawesome/
 
 > **savePricingRulesSnapshot**(`snapshot?`, `context?`, `staleAt?`): `void`
 
-Defined in: [offline/cache.ts:1798](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1798)
+Defined in: [offline/cache.ts:1798](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1798)
 
 #### Parameters
 
@@ -2784,7 +2784,7 @@ Defined in: [offline/cache.ts:1798](https://github.com/idibek-alimov/posawesome/
 
 > **saveStoredValueSnapshot**(`customer`, `company`, `sources`): `void`
 
-Defined in: [offline/customers.ts:322](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L322)
+Defined in: [offline/customers.ts:322](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L322)
 
 #### Parameters
 
@@ -2810,7 +2810,7 @@ Defined in: [offline/customers.ts:322](https://github.com/idibek-alimov/posaweso
 
 > **saveTaxTemplate**(`name`, `doc`): `void`
 
-Defined in: [offline/cache.ts:1474](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1474)
+Defined in: [offline/cache.ts:1474](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1474)
 
 #### Parameters
 
@@ -2832,7 +2832,7 @@ Defined in: [offline/cache.ts:1474](https://github.com/idibek-alimov/posawesome/
 
 > **saveTranslationsCache**(`lang`, `data`): `void`
 
-Defined in: [offline/cache.ts:1855](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1855)
+Defined in: [offline/cache.ts:1855](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1855)
 
 #### Parameters
 
@@ -2854,7 +2854,7 @@ Defined in: [offline/cache.ts:1855](https://github.com/idibek-alimov/posawesome/
 
 > **scheduleIdleOfflinePruning**(): `void`
 
-Defined in: [offline/db.ts:1250](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1250)
+Defined in: [offline/db.ts:1250](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1250)
 
 #### Returns
 
@@ -2866,7 +2866,7 @@ Defined in: [offline/db.ts:1250](https://github.com/idibek-alimov/posawesome/blo
 
 > **searchStoredItems**(`__namedParameters?`): `Promise`\<`any`\>
 
-Defined in: [offline/cache.ts:726](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L726)
+Defined in: [offline/cache.ts:726](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L726)
 
 #### Parameters
 
@@ -2902,7 +2902,7 @@ Defined in: [offline/cache.ts:726](https://github.com/idibek-alimov/posawesome/b
 
 > **setBootstrapLimitedMode**(`state`): `void`
 
-Defined in: [offline/cache.ts:1583](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1583)
+Defined in: [offline/cache.ts:1583](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1583)
 
 #### Parameters
 
@@ -2920,7 +2920,7 @@ Defined in: [offline/cache.ts:1583](https://github.com/idibek-alimov/posawesome/
 
 > **setBootstrapSnapshot**(`snapshot`): `void`
 
-Defined in: [offline/cache.ts:1552](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1552)
+Defined in: [offline/cache.ts:1552](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1552)
 
 #### Parameters
 
@@ -2938,7 +2938,7 @@ Defined in: [offline/cache.ts:1552](https://github.com/idibek-alimov/posawesome/
 
 > **setBootstrapSnapshotStatus**(`status`): `void`
 
-Defined in: [offline/cache.ts:1568](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1568)
+Defined in: [offline/cache.ts:1568](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1568)
 
 #### Parameters
 
@@ -2956,7 +2956,7 @@ Defined in: [offline/cache.ts:1568](https://github.com/idibek-alimov/posawesome/
 
 > **setCustomersLastSync**(`timestamp`): `void`
 
-Defined in: [offline/cache.ts:1755](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1755)
+Defined in: [offline/cache.ts:1755](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1755)
 
 #### Parameters
 
@@ -2974,7 +2974,7 @@ Defined in: [offline/cache.ts:1755](https://github.com/idibek-alimov/posawesome/
 
 > **setCustomerStorage**(`customers`): `Promise`\<`void`\>
 
-Defined in: [offline/customers.ts:189](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L189)
+Defined in: [offline/customers.ts:189](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L189)
 
 #### Parameters
 
@@ -2992,7 +2992,7 @@ Defined in: [offline/customers.ts:189](https://github.com/idibek-alimov/posaweso
 
 > **setInvoiceOutboxMode**(`mode`): `void`
 
-Defined in: [offline/invoiceOutbox.ts:79](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L79)
+Defined in: [offline/invoiceOutbox.ts:79](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L79)
 
 #### Parameters
 
@@ -3010,7 +3010,7 @@ Defined in: [offline/invoiceOutbox.ts:79](https://github.com/idibek-alimov/posaw
 
 > **setItemsLastSync**(`timestamp`): `void`
 
-Defined in: [offline/cache.ts:1746](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1746)
+Defined in: [offline/cache.ts:1746](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1746)
 
 #### Parameters
 
@@ -3028,7 +3028,7 @@ Defined in: [offline/cache.ts:1746](https://github.com/idibek-alimov/posawesome/
 
 > **setLastSyncTotals**(`totals`): `void`
 
-Defined in: [offline/invoices.ts:258](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoices.ts#L258)
+Defined in: [offline/invoices.ts:258](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoices.ts#L258)
 
 #### Parameters
 
@@ -3056,7 +3056,7 @@ Defined in: [offline/invoices.ts:258](https://github.com/idibek-alimov/posawesom
 
 > **setLocalStockCache**(`cache`): `void`
 
-Defined in: [offline/stock.ts:258](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/stock.ts#L258)
+Defined in: [offline/stock.ts:258](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/stock.ts#L258)
 
 #### Parameters
 
@@ -3074,7 +3074,7 @@ Defined in: [offline/stock.ts:258](https://github.com/idibek-alimov/posawesome/b
 
 > **setManualOffline**(`state`): `void`
 
-Defined in: [offline/db.ts:1319](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1319)
+Defined in: [offline/db.ts:1319](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1319)
 
 #### Parameters
 
@@ -3092,7 +3092,7 @@ Defined in: [offline/db.ts:1319](https://github.com/idibek-alimov/posawesome/blo
 
 > **setOpeningDialogStorage**(`data`): `void`
 
-Defined in: [offline/cache.ts:1676](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1676)
+Defined in: [offline/cache.ts:1676](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1676)
 
 #### Parameters
 
@@ -3110,7 +3110,7 @@ Defined in: [offline/cache.ts:1676](https://github.com/idibek-alimov/posawesome/
 
 > **setOpeningStorage**(`data`): `void`
 
-Defined in: [offline/cache.ts:1645](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1645)
+Defined in: [offline/cache.ts:1645](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1645)
 
 #### Parameters
 
@@ -3128,7 +3128,7 @@ Defined in: [offline/cache.ts:1645](https://github.com/idibek-alimov/posawesome/
 
 > **setPrintTemplate**(`template`): `void`
 
-Defined in: [offline/cache.ts:1874](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1874)
+Defined in: [offline/cache.ts:1874](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1874)
 
 #### Parameters
 
@@ -3146,7 +3146,7 @@ Defined in: [offline/cache.ts:1874](https://github.com/idibek-alimov/posawesome/
 
 > **setProfileBuyingPriceList**(`profile`, `buyingPriceList`): `Promise`\<`void`\>
 
-Defined in: [offline/cache.ts:1340](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1340)
+Defined in: [offline/cache.ts:1340](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1340)
 
 #### Parameters
 
@@ -3168,7 +3168,7 @@ Defined in: [offline/cache.ts:1340](https://github.com/idibek-alimov/posawesome/
 
 > **setSalesPersonsStorage**(`data`): `void`
 
-Defined in: [offline/cache.ts:1502](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1502)
+Defined in: [offline/cache.ts:1502](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1502)
 
 #### Parameters
 
@@ -3186,7 +3186,7 @@ Defined in: [offline/cache.ts:1502](https://github.com/idibek-alimov/posawesome/
 
 > **setStockCacheReady**(`ready`): `void`
 
-Defined in: [offline/stock.ts:113](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/stock.ts#L113)
+Defined in: [offline/stock.ts:113](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/stock.ts#L113)
 
 #### Parameters
 
@@ -3204,7 +3204,7 @@ Defined in: [offline/stock.ts:113](https://github.com/idibek-alimov/posawesome/b
 
 > **setSyncResourceState**(`state`): `Promise`\<`void`\>
 
-Defined in: [offline/sync/syncState.ts:41](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/syncState.ts#L41)
+Defined in: [offline/sync/syncState.ts:41](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/syncState.ts#L41)
 
 #### Parameters
 
@@ -3222,7 +3222,7 @@ Defined in: [offline/sync/syncState.ts:41](https://github.com/idibek-alimov/posa
 
 > **setSyncResourceStates**(`states`): `Promise`\<`void`\>
 
-Defined in: [offline/sync/syncState.ts:58](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/syncState.ts#L58)
+Defined in: [offline/sync/syncState.ts:58](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/syncState.ts#L58)
 
 #### Parameters
 
@@ -3240,7 +3240,7 @@ Defined in: [offline/sync/syncState.ts:58](https://github.com/idibek-alimov/posa
 
 > **setTaxInclusiveSetting**(`value`): `void`
 
-Defined in: [offline/cache.ts:1689](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1689)
+Defined in: [offline/cache.ts:1689](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1689)
 
 #### Parameters
 
@@ -3258,7 +3258,7 @@ Defined in: [offline/cache.ts:1689](https://github.com/idibek-alimov/posawesome/
 
 > **setTermsAndConditions**(`terms`): `void`
 
-Defined in: [offline/cache.ts:1894](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1894)
+Defined in: [offline/cache.ts:1894](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1894)
 
 #### Parameters
 
@@ -3276,7 +3276,7 @@ Defined in: [offline/cache.ts:1894](https://github.com/idibek-alimov/posawesome/
 
 > **shouldWriteInvoiceOutbox**(): `boolean`
 
-Defined in: [offline/invoiceOutbox.ts:84](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L84)
+Defined in: [offline/invoiceOutbox.ts:84](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L84)
 
 #### Returns
 
@@ -3288,7 +3288,7 @@ Defined in: [offline/invoiceOutbox.ts:84](https://github.com/idibek-alimov/posaw
 
 > **stageItemCatalogRows**(`items`, `scope`, `generation`): `Promise`\<`number`\>
 
-Defined in: [offline/cache.ts:508](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L508)
+Defined in: [offline/cache.ts:508](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L508)
 
 #### Parameters
 
@@ -3314,7 +3314,7 @@ Defined in: [offline/cache.ts:508](https://github.com/idibek-alimov/posawesome/b
 
 > **syncBootstrapConfigResource**(`args`): `Promise`\<`ResourceSyncResult`\>
 
-Defined in: [offline/sync/adapters/bootstrapConfig.ts:48](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/adapters/bootstrapConfig.ts#L48)
+Defined in: [offline/sync/adapters/bootstrapConfig.ts:48](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/adapters/bootstrapConfig.ts#L48)
 
 #### Parameters
 
@@ -3332,7 +3332,7 @@ Defined in: [offline/sync/adapters/bootstrapConfig.ts:48](https://github.com/idi
 
 > **syncCurrencyMatrixResource**(`args`): `Promise`\<`ResourceSyncResult`\>
 
-Defined in: [offline/sync/adapters/currencyMatrix.ts:39](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/adapters/currencyMatrix.ts#L39)
+Defined in: [offline/sync/adapters/currencyMatrix.ts:39](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/adapters/currencyMatrix.ts#L39)
 
 #### Parameters
 
@@ -3350,7 +3350,7 @@ Defined in: [offline/sync/adapters/currencyMatrix.ts:39](https://github.com/idib
 
 > **syncCustomersResource**(`args`): `Promise`\<`ResourceSyncResult`\>
 
-Defined in: [offline/sync/adapters/customers.ts:172](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/adapters/customers.ts#L172)
+Defined in: [offline/sync/adapters/customers.ts:172](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/adapters/customers.ts#L172)
 
 #### Parameters
 
@@ -3368,7 +3368,7 @@ Defined in: [offline/sync/adapters/customers.ts:172](https://github.com/idibek-a
 
 > **syncInvoiceOutboxResource**(`callOfflineSyncMethod`): `Promise`\<\{ `acknowledged`: `number`; `consecutiveFailures`: `number`; `lastError`: `string` \| `null`; `lastSyncedAt`: `string`; `pendingCount`: `number`; `resourceId`: `string`; `status`: `string`; `watermark`: `string`; \}\>
 
-Defined in: [offline/invoiceOutbox.ts:277](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L277)
+Defined in: [offline/invoiceOutbox.ts:277](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L277)
 
 #### Parameters
 
@@ -3386,7 +3386,7 @@ Defined in: [offline/invoiceOutbox.ts:277](https://github.com/idibek-alimov/posa
 
 > **syncItemPricesResource**(`args`): `Promise`\<`ResourceSyncResult`\>
 
-Defined in: [offline/sync/adapters/itemPrices.ts:37](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/adapters/itemPrices.ts#L37)
+Defined in: [offline/sync/adapters/itemPrices.ts:37](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/adapters/itemPrices.ts#L37)
 
 #### Parameters
 
@@ -3404,7 +3404,7 @@ Defined in: [offline/sync/adapters/itemPrices.ts:37](https://github.com/idibek-a
 
 > **syncItemsResource**(`args`): `Promise`\<`ResourceSyncResult`\>
 
-Defined in: [offline/sync/adapters/items.ts:279](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/adapters/items.ts#L279)
+Defined in: [offline/sync/adapters/items.ts:279](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/adapters/items.ts#L279)
 
 #### Parameters
 
@@ -3422,7 +3422,7 @@ Defined in: [offline/sync/adapters/items.ts:279](https://github.com/idibek-alimo
 
 > **syncOfflineCashMovements**(): `Promise`\<\{ `pending`: `any`; `synced`: `number`; \}\>
 
-Defined in: [offline/cash\_movements.ts:72](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cash_movements.ts#L72)
+Defined in: [offline/cash\_movements.ts:72](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cash_movements.ts#L72)
 
 #### Returns
 
@@ -3434,7 +3434,7 @@ Defined in: [offline/cash\_movements.ts:72](https://github.com/idibek-alimov/pos
 
 > **syncOfflineCustomers**(): `Promise`\<\{ `pending`: `any`; `synced`: `number`; \}\>
 
-Defined in: [offline/customers.ts:75](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L75)
+Defined in: [offline/customers.ts:75](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L75)
 
 #### Returns
 
@@ -3446,7 +3446,7 @@ Defined in: [offline/customers.ts:75](https://github.com/idibek-alimov/posawesom
 
 > **syncOfflineInvoices**(): `Promise`\<\{ `drafted`: `number`; `pending`: `any`; `synced`: `number`; \}\>
 
-Defined in: [offline/invoices.ts:271](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoices.ts#L271)
+Defined in: [offline/invoices.ts:271](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoices.ts#L271)
 
 #### Returns
 
@@ -3458,7 +3458,7 @@ Defined in: [offline/invoices.ts:271](https://github.com/idibek-alimov/posawesom
 
 > **syncOfflinePayments**(): `Promise`\<\{ `pending`: `any`; `synced`: `number`; \}\>
 
-Defined in: [offline/payments.ts:67](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/payments.ts#L67)
+Defined in: [offline/payments.ts:67](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/payments.ts#L67)
 
 #### Returns
 
@@ -3470,7 +3470,7 @@ Defined in: [offline/payments.ts:67](https://github.com/idibek-alimov/posawesome
 
 > **syncPaymentMethodCurrenciesResource**(`args`): `Promise`\<`ResourceSyncResult`\>
 
-Defined in: [offline/sync/adapters/paymentMethodCurrencies.ts:24](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/adapters/paymentMethodCurrencies.ts#L24)
+Defined in: [offline/sync/adapters/paymentMethodCurrencies.ts:24](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/adapters/paymentMethodCurrencies.ts#L24)
 
 #### Parameters
 
@@ -3488,7 +3488,7 @@ Defined in: [offline/sync/adapters/paymentMethodCurrencies.ts:24](https://github
 
 > **syncPriceListMetaResource**(`args`): `Promise`\<`ResourceSyncResult`\>
 
-Defined in: [offline/sync/adapters/bootstrapConfig.ts:92](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/adapters/bootstrapConfig.ts#L92)
+Defined in: [offline/sync/adapters/bootstrapConfig.ts:92](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/adapters/bootstrapConfig.ts#L92)
 
 #### Parameters
 
@@ -3506,7 +3506,7 @@ Defined in: [offline/sync/adapters/bootstrapConfig.ts:92](https://github.com/idi
 
 > **syncPricingRulesResource**(`args`): `Promise`\<`ResourceSyncResult`\>
 
-Defined in: [offline/sync/adapters/pricingRules.ts:80](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/adapters/pricingRules.ts#L80)
+Defined in: [offline/sync/adapters/pricingRules.ts:80](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/adapters/pricingRules.ts#L80)
 
 #### Parameters
 
@@ -3524,7 +3524,7 @@ Defined in: [offline/sync/adapters/pricingRules.ts:80](https://github.com/idibek
 
 > **syncStockResource**(`args`): `Promise`\<`ResourceSyncResult`\>
 
-Defined in: [offline/sync/adapters/stock.ts:55](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/adapters/stock.ts#L55)
+Defined in: [offline/sync/adapters/stock.ts:55](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/adapters/stock.ts#L55)
 
 #### Parameters
 
@@ -3542,7 +3542,7 @@ Defined in: [offline/sync/adapters/stock.ts:55](https://github.com/idibek-alimov
 
 > **toggleManualOffline**(): `void`
 
-Defined in: [offline/db.ts:1324](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1324)
+Defined in: [offline/db.ts:1324](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1324)
 
 #### Returns
 
@@ -3554,7 +3554,7 @@ Defined in: [offline/db.ts:1324](https://github.com/idibek-alimov/posawesome/blo
 
 > **updateLocalStock**(`items`): `void`
 
-Defined in: [offline/stock.ts:121](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/stock.ts#L121)
+Defined in: [offline/stock.ts:121](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/stock.ts#L121)
 
 #### Parameters
 
@@ -3572,7 +3572,7 @@ Defined in: [offline/stock.ts:121](https://github.com/idibek-alimov/posawesome/b
 
 > **updateLocalStockCache**(`items`): `void`
 
-Defined in: [offline/stock.ts:159](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/stock.ts#L159)
+Defined in: [offline/stock.ts:159](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/stock.ts#L159)
 
 #### Parameters
 
@@ -3590,7 +3590,7 @@ Defined in: [offline/stock.ts:159](https://github.com/idibek-alimov/posawesome/b
 
 > **updateLocalStockWithActualQuantities**(`invoiceItems`, `serverItems`): `void`
 
-Defined in: [offline/stock.ts:210](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/stock.ts#L210)
+Defined in: [offline/stock.ts:210](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/stock.ts#L210)
 
 #### Parameters
 
@@ -3612,7 +3612,7 @@ Defined in: [offline/stock.ts:210](https://github.com/idibek-alimov/posawesome/b
 
 > **updateOfflineInvoicesCustomer**(`oldName`, `newName`): `Promise`\<`void`\>
 
-Defined in: [offline/customers.ts:37](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/customers.ts#L37)
+Defined in: [offline/customers.ts:37](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/customers.ts#L37)
 
 #### Parameters
 
@@ -3634,7 +3634,7 @@ Defined in: [offline/customers.ts:37](https://github.com/idibek-alimov/posawesom
 
 > **updateQueuedPayloads**(`entityType`, `updater`): `Promise`\<`void`\>
 
-Defined in: [offline/writeQueue.ts:572](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L572)
+Defined in: [offline/writeQueue.ts:572](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L572)
 
 #### Parameters
 
@@ -3656,7 +3656,7 @@ Defined in: [offline/writeQueue.ts:572](https://github.com/idibek-alimov/posawes
 
 > **useSyncCoordinator**(): [`SyncCoordinator`](#synccoordinator)
 
-Defined in: [offline/sync/useSyncCoordinator.ts:8](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/useSyncCoordinator.ts#L8)
+Defined in: [offline/sync/useSyncCoordinator.ts:8](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/useSyncCoordinator.ts#L8)
 
 #### Returns
 
@@ -3668,7 +3668,7 @@ Defined in: [offline/sync/useSyncCoordinator.ts:8](https://github.com/idibek-ali
 
 > **validateStockForOfflineInvoice**(`items`, `invoice?`): `object`
 
-Defined in: [offline/invoices.ts:62](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoices.ts#L62)
+Defined in: [offline/invoices.ts:62](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoices.ts#L62)
 
 #### Parameters
 
@@ -3702,7 +3702,7 @@ Defined in: [offline/invoices.ts:62](https://github.com/idibek-alimov/posawesome
 
 > **withDbTransaction**\<`T`\>(`mode`, `tableNames`, `callback`): `Promise`\<`T`\>
 
-Defined in: [offline/db.ts:707](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L707)
+Defined in: [offline/db.ts:707](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L707)
 
 #### Type Parameters
 
@@ -3734,7 +3734,7 @@ Defined in: [offline/db.ts:707](https://github.com/idibek-alimov/posawesome/blob
 
 > **withItemCatalogRefreshLock**\<`T`\>(`scope`, `task`): `Promise`\<`T`\>
 
-Defined in: [offline/cache.ts:431](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L431)
+Defined in: [offline/cache.ts:431](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L431)
 
 #### Type Parameters
 
@@ -3760,7 +3760,7 @@ Defined in: [offline/cache.ts:431](https://github.com/idibek-alimov/posawesome/b
 
 ### SyncCoordinator
 
-Defined in: [offline/sync/SyncCoordinator.ts:109](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/SyncCoordinator.ts#L109)
+Defined in: [offline/sync/SyncCoordinator.ts:109](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/SyncCoordinator.ts#L109)
 
 Orchestrates offline background synchronisation for all registered resources.
 
@@ -3783,7 +3783,7 @@ coordinator.runTrigger("boot");
 
 > **new SyncCoordinator**(`options?`): [`SyncCoordinator`](#synccoordinator)
 
-Defined in: [offline/sync/SyncCoordinator.ts:128](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/SyncCoordinator.ts#L128)
+Defined in: [offline/sync/SyncCoordinator.ts:128](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/SyncCoordinator.ts#L128)
 
 ###### Parameters
 
@@ -3801,7 +3801,7 @@ Defined in: [offline/sync/SyncCoordinator.ts:128](https://github.com/idibek-alim
 
 > **getLastRunSummary**(): `any`
 
-Defined in: [offline/sync/SyncCoordinator.ts:166](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/SyncCoordinator.ts#L166)
+Defined in: [offline/sync/SyncCoordinator.ts:166](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/SyncCoordinator.ts#L166)
 
 ###### Returns
 
@@ -3811,7 +3811,7 @@ Defined in: [offline/sync/SyncCoordinator.ts:166](https://github.com/idibek-alim
 
 > **getResourceState**(`resourceId`): \{ `consecutiveFailures`: `number`; `cooldownMs?`: `number` \| `null`; `lastAttemptAt?`: `string` \| `null`; `lastError`: `string` \| `null`; `lastSuccessHash`: `string` \| `null`; `lastSyncedAt`: `string` \| `null`; `lastTrigger?`: [`SyncTrigger`](#synctrigger) \| `null`; `nextRetryAt?`: `string` \| `null`; `resourceId`: [`SyncResourceId`](#syncresourceid); `schemaVersion`: `string` \| `null`; `scopeSignature`: `string` \| `null`; `status`: [`SyncLifecycleState`](#synclifecyclestate); `watermark`: `string` \| `null`; \} \| `null`
 
-Defined in: [offline/sync/SyncCoordinator.ts:152](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/SyncCoordinator.ts#L152)
+Defined in: [offline/sync/SyncCoordinator.ts:152](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/SyncCoordinator.ts#L152)
 
 Returns a snapshot of the current state for a single resource,
 or `null` if the resource ID is not registered.
@@ -3830,7 +3830,7 @@ or `null` if the resource ID is not registered.
 
 > **getResourceStates**(): `object`[]
 
-Defined in: [offline/sync/SyncCoordinator.ts:160](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/SyncCoordinator.ts#L160)
+Defined in: [offline/sync/SyncCoordinator.ts:160](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/SyncCoordinator.ts#L160)
 
 Returns snapshots of the current state for all registered resources.
 
@@ -3842,7 +3842,7 @@ Returns snapshots of the current state for all registered resources.
 
 > **hydrateResourceStates**(`states`): `void`
 
-Defined in: [offline/sync/SyncCoordinator.ts:176](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/SyncCoordinator.ts#L176)
+Defined in: [offline/sync/SyncCoordinator.ts:176](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/SyncCoordinator.ts#L176)
 
 Replaces in-memory resource states with the supplied values, then emits a state-change
 notification. Used to restore persisted state after a page reload.
@@ -3861,7 +3861,7 @@ notification. Used to restore persisted state after a page reload.
 
 > **runTrigger**(`trigger`): `Promise`\<`void`\>
 
-Defined in: [offline/sync/SyncCoordinator.ts:196](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/SyncCoordinator.ts#L196)
+Defined in: [offline/sync/SyncCoordinator.ts:196](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/SyncCoordinator.ts#L196)
 
 Runs all resources that subscribe to `trigger`, in priority order.
 If a run for the same trigger is already in flight, returns the existing Promise
@@ -3883,7 +3883,7 @@ The event that initiated this sync pass.
 
 ### InvoiceOutboxEntry
 
-Defined in: [offline/invoiceOutbox.ts:20](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L20)
+Defined in: [offline/invoiceOutbox.ts:20](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L20)
 
 #### Properties
 
@@ -3891,91 +3891,91 @@ Defined in: [offline/invoiceOutbox.ts:20](https://github.com/idibek-alimov/posaw
 
 > **acknowledged\_at**: `string` \| `null`
 
-Defined in: [offline/invoiceOutbox.ts:34](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L34)
+Defined in: [offline/invoiceOutbox.ts:34](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L34)
 
 ##### client\_request\_id
 
 > **client\_request\_id**: `string`
 
-Defined in: [offline/invoiceOutbox.ts:22](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L22)
+Defined in: [offline/invoiceOutbox.ts:22](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L22)
 
 ##### created\_at
 
 > **created\_at**: `string`
 
-Defined in: [offline/invoiceOutbox.ts:27](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L27)
+Defined in: [offline/invoiceOutbox.ts:27](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L27)
 
 ##### data
 
 > **data**: `AnyRecord`
 
-Defined in: [offline/invoiceOutbox.ts:26](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L26)
+Defined in: [offline/invoiceOutbox.ts:26](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L26)
 
 ##### invoice
 
 > **invoice**: `AnyRecord`
 
-Defined in: [offline/invoiceOutbox.ts:25](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L25)
+Defined in: [offline/invoiceOutbox.ts:25](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L25)
 
 ##### invoice\_name
 
 > **invoice\_name**: `string` \| `null`
 
-Defined in: [offline/invoiceOutbox.ts:33](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L33)
+Defined in: [offline/invoiceOutbox.ts:33](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L33)
 
 ##### last\_error
 
 > **last\_error**: `string` \| `null`
 
-Defined in: [offline/invoiceOutbox.ts:32](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L32)
+Defined in: [offline/invoiceOutbox.ts:32](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L32)
 
 ##### next\_retry\_at
 
 > **next\_retry\_at**: `string` \| `null`
 
-Defined in: [offline/invoiceOutbox.ts:29](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L29)
+Defined in: [offline/invoiceOutbox.ts:29](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L29)
 
 ##### nextAttemptAt?
 
 > `optional` **nextAttemptAt?**: `string` \| `null`
 
-Defined in: [offline/invoiceOutbox.ts:30](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L30)
+Defined in: [offline/invoiceOutbox.ts:30](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L30)
 
 ##### outbox\_id?
 
 > `optional` **outbox\_id?**: `number`
 
-Defined in: [offline/invoiceOutbox.ts:21](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L21)
+Defined in: [offline/invoiceOutbox.ts:21](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L21)
 
 ##### resource?
 
 > `optional` **resource?**: `"invoice_outbox"`
 
-Defined in: [offline/invoiceOutbox.ts:23](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L23)
+Defined in: [offline/invoiceOutbox.ts:23](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L23)
 
 ##### retry\_count
 
 > **retry\_count**: `number`
 
-Defined in: [offline/invoiceOutbox.ts:31](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L31)
+Defined in: [offline/invoiceOutbox.ts:31](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L31)
 
 ##### status
 
 > **status**: [`InvoiceOutboxStatus`](#invoiceoutboxstatus)
 
-Defined in: [offline/invoiceOutbox.ts:24](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L24)
+Defined in: [offline/invoiceOutbox.ts:24](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L24)
 
 ##### updated\_at
 
 > **updated\_at**: `string`
 
-Defined in: [offline/invoiceOutbox.ts:28](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L28)
+Defined in: [offline/invoiceOutbox.ts:28](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L28)
 
 ***
 
 ### OfflineQueueEntry
 
-Defined in: [offline/writeQueue.ts:22](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L22)
+Defined in: [offline/writeQueue.ts:22](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L22)
 
 #### Properties
 
@@ -3983,73 +3983,73 @@ Defined in: [offline/writeQueue.ts:22](https://github.com/idibek-alimov/posaweso
 
 > **created\_at**: `string`
 
-Defined in: [offline/writeQueue.ts:27](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L27)
+Defined in: [offline/writeQueue.ts:27](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L27)
 
 ##### entity\_type
 
 > **entity\_type**: [`OfflineEntityType`](#offlineentitytype)
 
-Defined in: [offline/writeQueue.ts:24](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L24)
+Defined in: [offline/writeQueue.ts:24](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L24)
 
 ##### idempotency\_key
 
 > **idempotency\_key**: `string`
 
-Defined in: [offline/writeQueue.ts:32](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L32)
+Defined in: [offline/writeQueue.ts:32](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L32)
 
 ##### last\_attempt\_at
 
 > **last\_attempt\_at**: `string` \| `null`
 
-Defined in: [offline/writeQueue.ts:28](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L28)
+Defined in: [offline/writeQueue.ts:28](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L28)
 
 ##### last\_error
 
 > **last\_error**: `string` \| `null`
 
-Defined in: [offline/writeQueue.ts:33](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L33)
+Defined in: [offline/writeQueue.ts:33](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L33)
 
 ##### next\_attempt\_at?
 
 > `optional` **next\_attempt\_at?**: `string` \| `null`
 
-Defined in: [offline/writeQueue.ts:29](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L29)
+Defined in: [offline/writeQueue.ts:29](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L29)
 
 ##### payload
 
 > **payload**: `AnyRecord`
 
-Defined in: [offline/writeQueue.ts:26](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L26)
+Defined in: [offline/writeQueue.ts:26](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L26)
 
 ##### queue\_id?
 
 > `optional` **queue\_id?**: `number`
 
-Defined in: [offline/writeQueue.ts:23](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L23)
+Defined in: [offline/writeQueue.ts:23](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L23)
 
 ##### resource?
 
 > `optional` **resource?**: [`OfflineEntityType`](#offlineentitytype)
 
-Defined in: [offline/writeQueue.ts:25](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L25)
+Defined in: [offline/writeQueue.ts:25](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L25)
 
 ##### retry\_count
 
 > **retry\_count**: `number`
 
-Defined in: [offline/writeQueue.ts:30](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L30)
+Defined in: [offline/writeQueue.ts:30](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L30)
 
 ##### status
 
 > **status**: [`OfflineQueueStatus`](#offlinequeuestatus)
 
-Defined in: [offline/writeQueue.ts:31](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L31)
+Defined in: [offline/writeQueue.ts:31](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L31)
 
 ***
 
 ### SyncResourceDefinition
 
-Defined in: [offline/sync/types.ts:73](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L73)
+Defined in: [offline/sync/types.ts:73](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L73)
 
 Static definition of a single sync resource. Registered in `resourceRegistry.ts`
 and consumed by `SyncCoordinator`.
@@ -4060,7 +4060,7 @@ and consumed by `SyncCoordinator`.
 
 > **fullResyncSupported**: `boolean`
 
-Defined in: [offline/sync/types.ts:89](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L89)
+Defined in: [offline/sync/types.ts:89](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L89)
 
 Whether the adapter supports full-resync (wiping and re-fetching all records).
 
@@ -4068,7 +4068,7 @@ Whether the adapter supports full-resync (wiping and re-fetching all records).
 
 > **id**: [`SyncResourceId`](#syncresourceid)
 
-Defined in: [offline/sync/types.ts:75](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L75)
+Defined in: [offline/sync/types.ts:75](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L75)
 
 Unique identifier.
 
@@ -4076,7 +4076,7 @@ Unique identifier.
 
 > **mode**: [`SyncResourceMode`](#syncresourcemode)
 
-Defined in: [offline/sync/types.ts:79](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L79)
+Defined in: [offline/sync/types.ts:79](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L79)
 
 Fetch strategy.
 
@@ -4084,7 +4084,7 @@ Fetch strategy.
 
 > **priority**: [`SyncResourcePriority`](#syncresourcepriority)
 
-Defined in: [offline/sync/types.ts:81](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L81)
+Defined in: [offline/sync/types.ts:81](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L81)
 
 Execution priority within a trigger run.
 
@@ -4092,7 +4092,7 @@ Execution priority within a trigger run.
 
 > **scope**: `"customer"` \| `"company"` \| `"global"` \| `"profile"`
 
-Defined in: [offline/sync/types.ts:77](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L77)
+Defined in: [offline/sync/types.ts:77](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L77)
 
 Data isolation boundary — determines the scope-signature used for cache invalidation.
 
@@ -4100,7 +4100,7 @@ Data isolation boundary — determines the scope-signature used for cache invali
 
 > **storageKey**: `string`
 
-Defined in: [offline/sync/types.ts:85](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L85)
+Defined in: [offline/sync/types.ts:85](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L85)
 
 IndexedDB/localStorage key prefix used by the adapter.
 
@@ -4108,7 +4108,7 @@ IndexedDB/localStorage key prefix used by the adapter.
 
 > **triggers**: [`SyncTrigger`](#synctrigger)[]
 
-Defined in: [offline/sync/types.ts:83](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L83)
+Defined in: [offline/sync/types.ts:83](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L83)
 
 Which triggers activate this resource.
 
@@ -4116,7 +4116,7 @@ Which triggers activate this resource.
 
 > `optional` **ttlMs?**: `number` \| `null`
 
-Defined in: [offline/sync/types.ts:91](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L91)
+Defined in: [offline/sync/types.ts:91](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L91)
 
 Optional TTL in milliseconds. `null` means no expiry.
 
@@ -4124,7 +4124,7 @@ Optional TTL in milliseconds. `null` means no expiry.
 
 > **watermarkType**: `"none"` \| `"timestamp"` \| `"cursor"`
 
-Defined in: [offline/sync/types.ts:87](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L87)
+Defined in: [offline/sync/types.ts:87](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L87)
 
 Watermark type used for delta syncs. `"none"` means full-resync every time.
 
@@ -4132,7 +4132,7 @@ Watermark type used for delta syncs. `"none"` means full-resync every time.
 
 ### SyncResourceState
 
-Defined in: [offline/sync/types.ts:104](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L104)
+Defined in: [offline/sync/types.ts:104](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L104)
 
 Runtime state of a single sync resource, persisted across page loads.
 Returned by `SyncCoordinator.getResourceState()` and
@@ -4149,85 +4149,85 @@ triggers full resyncs after data-model changes.
 
 > **consecutiveFailures**: `number`
 
-Defined in: [offline/sync/types.ts:111](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L111)
+Defined in: [offline/sync/types.ts:111](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L111)
 
 ##### cooldownMs?
 
 > `optional` **cooldownMs?**: `number` \| `null`
 
-Defined in: [offline/sync/types.ts:114](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L114)
+Defined in: [offline/sync/types.ts:114](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L114)
 
 ##### lastAttemptAt?
 
 > `optional` **lastAttemptAt?**: `string` \| `null`
 
-Defined in: [offline/sync/types.ts:112](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L112)
+Defined in: [offline/sync/types.ts:112](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L112)
 
 ##### lastError
 
 > **lastError**: `string` \| `null`
 
-Defined in: [offline/sync/types.ts:110](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L110)
+Defined in: [offline/sync/types.ts:110](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L110)
 
 ##### lastSuccessHash
 
 > **lastSuccessHash**: `string` \| `null`
 
-Defined in: [offline/sync/types.ts:109](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L109)
+Defined in: [offline/sync/types.ts:109](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L109)
 
 ##### lastSyncedAt
 
 > **lastSyncedAt**: `string` \| `null`
 
-Defined in: [offline/sync/types.ts:107](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L107)
+Defined in: [offline/sync/types.ts:107](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L107)
 
 ##### lastTrigger?
 
 > `optional` **lastTrigger?**: [`SyncTrigger`](#synctrigger) \| `null`
 
-Defined in: [offline/sync/types.ts:115](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L115)
+Defined in: [offline/sync/types.ts:115](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L115)
 
 ##### nextRetryAt?
 
 > `optional` **nextRetryAt?**: `string` \| `null`
 
-Defined in: [offline/sync/types.ts:113](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L113)
+Defined in: [offline/sync/types.ts:113](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L113)
 
 ##### resourceId
 
 > **resourceId**: [`SyncResourceId`](#syncresourceid)
 
-Defined in: [offline/sync/types.ts:105](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L105)
+Defined in: [offline/sync/types.ts:105](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L105)
 
 ##### schemaVersion
 
 > **schemaVersion**: `string` \| `null`
 
-Defined in: [offline/sync/types.ts:117](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L117)
+Defined in: [offline/sync/types.ts:117](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L117)
 
 ##### scopeSignature
 
 > **scopeSignature**: `string` \| `null`
 
-Defined in: [offline/sync/types.ts:116](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L116)
+Defined in: [offline/sync/types.ts:116](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L116)
 
 ##### status
 
 > **status**: [`SyncLifecycleState`](#synclifecyclestate)
 
-Defined in: [offline/sync/types.ts:106](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L106)
+Defined in: [offline/sync/types.ts:106](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L106)
 
 ##### watermark
 
 > **watermark**: `string` \| `null`
 
-Defined in: [offline/sync/types.ts:108](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L108)
+Defined in: [offline/sync/types.ts:108](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L108)
 
 ***
 
 ### SyncTriggerResourceSummary
 
-Defined in: [offline/sync/types.ts:120](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L120)
+Defined in: [offline/sync/types.ts:120](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L120)
 
 #### Properties
 
@@ -4235,37 +4235,37 @@ Defined in: [offline/sync/types.ts:120](https://github.com/idibek-alimov/posawes
 
 > **error**: `string` \| `null`
 
-Defined in: [offline/sync/types.ts:125](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L125)
+Defined in: [offline/sync/types.ts:125](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L125)
 
 ##### priority
 
 > **priority**: [`SyncResourcePriority`](#syncresourcepriority)
 
-Defined in: [offline/sync/types.ts:122](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L122)
+Defined in: [offline/sync/types.ts:122](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L122)
 
 ##### resourceId
 
 > **resourceId**: [`SyncResourceId`](#syncresourceid)
 
-Defined in: [offline/sync/types.ts:121](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L121)
+Defined in: [offline/sync/types.ts:121](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L121)
 
 ##### skipped
 
 > **skipped**: `boolean`
 
-Defined in: [offline/sync/types.ts:124](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L124)
+Defined in: [offline/sync/types.ts:124](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L124)
 
 ##### status
 
 > **status**: [`SyncLifecycleState`](#synclifecyclestate)
 
-Defined in: [offline/sync/types.ts:123](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L123)
+Defined in: [offline/sync/types.ts:123](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L123)
 
 ***
 
 ### SyncTriggerRunSummary
 
-Defined in: [offline/sync/types.ts:128](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L128)
+Defined in: [offline/sync/types.ts:128](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L128)
 
 #### Properties
 
@@ -4273,13 +4273,13 @@ Defined in: [offline/sync/types.ts:128](https://github.com/idibek-alimov/posawes
 
 > **bootCriticalFailures**: `number`
 
-Defined in: [offline/sync/types.ts:136](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L136)
+Defined in: [offline/sync/types.ts:136](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L136)
 
 ##### errors
 
 > **errors**: `object`[]
 
-Defined in: [offline/sync/types.ts:137](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L137)
+Defined in: [offline/sync/types.ts:137](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L137)
 
 ###### message
 
@@ -4297,49 +4297,49 @@ Defined in: [offline/sync/types.ts:137](https://github.com/idibek-alimov/posawes
 
 > **failed**: `number`
 
-Defined in: [offline/sync/types.ts:134](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L134)
+Defined in: [offline/sync/types.ts:134](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L134)
 
 ##### finishedAt
 
 > **finishedAt**: `string`
 
-Defined in: [offline/sync/types.ts:131](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L131)
+Defined in: [offline/sync/types.ts:131](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L131)
 
 ##### resources
 
 > **resources**: [`SyncTriggerResourceSummary`](#synctriggerresourcesummary)[]
 
-Defined in: [offline/sync/types.ts:142](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L142)
+Defined in: [offline/sync/types.ts:142](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L142)
 
 ##### resourcesTotal
 
 > **resourcesTotal**: `number`
 
-Defined in: [offline/sync/types.ts:132](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L132)
+Defined in: [offline/sync/types.ts:132](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L132)
 
 ##### skipped
 
 > **skipped**: `number`
 
-Defined in: [offline/sync/types.ts:135](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L135)
+Defined in: [offline/sync/types.ts:135](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L135)
 
 ##### startedAt
 
 > **startedAt**: `string`
 
-Defined in: [offline/sync/types.ts:130](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L130)
+Defined in: [offline/sync/types.ts:130](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L130)
 
 ##### succeeded
 
 > **succeeded**: `number`
 
-Defined in: [offline/sync/types.ts:133](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L133)
+Defined in: [offline/sync/types.ts:133](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L133)
 
 ##### trigger
 
 > **trigger**: [`SyncTrigger`](#synctrigger)
 
-Defined in: [offline/sync/types.ts:129](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L129)
+Defined in: [offline/sync/types.ts:129](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L129)
 
 ## Type Aliases
 
@@ -4347,7 +4347,7 @@ Defined in: [offline/sync/types.ts:129](https://github.com/idibek-alimov/posawes
 
 > **InvoiceOutboxMode** = `"off"` \| `"dual_write"` \| `"coordinator"`
 
-Defined in: [offline/invoiceOutbox.ts:12](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L12)
+Defined in: [offline/invoiceOutbox.ts:12](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L12)
 
 ***
 
@@ -4355,7 +4355,7 @@ Defined in: [offline/invoiceOutbox.ts:12](https://github.com/idibek-alimov/posaw
 
 > **InvoiceOutboxStatus** = `"pending"` \| `"syncing"` \| `"retrying"` \| `"acknowledged"` \| `"dead_letter"`
 
-Defined in: [offline/invoiceOutbox.ts:13](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/invoiceOutbox.ts#L13)
+Defined in: [offline/invoiceOutbox.ts:13](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/invoiceOutbox.ts#L13)
 
 ***
 
@@ -4363,7 +4363,7 @@ Defined in: [offline/invoiceOutbox.ts:13](https://github.com/idibek-alimov/posaw
 
 > **OfflineEntityType** = `"invoice"` \| `"customer"` \| `"payment"` \| `"cash_movement"`
 
-Defined in: [offline/writeQueue.ts:9](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L9)
+Defined in: [offline/writeQueue.ts:9](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L9)
 
 ***
 
@@ -4371,7 +4371,7 @@ Defined in: [offline/writeQueue.ts:9](https://github.com/idibek-alimov/posawesom
 
 > **OfflinePruneResult** = `object`
 
-Defined in: [offline/db.ts:1213](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1213)
+Defined in: [offline/db.ts:1213](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1213)
 
 #### Properties
 
@@ -4379,31 +4379,31 @@ Defined in: [offline/db.ts:1213](https://github.com/idibek-alimov/posawesome/blo
 
 > **invoiceOutbox**: `number`
 
-Defined in: [offline/db.ts:1214](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1214)
+Defined in: [offline/db.ts:1214](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1214)
 
 ##### localTelemetry
 
 > **localTelemetry**: `number`
 
-Defined in: [offline/db.ts:1218](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1218)
+Defined in: [offline/db.ts:1218](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1218)
 
 ##### syncState
 
 > **syncState**: `number`
 
-Defined in: [offline/db.ts:1216](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1216)
+Defined in: [offline/db.ts:1216](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1216)
 
 ##### tombstones
 
 > **tombstones**: `number`
 
-Defined in: [offline/db.ts:1217](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1217)
+Defined in: [offline/db.ts:1217](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1217)
 
 ##### writeQueue
 
 > **writeQueue**: `number`
 
-Defined in: [offline/db.ts:1215](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L1215)
+Defined in: [offline/db.ts:1215](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L1215)
 
 ***
 
@@ -4411,7 +4411,7 @@ Defined in: [offline/db.ts:1215](https://github.com/idibek-alimov/posawesome/blo
 
 > **OfflineQueueStatus** = `"pending"` \| `"syncing"` \| `"failed"` \| `"dead_letter"` \| `"synced"`
 
-Defined in: [offline/writeQueue.ts:15](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/writeQueue.ts#L15)
+Defined in: [offline/writeQueue.ts:15](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/writeQueue.ts#L15)
 
 ***
 
@@ -4419,7 +4419,7 @@ Defined in: [offline/writeQueue.ts:15](https://github.com/idibek-alimov/posaweso
 
 > **SyncLifecycleState** = `"idle"` \| `"syncing"` \| `"fresh"` \| `"stale"` \| `"error"` \| `"limited"`
 
-Defined in: [offline/sync/types.ts:61](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L61)
+Defined in: [offline/sync/types.ts:61](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L61)
 
 Per-resource lifecycle state exposed to the UI:
 - `"idle"` — not yet synced in this session.
@@ -4435,7 +4435,7 @@ Per-resource lifecycle state exposed to the UI:
 
 > **SyncResourceId** = `"bootstrap_config"` \| `"price_list_meta"` \| `"currency_matrix"` \| `"payment_method_currencies"` \| `"item_groups"` \| `"offers"` \| `"items"` \| `"item_prices"` \| `"pricing_rules"` \| `"stock"` \| `"customers"` \| `"invoice_outbox"` \| `"customer_addresses"` \| `"delivery_charges"`
 
-Defined in: [offline/sync/types.ts:5](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L5)
+Defined in: [offline/sync/types.ts:5](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L5)
 
 All registered offline-sync resource identifiers.
 Each ID maps 1-to-1 with a [SyncResourceDefinition](#syncresourcedefinition) in the resource registry.
@@ -4446,7 +4446,7 @@ Each ID maps 1-to-1 with a [SyncResourceDefinition](#syncresourcedefinition) in 
 
 > **SyncResourceMode** = `"delta"` \| `"scoped"` \| `"on_demand"`
 
-Defined in: [offline/sync/types.ts:27](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L27)
+Defined in: [offline/sync/types.ts:27](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L27)
 
 How a resource is synchronised from the server:
 - `"delta"` — fetch only records changed since the last watermark.
@@ -4459,7 +4459,7 @@ How a resource is synchronised from the server:
 
 > **SyncResourcePriority** = `"boot_critical"` \| `"warm"` \| `"lazy"`
 
-Defined in: [offline/sync/types.ts:35](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L35)
+Defined in: [offline/sync/types.ts:35](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L35)
 
 Controls the order in which resources are processed within a single trigger run:
 - `"boot_critical"` — must succeed before the POS is usable offline.
@@ -4472,7 +4472,7 @@ Controls the order in which resources are processed within a single trigger run:
 
 > **SyncTrigger** = `"boot"` \| `"online_resume"` \| `"timer"` \| `"profile_change"` \| `"user_action"`
 
-Defined in: [offline/sync/types.ts:45](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/sync/types.ts#L45)
+Defined in: [offline/sync/types.ts:45](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/sync/types.ts#L45)
 
 Events that can kick off a sync run:
 - `"boot"` — app startup.
@@ -4487,7 +4487,7 @@ Events that can kick off a sync run:
 
 > `const` **db**: `any`
 
-Defined in: [offline/db.ts:51](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L51)
+Defined in: [offline/db.ts:51](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L51)
 
 ***
 
@@ -4495,7 +4495,7 @@ Defined in: [offline/db.ts:51](https://github.com/idibek-alimov/posawesome/blob/
 
 > `const` **DERIVED\_OFFLINE\_CACHE\_KEYS**: readonly `string`[]
 
-Defined in: [offline/db.ts:199](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L199)
+Defined in: [offline/db.ts:199](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L199)
 
 ***
 
@@ -4503,7 +4503,7 @@ Defined in: [offline/db.ts:199](https://github.com/idibek-alimov/posawesome/blob
 
 > `const` **initPromise**: `Promise`\<`void`\>
 
-Defined in: [offline/db.ts:680](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L680)
+Defined in: [offline/db.ts:680](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L680)
 
 ***
 
@@ -4511,7 +4511,7 @@ Defined in: [offline/db.ts:680](https://github.com/idibek-alimov/posawesome/blob
 
 > `const` **KEY\_TABLE\_MAP**: `Record`\<`string`, `string`\>
 
-Defined in: [offline/db.ts:111](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L111)
+Defined in: [offline/db.ts:111](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L111)
 
 ***
 
@@ -4519,7 +4519,7 @@ Defined in: [offline/db.ts:111](https://github.com/idibek-alimov/posawesome/blob
 
 > `const` **memory**: `AnyRecord`
 
-Defined in: [offline/db.ts:397](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L397)
+Defined in: [offline/db.ts:397](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L397)
 
 ***
 
@@ -4527,7 +4527,7 @@ Defined in: [offline/db.ts:397](https://github.com/idibek-alimov/posawesome/blob
 
 > `const` **memoryInitPromise**: `Promise`\<`void`\> = `initPromise`
 
-Defined in: [offline/index.ts:49](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/index.ts#L49)
+Defined in: [offline/index.ts:49](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/index.ts#L49)
 
 ***
 
@@ -4535,7 +4535,7 @@ Defined in: [offline/index.ts:49](https://github.com/idibek-alimov/posawesome/bl
 
 > `const` **PENDING\_OFFLINE\_QUEUE\_KEYS**: readonly `string`[]
 
-Defined in: [offline/db.ts:192](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L192)
+Defined in: [offline/db.ts:192](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L192)
 
 ***
 
@@ -4543,7 +4543,7 @@ Defined in: [offline/db.ts:192](https://github.com/idibek-alimov/posawesome/blob
 
 > `const` **PERSIST\_WORKER\_READY\_TIMEOUT\_MS**: `30000` = `30_000`
 
-Defined in: [offline/db.ts:517](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L517)
+Defined in: [offline/db.ts:517](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L517)
 
 ***
 
@@ -4551,7 +4551,7 @@ Defined in: [offline/db.ts:517](https://github.com/idibek-alimov/posawesome/blob
 
 > `const` **PERSIST\_WORKER\_TIMEOUT\_MS**: `10000` = `10_000`
 
-Defined in: [offline/db.ts:516](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L516)
+Defined in: [offline/db.ts:516](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L516)
 
 ***
 
@@ -4559,7 +4559,7 @@ Defined in: [offline/db.ts:516](https://github.com/idibek-alimov/posawesome/blob
 
 > `const` **setTaxTemplate**: (`name`, `doc`) => `void` = `saveTaxTemplate`
 
-Defined in: [offline/cache.ts:1486](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/cache.ts#L1486)
+Defined in: [offline/cache.ts:1486](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/cache.ts#L1486)
 
 #### Parameters
 
@@ -4581,7 +4581,7 @@ Defined in: [offline/cache.ts:1486](https://github.com/idibek-alimov/posawesome/
 
 > `const` **STARTUP\_MEMORY\_KEYS**: readonly `string`[]
 
-Defined in: [offline/db.ts:173](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L173)
+Defined in: [offline/db.ts:173](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L173)
 
 ***
 
@@ -4589,4 +4589,4 @@ Defined in: [offline/db.ts:173](https://github.com/idibek-alimov/posawesome/blob
 
 > `const` **startupInitPromise**: `Promise`\<`void`\>
 
-Defined in: [offline/db.ts:666](https://github.com/idibek-alimov/posawesome/blob/a49d27a6a5bb066be84bbcbd7246f1493447586a/frontend/src/offline/db.ts#L666)
+Defined in: [offline/db.ts:666](https://github.com/idibek-alimov/posawesome/blob/15160aaa803a77064640008c4b9e1436d0c875b0/frontend/src/offline/db.ts#L666)
