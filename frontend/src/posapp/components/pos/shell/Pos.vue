@@ -17,6 +17,24 @@
 			@close="closeOpeningDialog"
 			@register="handleRegisterPosData"
 		></OpeningDialog>
+
+		<v-chip
+			v-if="managerUnlocked"
+			color="success"
+			variant="flat"
+			size="small"
+			class="manager-floating-badge elevation-4"
+		>
+			<v-icon start icon="mdi-shield-check" />
+			{{ __("Админ: {0} ({1}с)", [managerName, managerCountdown]) }}
+		</v-chip>
+
+		<ManagerBadgeDialog
+			:model-value="badgeDialogOpen"
+			@verified="verifyBadge"
+			@cancel="badgeDialogOpen = false"
+		/>
+
 		<v-dialog
 			v-if="usePaymentDialog"
 			v-model="paymentDialogOpen"
@@ -297,9 +315,11 @@ import NewAddress from "../customer/NewAddress.vue";
 import Variants from "../items/Variants.vue";
 import Returns from "../flows/Returns.vue";
 import MpesaPayments from "../payments/Mpesa-Payments.vue";
+import ManagerBadgeDialog from "../dialogs/ManagerBadgeDialog.vue";
 import { inject, ref, onMounted, onBeforeUnmount, computed, watch, nextTick } from "vue";
 import { usePosShift } from "../../../composables/pos/shared/usePosShift";
 import { useOffers } from "../../../composables/pos/shared/useOffers";
+import { useManagerAuthorization } from "../../../composables/pos/invoice/useManagerAuthorization";
 // Import the cache cleanup function
 import { clearExpiredCustomerBalances } from "../../../../offline/index";
 import { useResponsive } from "../../../composables/core/useResponsive";
@@ -332,6 +352,13 @@ export default {
 		const invoiceStore = useInvoiceStore();
 		const toastStore = useToastStore();
 		const __ = window.__;
+		const {
+			managerUnlocked,
+			managerName,
+			managerCountdown,
+			badgeDialogOpen,
+			verifyBadge,
+		} = useManagerAuthorization();
 		const { activeView, posProfile, paymentDialogOpen, stockSettings } = storeToRefs(uiStore);
 		const {
 			invoiceDoc,
@@ -900,6 +927,11 @@ export default {
 			counterItemsSelector,
 			eventBus,
 			dialog,
+			managerUnlocked,
+			managerName,
+			managerCountdown,
+			badgeDialogOpen,
+			verifyBadge,
 		};
 	},
 	data: function () {
@@ -922,6 +954,7 @@ export default {
 		Variants,
 		MpesaPayments,
 		SalesOrders,
+		ManagerBadgeDialog,
 	},
 
 	methods: {
@@ -1316,5 +1349,14 @@ export default {
 		min-height: 52px;
 		font-size: 0.65rem;
 	}
+}
+
+.manager-floating-badge {
+	position: fixed;
+	top: 12px;
+	right: 180px;
+	z-index: 1000;
+	font-weight: 700;
+	box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
 }
 </style>

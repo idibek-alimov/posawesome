@@ -19,6 +19,7 @@ import {
 	finishStartupPhase,
 	startStartupPhase,
 } from "../../../../utils/startupTrace";
+import { useFiscalPrinter } from "../payments/useFiscalPrinter";
 
 declare const __BUILD_VERSION__: string;
 declare const frappe: any;
@@ -246,6 +247,20 @@ export function usePosShift(openDialog?: () => void) {
 
 	function submit_closing_pos(data: any) {
 		console.log("Submitting closing shift", data);
+
+		if (data?.print_z_report) {
+			const fiscal = useFiscalPrinter();
+			const cashierName = frappe.session?.user_fullname || frappe.session?.user || "Кассир";
+			fiscal.printZReport(cashierName).then((printed) => {
+				if (printed) {
+					toastStore.show({
+						title: "🧾 Фискальный Z-отчет напечатан на TP809",
+						color: "success",
+					});
+				}
+			});
+		}
+
 		frappe
 			.call(
 				"posawesome.posawesome.doctype.pos_closing_shift.pos_closing_shift.submit_closing_shift",
@@ -256,6 +271,20 @@ export function usePosShift(openDialog?: () => void) {
 			.then((r: any) => {
 				console.log("Submit result", r);
 				if (r.message) {
+					const closingShiftName = r.message?.name || (typeof r.message === "string" ? r.message : "");
+					if (data?.transfer_to_safe && closingShiftName) {
+						frappe.call("posawesome.posawesome.api.fiscal.transfer_shift_cash_to_safe", {
+							pos_closing_shift_name: closingShiftName,
+						}).then((transferRes: any) => {
+							if (transferRes?.message?.message) {
+								toastStore.show({
+									title: transferRes.message.message,
+									color: transferRes.message.success ? "success" : "warning",
+								});
+							}
+						});
+					}
+
 					pos_profile.value = null;
 					pos_opening_shift.value = null;
 					uiStore.posOpeningShift = null;

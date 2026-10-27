@@ -43,7 +43,7 @@
 						hide-details
 						:prefix="currencySymbol(pos_profile.currency)"
 						:disabled="
-							!pos_profile.posa_allow_user_to_edit_additional_discount ||
+							(!pos_profile.posa_allow_user_to_edit_additional_discount && !managerUnlocked) ||
 							!!discount_percentage_offer_name
 						"
 					/>
@@ -68,7 +68,7 @@
 						density="compact"
 						hide-details
 						:disabled="
-							!pos_profile.posa_allow_user_to_edit_additional_discount ||
+							(!pos_profile.posa_allow_user_to_edit_additional_discount && !managerUnlocked) ||
 							!!discount_percentage_offer_name
 						"
 					/>
@@ -165,7 +165,7 @@
 							color="warning"
 							:prefix="currencySymbol(pos_profile.currency)"
 							:disabled="
-								!pos_profile.posa_allow_user_to_edit_additional_discount ||
+								(!pos_profile.posa_allow_user_to_edit_additional_discount && !managerUnlocked) ||
 								!!discount_percentage_offer_name
 							"
 							class="summary-field summary-field--dock"
@@ -193,7 +193,7 @@
 							density="compact"
 							color="warning"
 							:disabled="
-								!pos_profile.posa_allow_user_to_edit_additional_discount ||
+								(!pos_profile.posa_allow_user_to_edit_additional_discount && !managerUnlocked) ||
 								!!discount_percentage_offer_name
 							"
 							class="summary-field summary-field--dock"
@@ -320,10 +320,13 @@ import {
 import InvoiceActionButtons from "./InvoiceActionButtons.vue";
 import ParkedOrdersList from "./ParkedOrdersList.vue";
 import DocumentSourceSelector from "../shared/DocumentSourceSelector.vue";
+import { useManagerAuthorization } from "../../../composables/pos/invoice/useManagerAuthorization";
 
 defineOptions({
 	name: "InvoiceSummary",
 });
+
+const { managerUnlocked, requireManagerForDiscount } = useManagerAuthorization();
 
 const props = defineProps({
 	presentation: {
@@ -497,7 +500,12 @@ function handleAdditionalDiscountUpdate(value) {
 	emit("update:additional_discount", normalizeAdditionalDiscountInput(value));
 }
 
-function handleAdditionalDiscountFocus() {
+function handleAdditionalDiscountFocus(event) {
+	if (!props.pos_profile?.posa_allow_user_to_edit_additional_discount && !managerUnlocked.value) {
+		requireManagerForDiscount();
+		event?.target?.blur?.();
+		return;
+	}
 	isEditingAdditionalDiscount.value = true;
 }
 
@@ -509,7 +517,12 @@ function handleAdditionalDiscountPercentageUpdate(value) {
 	emit("update:additional_discount_percentage", value);
 }
 
-function handleAdditionalDiscountPercentageFocus() {
+function handleAdditionalDiscountPercentageFocus(event) {
+	if (!props.pos_profile?.posa_allow_user_to_edit_additional_discount && !managerUnlocked.value) {
+		requireManagerForDiscount();
+		event?.target?.blur?.();
+		return;
+	}
 	isEditingAdditionalDiscountPercentage.value = true;
 }
 

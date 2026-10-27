@@ -293,6 +293,14 @@
 			@approve="approveBelowCostOverride"
 			@cancel="cancelBelowCostOverride"
 		/>
+		<FiscalOfflineDialog
+			:model-value="fiscalFallbackOpen"
+			:error-message="fiscalError"
+			:loading="fiscalLoading"
+			@retry="handleFiscalRetry"
+			@skip-fiscal="handleFiscalSkip"
+			@cancel="fiscalFallbackOpen = false"
+		/>
 	</div>
 </template>
 
@@ -316,6 +324,7 @@ import { useRedemptionLogic } from "../../composables/pos/payments/useRedemption
 import { usePaymentPrinting } from "../../composables/pos/payments/usePaymentPrinting";
 import { usePaymentMethods } from "../../composables/pos/payments/usePaymentMethods";
 import { useInvoiceDetails } from "../../composables/pos/invoice/useInvoiceDetails";
+import { useFiscalPrinter } from "../../composables/pos/payments/useFiscalPrinter";
 import { useFormat } from "../../format";
 import {
 	isOffline,
@@ -325,6 +334,7 @@ import {
 } from "../../../offline/index";
 import GiftCardDialog from "./wallet/GiftCardDialog.vue";
 import BelowCostOverrideDialog from "./payments/BelowCostOverrideDialog.vue";
+import FiscalOfflineDialog from "./dialogs/FiscalOfflineDialog.vue";
 import {
 	applyPreferredPaymentAmount,
 	initializePaymentLinesForDialog,
@@ -1707,6 +1717,41 @@ const scheduleBackgroundStatusCheck = ({
 	}, 10000);
 };
 
+// Fiscal printer integration
+const {
+	fiscalLoading,
+	fiscalError,
+	fiscalFallbackOpen,
+	printFiscalReceipt,
+	recordNonFiscal,
+} = useFiscalPrinter();
+
+const lastFiscalInvoiceDoc = ref(null);
+
+const handleFiscalRetry = async () => {
+	if (lastFiscalInvoiceDoc.value) {
+		const res = await printFiscalReceipt(lastFiscalInvoiceDoc.value);
+		if (res.success) {
+			fiscalFallbackOpen.value = false;
+			toastStore.show({
+				title: `🧾 ${__("Чек зарегистрирован в ОФД (ФД № {0})", [res.fdNumber])}`,
+				color: "success",
+			});
+		}
+	}
+};
+
+const handleFiscalSkip = async () => {
+	if (lastFiscalInvoiceDoc.value) {
+		await recordNonFiscal(lastFiscalInvoiceDoc.value, "Пробито без чека (принтер недоступен)");
+	}
+	fiscalFallbackOpen.value = false;
+	toastStore.show({
+		title: __("⚡ Продажа оформлена без фискального чека"),
+		color: "info",
+	});
+};
+
 // Submission Wrapper
 const submit = async (_event, payment_received = false, print = false) => {
 	await submitInvoiceWrapper(print, undefined, {
@@ -1724,27 +1769,34 @@ const submitInvoiceWrapper = async (print, callbackOverrides = {}, options = {})
 	try {
 		await validateSubmission(options.paymentReceived || false);
 		await submitInvoice(print, {
-			onPrint: (doc, printOptions = {}) => {
+			onPrint: async (doc, printOptions = {}) => {
 				if (print) {
-					if (printOptions.waitForPostSubmitPayments || printOptions.waitForInvoiceProcessing) {
-						void runDeferredPrintWorkflow({
-							name: printOptions.name || doc?.name,
-							doctype: printOptions.doctype,
-							waitForPostSubmitPayments: Boolean(printOptions.waitForPostSubmitPayments),
-							waitForInvoiceProcessing: Boolean(printOptions.waitForInvoiceProcessing),
-						});
-					} else if (isOffline()) {
-						printOfflineInvoice(doc);
-					} else {
-						loadPrintPage({
-							doc,
-							doctype: printOptions.doctype,
-							name: printOptions.name,
-						});
+					const submittedDoc = {
+						...(doc || {}),
+						name: printOptions.name || doc?.name,
+						doctype: printOptions.doctype || doc?.doctype,
+					};
+					try {
+						const fiscalRes = await printFiscalReceipt(submittedDoc);
+						if (fiscalRes.success) {
+							toastStore.show({
+								title: `🧾 ${__("Чек зарегистрирован в ОФД (ФД № {0})", [fiscalRes.fdNumber])}`,
+								color: "success",
+							});
+						} else {
+							lastFiscalInvoiceDoc.value = submittedDoc;
+							fiscalFallbackOpen.value = true;
+						}
+					} catch (e) {
+						lastFiscalInvoiceDoc.value = submittedDoc;
+						fiscalFallbackOpen.value = true;
 					}
 				}
 			},
 			onSuccess: () => {
+				if (!print && invoice_doc.value?.name) {
+					recordNonFiscal(invoice_doc.value, "Обычная продажа без чека");
+				}
 				customer_credit_dict.value = [];
 				redeem_customer_credit.value = false;
 				is_cashback.value = true;
@@ -2013,6 +2065,7 @@ watch(redeemed_customer_credit, () => {
 
 watch(sales_person, (newVal) => {
 	if (!invoice_doc.value) return;
+	invoice_doc.value.custom_sales_person = newVal || "";
 	if (newVal) {
 		invoice_doc.value.sales_team = [
 			{

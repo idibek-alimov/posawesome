@@ -44,6 +44,30 @@
 							/>
 						</v-col>
 					</v-row>
+					<v-row class="mt-2">
+						<v-col cols="12" class="pa-1">
+							<v-card variant="flat" class="pa-4 rounded-lg bg-grey-lighten-4 border">
+								<div class="text-subtitle-2 font-weight-bold text-grey-darken-3 mb-2">
+									{{ __("Автоматические действия при закрытии:") }}
+								</div>
+								<v-checkbox
+									v-model="printZReportOption"
+									color="primary"
+									hide-details
+									density="compact"
+									class="mb-1"
+									:label="__('Напечатать фискальный Z-отчет на TP809 (ОФД)')"
+								/>
+								<v-checkbox
+									v-model="autoTransferToSafeOption"
+									color="success"
+									hide-details
+									density="compact"
+									:label="__('Перевести остаток наличных в «Сейф магазина» (Инкассация в Money Hub)')"
+								/>
+							</v-card>
+						</v-col>
+					</v-row>
 				</v-container>
 			</v-card-text>
 
@@ -62,7 +86,7 @@
 				</v-btn>
 				<v-btn
 					theme="dark"
-					@click="submitDialog"
+					@click="handleSubmit"
 					class="pos-action-btn submit-action-btn"
 					size="large"
 					elevation="2"
@@ -215,6 +239,16 @@ export default {
 			{ deep: true, immediate: true },
 		);
 
+		const printZReportOption = ref(true);
+		const autoTransferToSafeOption = ref(true);
+
+		const handleSubmit = () => {
+			submitDialog({
+				print_z_report: printZReportOption.value,
+				transfer_to_safe: autoTransferToSafeOption.value,
+			});
+		};
+
 		return {
 			uiStore,
 			eventBus,
@@ -226,6 +260,9 @@ export default {
 			closeDialog,
 			fetchOverview,
 			submitDialog,
+			handleSubmit,
+			printZReportOption,
+			autoTransferToSafeOption,
 			...summary,
 			// Expose formatters used in template
 			formatCurrency,

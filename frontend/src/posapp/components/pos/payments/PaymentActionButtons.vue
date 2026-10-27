@@ -8,7 +8,7 @@
 					size="large"
 					color="primary"
 					variant="flat"
-					class="payment-submit-btn payment-footer-btn"
+					class="payment-submit-btn payment-footer-btn font-weight-bold"
 					data-pos-keyboard-target="payment-submit"
 					data-testid="payment-submit"
 					:aria-keyshortcuts="showKeyboardShortcuts ? 'Control+Enter Meta+Enter' : undefined"
@@ -17,9 +17,10 @@
 					:disabled="loading || validatePayment"
 					:class="{ 'submit-highlight': highlightSubmit }"
 				>
-					<span>{{ __("Submit") }}</span>
+					<v-icon start icon="mdi-cart-check" class="mr-1" />
+					<span>{{ __("1. Обычная продажа") }}</span>
 					<kbd v-if="showKeyboardShortcuts" class="payment-footer-btn__shortcut">
-						Ctrl/⌘+Enter
+						Ctrl+Enter
 					</kbd>
 				</v-btn>
 			</v-col>
@@ -29,7 +30,7 @@
 					size="large"
 					color="success"
 					variant="flat"
-					class="payment-submit-print-btn payment-footer-btn"
+					class="payment-submit-print-btn payment-footer-btn font-weight-bold"
 					data-pos-keyboard-target="payment-submit-print"
 					data-testid="payment-submit-print"
 					:aria-keyshortcuts="
@@ -39,9 +40,10 @@
 					:loading="loading"
 					:disabled="loading || validatePayment"
 				>
-					<span>{{ __("Submit & Print") }}</span>
+					<v-icon start icon="mdi-receipt-text-check" class="mr-1" />
+					<span>{{ __("2. Продажа с чеком (Фискальная)") }}</span>
 					<kbd v-if="showKeyboardShortcuts" class="payment-footer-btn__shortcut">
-						Ctrl/⌘+Shift+Enter
+						Ctrl+Shift+Enter
 					</kbd>
 				</v-btn>
 			</v-col>
@@ -56,7 +58,8 @@
 					data-testid="payment-cancel"
 					@click="$emit('cancel')"
 				>
-					{{ __("Cancel Payment") }}
+					<v-icon start icon="mdi-close-circle-outline" class="mr-1" />
+					{{ __("Отмена оплаты") }}
 				</v-btn>
 			</v-col>
 		</v-row>

@@ -17,6 +17,7 @@ import {
 	scheduleFrame,
 } from "../../../utils/perf.js";
 import { classifyClipboardScanText } from "./scannerInput/clipboardScan";
+import { useManagerAuthorization } from "../invoice/useManagerAuthorization";
 
 declare const frappe: any;
 declare const __: (_str: string, _args?: any[]) => string;
@@ -273,6 +274,15 @@ export function useScannerInput(options: ScannerInputOptions = {}) {
 		resetKeyboardScanDetection();
 		const normalizedCode = String(scannedCode || "").trim();
 		if (!normalizedCode) return;
+
+		if (normalizedCode.toUpperCase().startsWith("MGR-")) {
+			const mgr = useManagerAuthorization();
+			if (mgr.handlePotentialManagerBarcode(normalizedCode)) {
+				if (clearSearchHandler.value) clearSearchHandler.value();
+				return;
+			}
+		}
+
 		if (
 			scanQueuedCode.value === normalizedCode ||
 			activeScanCodes.has(normalizedCode)

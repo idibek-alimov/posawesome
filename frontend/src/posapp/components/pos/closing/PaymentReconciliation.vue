@@ -35,8 +35,20 @@
 				></v-text-field>
 			</template>
 			<template v-slot:item.difference="{ item }">
-				{{ companyCurrencySymbol }}
-				{{ formatCurrency(calculateDifference(item)) }}
+				<div class="d-flex flex-column align-end">
+					<span class="font-weight-medium">
+						{{ companyCurrencySymbol }}
+						{{ formatCurrency(calculateDifference(item)) }}
+					</span>
+					<v-chip
+						size="x-small"
+						:color="getDiscrepancyLabel(item).color"
+						variant="flat"
+						class="mt-1 font-weight-bold"
+					>
+						{{ getDiscrepancyLabel(item).text }}
+					</v-chip>
+				</div>
 			</template>
 			<template v-slot:item.opening_amount="{ item }">
 				{{ companyCurrencySymbol }}
@@ -126,6 +138,22 @@ const varianceClass = (item) => {
 		return "variance-neutral";
 	}
 	return variance > 0 ? "variance-negative" : "variance-positive";
+};
+
+const getDiscrepancyLabel = (item) => {
+	const closing = Number(item?.closing_amount);
+	const expected = Number(item?.expected_amount) || 0;
+	if (item?.closing_amount === "" || item?.closing_amount === undefined || isNaN(closing)) {
+		return { text: __("Не введено"), color: "grey" };
+	}
+	const diff = closing - expected;
+	if (Math.abs(diff) < 0.001) {
+		return { text: __("В кассе сошлось (0)"), color: "success" };
+	} else if (diff > 0) {
+		return { text: `+${props.formatCurrency(diff)} ${__("Излишек")}`, color: "info" };
+	} else {
+		return { text: `${props.formatCurrency(diff)} ${__("Недостача")}`, color: "error" };
+	}
 };
 </script>
 

@@ -28,6 +28,28 @@ def validate(doc, method):
     auto_set_delivery_charges(doc)
     calc_delivery_charges(doc)
     apply_tax_inclusive(doc)
+    sync_sales_person(doc)
+
+
+def sync_sales_person(doc):
+    """Ensure custom_sales_person and sales_team are properly synchronized for commission calculation."""
+    sales_person = doc.get("custom_sales_person")
+    sales_team = doc.get("sales_team") or []
+
+    if sales_person and not sales_team:
+        doc.append("sales_team", {
+            "sales_person": sales_person,
+            "allocated_percentage": 100.0,
+            "allocated_amount": flt(doc.grand_total or doc.total),
+        })
+    elif sales_team and not sales_person:
+        doc.custom_sales_person = sales_team[0].sales_person
+
+    if sales_team and doc.grand_total:
+        for st in sales_team:
+            if not st.get("allocated_amount"):
+                st.allocated_amount = flt(doc.grand_total) * flt(st.get("allocated_percentage") or 100.0) / 100.0
+
 
 
 def before_submit(doc, method):

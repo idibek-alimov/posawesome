@@ -445,10 +445,13 @@ import {
 	getItemLossRisk,
 	resolveSaleFloorPolicy,
 } from "../../../utils/lossPrevention";
+import { useManagerAuthorization } from "../../../composables/pos/invoice/useManagerAuthorization";
 
 defineOptions({
 	name: "CartItemRow",
 });
+
+const { managerUnlocked, requireManagerForDiscount } = useManagerAuthorization();
 
 const props = defineProps({
 	item: {
@@ -652,12 +655,12 @@ const canEditUom = computed(
 );
 
 const disableRateEdit = computed(
-	() => !props.posProfile?.posa_allow_user_to_edit_rate || !!props.item.posa_is_replace,
+	() => (!props.posProfile?.posa_allow_user_to_edit_rate && !managerUnlocked.value) || !!props.item.posa_is_replace,
 );
 
 const disableDiscountEdit = computed(
 	() =>
-		!props.posProfile?.posa_allow_user_to_edit_item_discount ||
+		(!props.posProfile?.posa_allow_user_to_edit_item_discount && !managerUnlocked.value) ||
 		!!props.item.posa_is_replace ||
 		!!props.item.posa_offer_applied ||
 		!!props.item.retailmind_non_discountable,
@@ -830,7 +833,10 @@ function handleUomSelect(newUom) {
 }
 
 function openRateEdit() {
-	if (disableRateEdit.value) return;
+	if (disableRateEdit.value) {
+		requireManagerForDiscount();
+		return;
+	}
 	isEditingRate.value = true;
 	replaceRateOnNextInput.value = true;
 	editingRateValue.value = String(Number(props.item.rate ?? 0));
@@ -874,7 +880,10 @@ function handleRatePaste(event) {
 }
 
 function openDiscountPercentEdit() {
-	if (disableDiscountEdit.value) return;
+	if (disableDiscountEdit.value) {
+		requireManagerForDiscount();
+		return;
+	}
 	isEditingDiscountPercent.value = true;
 	replaceDiscountPercentOnNextInput.value = true;
 	editingDiscountPercentValue.value = String(
@@ -922,7 +931,10 @@ function handleDiscountPercentPaste(event) {
 }
 
 function openDiscountAmountEdit() {
-	if (disableDiscountEdit.value) return;
+	if (disableDiscountEdit.value) {
+		requireManagerForDiscount();
+		return;
+	}
 	isEditingDiscountAmount.value = true;
 	replaceDiscountAmountOnNextInput.value = true;
 	editingDiscountAmountValue.value = String(Number(props.item.discount_amount || 0));

@@ -265,7 +265,7 @@ export function useClosingShift(eventBus: any) {
 		}
 	};
 
-	const submitDialog = () => {
+	const submitDialog = (extraData: any = {}) => {
 		const payments =
 			dialog_data.value.payment_reconciliation ||
 			dialog_data.value.payments ||
@@ -277,7 +277,10 @@ export function useClosingShift(eventBus: any) {
 			return false;
 		}
 		if (eventBus) {
-			eventBus.emit("submit_closing_pos", dialog_data.value);
+			eventBus.emit("submit_closing_pos", {
+				...dialog_data.value,
+				...extraData,
+			});
 		}
 		closingDialog.value = false;
 		return true;
