@@ -176,7 +176,7 @@ def verify_manager_badge(badge_code):
 	# 4. Check if the user has supervisor/manager roles
 	if user:
 		roles = set(frappe.get_roles(user["name"]))
-		manager_roles = {"System Manager", "Accounts Manager", "Stock Manager", "Retail Manager", "POS Supervisor"}
+		manager_roles = {"System Manager", "Accounts Manager", "Stock Manager", "Retail Manager", "Retail Owner", "POS Supervisor"}
 		if roles.intersection(manager_roles):
 			return {
 				"valid": True,
@@ -188,7 +188,7 @@ def verify_manager_badge(badge_code):
 
 	# Also check if current session user is already System Manager or Retail Manager
 	current_roles = set(frappe.get_roles())
-	if current_roles.intersection({"System Manager", "Retail Manager", "POS Supervisor"}):
+	if current_roles.intersection({"System Manager", "Retail Manager", "Retail Owner", "POS Supervisor"}):
 		return {
 			"valid": True,
 			"manager_user": frappe.session.user,
