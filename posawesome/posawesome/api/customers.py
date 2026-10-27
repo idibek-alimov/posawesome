@@ -350,6 +350,8 @@ def get_customer_info(customer=None, company=None):
         )
         res["loyalty_points"] = lp_details.get("loyalty_points")
         res["conversion_factor"] = lp_details.get("conversion_factor")
+        res["collection_factor"] = lp_details.get("collection_factor")
+        res["loyalty_tier"] = lp_details.get("tier_name")
 
     company = cstr(company or "").strip()
     if company:

@@ -121,6 +121,14 @@
 							:item-discount-total="paymentItemDiscountTotal"
 							:currencySymbol="currencySymbol"
 							:formatCurrency="formatCurrency"
+							:customer-info="customer_info"
+							:available-points-amount="available_points_amount"
+							:loyalty-amount="Number(loyalty_amount) || 0"
+							:payable="netInvoiceSettlementAmount"
+							:discount-locked="discountLocked"
+							@update-discount="handleDiscountUpdate"
+							@update-loyalty="(v) => handleRedemptionFormattedCurrency({ field: 'loyalty_amount', value: v })"
+							@request-manager="requireManagerForDiscount()"
 						/>
 						<div class="payment-section__subsection">
 							<h3 class="payment-section__title payment-section__title--subsection">
@@ -325,6 +333,7 @@ import { usePaymentPrinting } from "../../composables/pos/payments/usePaymentPri
 import { usePaymentMethods } from "../../composables/pos/payments/usePaymentMethods";
 import { useInvoiceDetails } from "../../composables/pos/invoice/useInvoiceDetails";
 import { useFiscalPrinter } from "../../composables/pos/payments/useFiscalPrinter";
+import { useManagerAuthorization } from "../../composables/pos/invoice/useManagerAuthorization";
 import { useFormat } from "../../format";
 import {
 	isOffline,
@@ -1456,6 +1465,43 @@ const handleRedemptionFormattedCurrency = (data) => {
 	if (data.field === "redeemed_customer_credit") {
 		setFormatedCurrency(redeemed_customer_credit, "value", null, false, data.value);
 	}
+};
+
+// Additional (admin) discount entered on the checkout screen.
+const { managerUnlocked, requireManagerForDiscount } = useManagerAuthorization();
+const discountLocked = computed(
+	() => !(pos_profile.value?.posa_allow_user_to_edit_additional_discount || managerUnlocked.value),
+);
+
+const handleDiscountUpdate = ({ amount = 0, percentage = 0 } = {}) => {
+	const doc = invoice_doc.value;
+	if (!doc || doc.is_return) return;
+	if (discountLocked.value) {
+		requireManagerForDiscount();
+		return;
+	}
+	const precision = currency_precision.value;
+	const rate = flt(doc.conversion_rate) || 1;
+	const hadRounded = Boolean(doc.rounded_total);
+	const previousDiscount = Math.abs(flt(doc.discount_amount));
+	const before = flt(doc.grand_total, precision) + previousDiscount;
+
+	let discount = percentage > 0 ? (before * Math.min(percentage, 100)) / 100 : amount;
+	discount = flt(Math.min(Math.max(discount, 0), before), precision);
+
+	doc.discount_amount = discount;
+	doc.base_discount_amount = flt(discount * rate, precision);
+	doc.additional_discount_percentage = percentage > 0 ? Math.min(percentage, 100) : 0;
+	doc.grand_total = flt(before - discount, precision);
+	doc.base_grand_total = flt(doc.grand_total * rate, precision);
+	if (hadRounded) {
+		doc.rounded_total = Math.round(doc.grand_total);
+		doc.base_rounded_total = flt(doc.rounded_total * rate, precision);
+		doc.rounding_adjustment = flt(doc.rounded_total - doc.grand_total, precision);
+	}
+
+	// Re-cover the payable amount with the preferred payment line
+	rebalancePreferredPaymentCoverage();
 };
 
 const updateCreditChange = (rawValue) => {

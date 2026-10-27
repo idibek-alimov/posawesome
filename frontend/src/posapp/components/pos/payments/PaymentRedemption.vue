@@ -1,38 +1,6 @@
 <template>
 	<div v-if="invoiceDoc">
-		<!-- Loyalty Points Redemption -->
-		<v-row class="payments pa-1" v-if="hasRedeemableLoyaltyPoints && !invoiceDoc.is_return">
-			<v-col cols="7">
-				<v-text-field
-					density="compact"
-					variant="solo"
-					color="primary"
-					:label="$frappe._('Redeem Loyalty Points')"
-					class="sleek-field pos-themed-input"
-					hide-details
-					:model-value="formatCurrency(loyaltyAmount)"
-					type="text"
-					@change="handleLoyaltyChange"
-					:prefix="currencySymbol(invoiceDoc.currency)"
-				></v-text-field>
-			</v-col>
-			<v-col cols="5">
-				<v-text-field
-					density="compact"
-					variant="solo"
-					color="primary"
-					:label="
-						$frappe._('You can redeem up to') +
-						(customerInfo.loyalty_points ? ` (${customerInfo.loyalty_points} pts)` : '')
-					"
-					class="sleek-field pos-themed-input"
-					hide-details
-					:model-value="formatFloat(availablePointsAmount)"
-					:prefix="currencySymbol(invoiceDoc.currency)"
-					readonly
-				></v-text-field>
-			</v-col>
-		</v-row>
+		<!-- Loyalty points are handled in the compact InvoiceTotals summary -->
 
 		<!-- Customer Credit Redemption -->
 		<v-row
