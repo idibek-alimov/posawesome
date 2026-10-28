@@ -156,24 +156,11 @@ export const useUpdateStore = defineStore("update", {
 		reloading: false,
 	}),
 	getters: {
-		isUpdateReady(state: UpdateState): boolean {
-			return Boolean(
-				state.availableVersion &&
-				state.currentVersion &&
-				state.availableVersion !== state.currentVersion,
-			);
+		isUpdateReady(_state: UpdateState): boolean {
+			return false;
 		},
-		shouldPrompt(state: UpdateState): boolean {
-			if (!this.isUpdateReady || state.reloading) {
-				return false;
-			}
-			if (
-				state.dismissedVersion &&
-				state.availableVersion === state.dismissedVersion
-			) {
-				return false;
-			}
-			return !state.dismissedUntil || state.dismissedUntil <= Date.now();
+		shouldPrompt(_state: UpdateState): boolean {
+			return false;
 		},
 		formattedAvailableVersion(state: UpdateState): string | null {
 			return (

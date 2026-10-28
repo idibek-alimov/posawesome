@@ -361,40 +361,7 @@ def _get_current_branch(app_path: str) -> str:
 
 @frappe.whitelist()
 def get_remote_update_info() -> Dict[str, Any]:
-    data: Dict[str, Any] = {"build_version": get_build_version(), **_get_update_metadata()}
-    base = _get_git_commit_info("posawesome")
-    if base:
-        data.update(base)
-
-    try:
-        app_path = frappe.get_app_path("posawesome")
-    except Exception:
-        return data
-
-    if not app_path or not os.path.exists(app_path):
-        return data
-
-    _fetch_remote(app_path)
-    heads = _get_remote_heads(app_path)
-    data["remote_heads"] = heads
-    current_branch = _get_current_branch(app_path)
-    if current_branch:
-        data["current_branch"] = current_branch
-
-    current_hash = base.get("commit_hash") if base else None
-    if heads and current_hash and current_branch:
-        remote_head = heads.get(current_branch)
-        if remote_head and remote_head != current_hash:
-            different = {current_branch: remote_head}
-            data["remote_ahead"] = different
-            ref = f"origin/{current_branch}"
-            details = _get_commit_details(app_path, ref)
-            if details:
-                data["remote_sample_branch"] = current_branch
-                data["remote_sample"] = details
-            data["remote_commits"] = _get_commit_list(app_path, f"{current_hash}..{ref}")
-
-    return data
+    return {}
 
 
 def ensure_child_doctype(doc, table_field, child_doctype):

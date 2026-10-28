@@ -29,10 +29,6 @@ export function useUpdateChecks({
 		if (buildVersion) {
 			updateStore.setCurrentVersion(buildVersion);
 		}
-		void updateStore.checkForUpdates(true);
-		intervalHandle = window.setInterval(() => {
-			void updateStore.checkForUpdates();
-		}, intervalMs);
 	}
 
 	function stop() {
