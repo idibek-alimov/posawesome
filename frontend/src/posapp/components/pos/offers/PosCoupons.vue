@@ -180,12 +180,14 @@ export default {
 		},
 		setActiveGiftCoupons() {
 			if (!this.customer) return;
+			const company = this.pos_profile?.company || this.uiStore?.posProfile?.company;
+			if (!company) return;
 			const vm = this;
 			frappe.call({
 				method: "posawesome.posawesome.api.offers.get_active_gift_coupons",
 				args: {
 					customer: vm.customer,
-					company: vm.pos_profile.company,
+					company: company,
 				},
 				callback: function (r) {
 					if (r.message) {

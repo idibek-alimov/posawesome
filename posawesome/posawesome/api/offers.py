@@ -13,13 +13,21 @@ from posawesome.posawesome.doctype.delivery_charges.delivery_charges import (
 
 
 @frappe.whitelist()
-def get_pos_coupon(coupon, customer, company):
+def get_pos_coupon(coupon, customer=None, company=None):
+    if not company:
+        company = frappe.defaults.get_user_default("Company")
     res = check_coupon_code(coupon, customer, company)
     return res
 
 
 @frappe.whitelist()
-def get_active_gift_coupons(customer, company):
+def get_active_gift_coupons(customer=None, company=None):
+    if not customer:
+        return []
+    if not company:
+        company = frappe.defaults.get_user_default("Company")
+    if not company:
+        return []
     coupons = []
     today = getdate(nowdate())
     coupons_data = frappe.get_all(
