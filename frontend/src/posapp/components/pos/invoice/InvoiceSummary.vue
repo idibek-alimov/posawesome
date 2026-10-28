@@ -127,7 +127,6 @@
 
 				<div v-if="!useCompactSaleDock" class="summary-hero">
 					<div class="summary-hero__copy">
-						<span class="summary-hero__eyebrow">{{ __("Active sale") }}</span>
 						<strong class="summary-hero__amount">
 							{{ currencySymbol(displayCurrency) }}{{ formatCurrency(subtotal) }}
 						</strong>
@@ -848,8 +847,10 @@ defineExpose({
 }
 
 .summary-hero__amount {
-	font-size: clamp(1.2rem, 2vw, 1.8rem);
-	line-height: 1.1;
+	font-size: clamp(1.8rem, 2.6vw, 2.5rem);
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	line-height: 1.05;
 	color: var(--pos-text-primary);
 }
 

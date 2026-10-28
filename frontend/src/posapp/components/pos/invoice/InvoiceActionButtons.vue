@@ -138,159 +138,141 @@
 		</v-btn>
 	</div>
 
-	<v-row v-else dense>
-		<v-col cols="12" sm="6">
+	<div v-else class="classic-actions" data-testid="classic-actions">
+		<div class="classic-secondary-actions">
 			<v-btn
-				block
-				color="accent"
-				theme="dark"
-				prepend-icon="mdi-content-save"
-				@click="$emit('save-and-clear')"
-				class="summary-btn"
-				data-pos-keyboard-target="invoice-action"
-				data-testid="invoice-action-save-clear"
-				:loading="saveLoading"
-			>
-				{{ __("Save & Clear") }}
-			</v-btn>
-		</v-col>
-		<v-col cols="12" sm="6">
-			<v-btn
-				block
-				color="warning"
-				theme="dark"
+				variant="tonal"
+				density="compact"
 				prepend-icon="mdi-tray-full"
-				@click="$emit('load-drafts')"
-				class="white-text-btn summary-btn"
+				class="secondary-action-btn"
 				data-pos-keyboard-target="invoice-action"
 				data-testid="invoice-action-drafts"
 				:loading="loadDraftsLoading"
+				@click="$emit('load-drafts')"
 			>
 				{{ __("Drafts") }}
 			</v-btn>
-		</v-col>
-		<v-col cols="12" sm="6" v-if="pos_profile.custom_allow_select_sales_order == 1">
+
 			<v-btn
-				block
-				color="info"
-				theme="dark"
-				prepend-icon="mdi-book-search"
-				@click="$emit('select-order')"
-				class="summary-btn"
-				data-pos-keyboard-target="invoice-action"
-				data-testid="invoice-action-select-order"
-				:loading="selectOrderLoading"
-			>
-				{{ __("Select S.O") }}
-			</v-btn>
-		</v-col>
-		<v-col cols="12" sm="6">
-			<v-btn
-				block
-				color="deep-purple"
-				theme="dark"
+				variant="tonal"
+				density="compact"
 				prepend-icon="mdi-folder-search-outline"
-				@click="$emit('open-invoice-management')"
-				class="summary-btn"
+				class="secondary-action-btn"
 				data-pos-keyboard-target="invoice-action"
 				data-testid="invoice-action-management"
 				:loading="invoiceManagementLoading"
+				@click="$emit('open-invoice-management')"
 			>
-				{{ __("Invoice Mgmt") }}
+				{{ __("Invoices") }}
 			</v-btn>
-		</v-col>
-		<v-col cols="12" sm="6">
-			<v-btn
-				block
-				color="error"
-				theme="dark"
-				prepend-icon="mdi-close-circle"
-				@click="$emit('cancel-sale')"
-				class="summary-btn"
-				data-pos-keyboard-target="invoice-action"
-				data-testid="invoice-action-cancel-sale"
-				:loading="cancelLoading"
-			>
-				{{ __("Cancel Sale") }}
-			</v-btn>
-		</v-col>
 
-		<v-col cols="12" sm="6" v-if="pos_profile.posa_allow_return == 1">
 			<v-btn
-				block
-				color="secondary"
-				theme="dark"
+				v-if="pos_profile.posa_allow_return == 1"
+				variant="tonal"
+				density="compact"
 				prepend-icon="mdi-backup-restore"
-				@click="$emit('open-returns')"
-				class="summary-btn"
+				class="secondary-action-btn"
 				data-pos-keyboard-target="invoice-action"
 				data-testid="invoice-action-returns"
 				:loading="returnsLoading"
+				@click="$emit('open-returns')"
 			>
-				{{ __("Sales Return") }}
+				{{ __("Return") }}
 			</v-btn>
-		</v-col>
-		<v-col cols="12" sm="6" v-if="pos_profile.posa_allow_print_draft_invoices">
+
 			<v-btn
-				block
-				color="primary"
-				theme="dark"
-				prepend-icon="mdi-printer"
-				@click="$emit('print-draft')"
-				class="summary-btn"
+				variant="tonal"
+				density="compact"
+				color="error"
+				prepend-icon="mdi-close-circle-outline"
+				class="secondary-action-btn secondary-action-btn--cancel"
 				data-pos-keyboard-target="invoice-action"
-				data-testid="invoice-action-print-draft"
-				:loading="printLoading"
+				data-testid="invoice-action-cancel-sale"
+				:loading="cancelLoading"
+				@click="$emit('cancel-sale')"
 			>
-				{{ __("Print Draft") }}
+				{{ __("Cancel") }}
 			</v-btn>
-		</v-col>
-		<v-col cols="12" sm="6">
-			<v-btn
-				block
-				color="teal"
-				theme="dark"
-				prepend-icon="mdi-tag-refresh-outline"
-				@click="$emit('refresh-prices')"
-				class="summary-btn"
-				data-pos-keyboard-target="invoice-action"
-				data-testid="invoice-action-refresh-prices"
-			>
-				{{ __("Refresh Prices") }}
-			</v-btn>
-		</v-col>
-		<v-col cols="12" sm="6" v-if="showCustomerDisplayButton">
-			<v-btn
-				block
-				color="indigo"
-				theme="dark"
-				prepend-icon="mdi-monitor"
-				@click="$emit('open-customer-display')"
-				class="summary-btn"
-				data-pos-keyboard-target="invoice-action"
-				data-testid="invoice-action-customer-display"
-				:loading="customerDisplayLoading"
-			>
-				{{ __("Customer Screen") }}
-			</v-btn>
-		</v-col>
-		<v-col cols="12">
-			<v-btn
-				block
-				color="success"
-				theme="dark"
-				size="large"
-				prepend-icon="mdi-credit-card"
-				@click="$emit('show-payment')"
-				class="summary-btn pay-btn"
-				data-pos-keyboard-target="pay"
-				data-testid="invoice-action-pay"
-				:loading="paymentLoading"
-			>
-				{{ __("PAY") }}
-			</v-btn>
-		</v-col>
-	</v-row>
+
+			<v-menu location="top end">
+				<template #activator="{ props: menuProps }">
+					<v-btn
+						v-bind="menuProps"
+						variant="tonal"
+						density="compact"
+						prepend-icon="mdi-dots-horizontal"
+						class="secondary-action-btn secondary-action-btn--more"
+						data-pos-keyboard-target="invoice-action"
+						data-testid="invoice-action-more"
+					>
+						{{ __("More") }}
+					</v-btn>
+				</template>
+				<v-list density="compact" min-width="220">
+					<v-list-item
+						prepend-icon="mdi-content-save-outline"
+						data-pos-keyboard-target="invoice-action"
+						data-testid="invoice-action-save-clear"
+						:disabled="saveLoading"
+						@click="$emit('save-and-clear')"
+					>
+						<v-list-item-title>{{ __("Save & Clear") }}</v-list-item-title>
+					</v-list-item>
+					<v-list-item
+						v-if="pos_profile.custom_allow_select_sales_order == 1"
+						prepend-icon="mdi-book-search"
+						data-testid="invoice-action-select-order"
+						:disabled="selectOrderLoading"
+						@click="$emit('select-order')"
+					>
+						<v-list-item-title>{{ __("Select Sales Order") }}</v-list-item-title>
+					</v-list-item>
+					<v-list-item
+						v-if="pos_profile.posa_allow_print_draft_invoices"
+						prepend-icon="mdi-printer"
+						data-testid="invoice-action-print-draft"
+						:disabled="printLoading"
+						@click="$emit('print-draft')"
+					>
+						<v-list-item-title>{{ __("Print Draft") }}</v-list-item-title>
+					</v-list-item>
+					<v-list-item
+						prepend-icon="mdi-tag-refresh-outline"
+						data-pos-keyboard-target="invoice-action"
+						data-testid="invoice-action-refresh-prices"
+						@click="$emit('refresh-prices')"
+					>
+						<v-list-item-title>{{ __("Refresh Prices") }}</v-list-item-title>
+					</v-list-item>
+					<v-list-item
+						v-if="showCustomerDisplayButton"
+						prepend-icon="mdi-monitor"
+						data-testid="invoice-action-customer-display"
+						:disabled="customerDisplayLoading"
+						@click="$emit('open-customer-display')"
+					>
+						<v-list-item-title>{{ __("Customer Screen") }}</v-list-item-title>
+					</v-list-item>
+				</v-list>
+			</v-menu>
+		</div>
+
+		<!-- Giant Hero PAY Button -->
+		<v-btn
+			block
+			color="success"
+			theme="dark"
+			size="x-large"
+			prepend-icon="mdi-credit-card-check"
+			@click="$emit('show-payment')"
+			class="summary-btn pay-btn pay-btn--hero"
+			data-pos-keyboard-target="pay"
+			data-testid="invoice-action-pay"
+			:loading="paymentLoading"
+		>
+			<span class="pay-btn__label">{{ __("PAY") }}</span>
+		</v-btn>
+	</div>
 </template>
 
 <script setup>
@@ -410,6 +392,49 @@ const showMoreActions = computed(
 	color: var(--pos-text-primary) !important;
 }
 
+/* Classic layout styling */
+.classic-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	width: 100%;
+}
+
+.classic-secondary-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+	align-items: center;
+	justify-content: flex-end;
+}
+
+.secondary-action-btn {
+	height: 30px !important;
+	min-height: 30px !important;
+	padding: 0 9px !important;
+	font-size: 0.76rem !important;
+	font-weight: 600 !important;
+	text-transform: none !important;
+	border-radius: 6px !important;
+	border: 1px solid var(--pos-outline) !important;
+	background: var(--pos-surface-muted) !important;
+	color: var(--pos-text-secondary) !important;
+	transition: all 0.15s ease !important;
+}
+
+.secondary-action-btn:hover {
+	color: var(--pos-text-primary) !important;
+	background: rgba(var(--v-theme-primary), 0.08) !important;
+	border-color: rgba(var(--v-theme-primary), 0.3) !important;
+	transform: translateY(-1px);
+}
+
+.secondary-action-btn--cancel:hover {
+	background: rgba(var(--v-theme-error), 0.1) !important;
+	border-color: rgba(var(--v-theme-error), 0.4) !important;
+	color: rgb(var(--v-theme-error)) !important;
+}
+
 /* Enhanced button styling with better performance */
 .summary-btn {
 	transition: all 0.2s ease !important;
@@ -435,16 +460,30 @@ const showMoreActions = computed(
 
 /* Special styling for the PAY button */
 .pay-btn {
-	font-weight: 600 !important;
-	font-size: 1.1rem !important;
-	background: linear-gradient(135deg, #4caf50, #45a049) !important;
-	box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3) !important;
+	font-weight: 700 !important;
+	font-size: 1.15rem !important;
+	background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+	box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
 }
 
 .pay-btn:hover {
-	background: linear-gradient(135deg, #45a049, #3d8b40) !important;
-	box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4) !important;
+	background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+	box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45) !important;
 	transform: translateY(-2px);
+}
+
+.pay-btn--hero {
+	min-height: 54px !important;
+	height: 54px !important;
+	font-size: 1.35rem !important;
+	font-weight: 800 !important;
+	letter-spacing: 0.04em !important;
+	border-radius: 12px !important;
+}
+
+.pay-btn__label {
+	font-weight: 800;
+	letter-spacing: 0.03em;
 }
 
 /* Responsive optimizations */

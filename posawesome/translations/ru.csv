@@ -53,7 +53,7 @@ Acknowledge the error to resume scanning,"Подтвердите ошибку, �
 Acknowledge the error to resume scanning.,"Подтвердите ошибку, чтобы возобновить сканирование."
 Across,Через
 Action,Действие
-Active sale,Активная распродажа
+Active sale,Активный чек
 add,добавить
 Add items from the selector to start building this sale.,"Добавьте товары из селектора, чтобы начать создавать эту распродажу."
 Add more value to an existing gift card,Добавьте больше ценности существующей подарочной карте
@@ -1063,6 +1063,9 @@ Search invoices or customers,Поиск счетов или клиентов
 Search item,Поиск элемента
 Search item / code,Искать предмет/код
 Search items or barcode,Поиск товаров или штрих-кода
+Search saleable items,Поиск товаров
+Search, scan or browse item,Поиск или сканирование товара
+Search, scan, or browse items,Поиск или сканирование товара
 Search Mpesa Payments,Поиск платежей Mpesa
 Search return invoices or customers,Поиск счетов-фактур или клиентов
 Search supplier,Поиск поставщика

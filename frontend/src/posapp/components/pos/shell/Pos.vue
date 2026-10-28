@@ -187,7 +187,6 @@
 		<div v-if="showBottomDock" ref="mobileDock" class="mobile-pos-stack">
 			<div class="mobile-sale-dock">
 				<div class="mobile-sale-dock__copy">
-					<span class="mobile-sale-dock__eyebrow">{{ __("Active sale") }}</span>
 					<strong class="mobile-sale-dock__amount">{{ formattedCartTotal }}</strong>
 					<div class="mobile-sale-dock__meta">
 						<span>{{ cartMetaLabel }}</span>

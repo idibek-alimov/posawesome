@@ -17,7 +17,7 @@
 						:label="
 							searchCombobox
 								? __('Search saleable items')
-								: frappe._('Search, scan or browse item')
+								: __('Search, scan or browse item')
 						"
 						hide-details
 						data-pos-keyboard-target="item-search"
