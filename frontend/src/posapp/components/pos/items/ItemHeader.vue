@@ -17,7 +17,7 @@
 						:label="
 							searchCombobox
 								? __('Search saleable items')
-								: __('Search, scan or browse item')
+								: 'Поиск или сканирование товара'
 						"
 						hide-details
 						data-pos-keyboard-target="item-search"
