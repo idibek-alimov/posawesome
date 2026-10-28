@@ -10,7 +10,7 @@
 
 ### CartItem
 
-Defined in: [posapp/types/models.ts:45](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L45)
+Defined in: [posapp/types/models.ts:45](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L45)
 
 An [Item](#item) that has been added to the active invoice.
 Carries per-line pricing and discount state alongside the item's catalogue data.
@@ -31,7 +31,7 @@ ERPNext `name` field and is generated client-side.
 
 > `optional` **\_scale\_price?**: `number`
 
-Defined in: [posapp/types/models.ts:28](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L28)
+Defined in: [posapp/types/models.ts:28](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L28)
 
 ###### Inherited from
 
@@ -41,7 +41,7 @@ Defined in: [posapp/types/models.ts:28](https://github.com/idibek-alimov/posawes
 
 > `optional` **\_scale\_qty?**: `number`
 
-Defined in: [posapp/types/models.ts:27](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L27)
+Defined in: [posapp/types/models.ts:27](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L27)
 
 ###### Inherited from
 
@@ -51,7 +51,7 @@ Defined in: [posapp/types/models.ts:27](https://github.com/idibek-alimov/posawes
 
 > `optional` **actual\_qty?**: `number` \| `null`
 
-Defined in: [posapp/types/models.ts:18](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L18)
+Defined in: [posapp/types/models.ts:18](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L18)
 
 ###### Inherited from
 
@@ -61,7 +61,7 @@ Defined in: [posapp/types/models.ts:18](https://github.com/idibek-alimov/posawes
 
 > **amount**: `number`
 
-Defined in: [posapp/types/models.ts:48](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L48)
+Defined in: [posapp/types/models.ts:48](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L48)
 
 Line total = qty × rate, in the selected currency.
 
@@ -69,7 +69,7 @@ Line total = qty × rate, in the selected currency.
 
 > `optional` **batch\_no?**: `string` \| `null`
 
-Defined in: [posapp/types/models.ts:17](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L17)
+Defined in: [posapp/types/models.ts:17](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L17)
 
 ###### Inherited from
 
@@ -79,7 +79,7 @@ Defined in: [posapp/types/models.ts:17](https://github.com/idibek-alimov/posawes
 
 > `optional` **batch\_no\_data?**: `Record`\<`string`, `any`\>[]
 
-Defined in: [posapp/types/models.ts:26](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L26)
+Defined in: [posapp/types/models.ts:26](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L26)
 
 ###### Inherited from
 
@@ -89,7 +89,7 @@ Defined in: [posapp/types/models.ts:26](https://github.com/idibek-alimov/posawes
 
 > `optional` **brand?**: `string`
 
-Defined in: [posapp/types/models.ts:15](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L15)
+Defined in: [posapp/types/models.ts:15](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L15)
 
 ###### Inherited from
 
@@ -99,7 +99,7 @@ Defined in: [posapp/types/models.ts:15](https://github.com/idibek-alimov/posawes
 
 > `optional` **conversion\_factor?**: `number`
 
-Defined in: [posapp/types/models.ts:35](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L35)
+Defined in: [posapp/types/models.ts:35](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L35)
 
 ###### Inherited from
 
@@ -109,7 +109,7 @@ Defined in: [posapp/types/models.ts:35](https://github.com/idibek-alimov/posawes
 
 > `optional` **currency?**: `string`
 
-Defined in: [posapp/types/models.ts:59](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L59)
+Defined in: [posapp/types/models.ts:59](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L59)
 
 ###### Overrides
 
@@ -119,7 +119,7 @@ Defined in: [posapp/types/models.ts:59](https://github.com/idibek-alimov/posawes
 
 > `optional` **description?**: `string`
 
-Defined in: [posapp/types/models.ts:9](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L9)
+Defined in: [posapp/types/models.ts:9](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L9)
 
 ###### Inherited from
 
@@ -129,19 +129,19 @@ Defined in: [posapp/types/models.ts:9](https://github.com/idibek-alimov/posaweso
 
 > `optional` **discount\_amount?**: `number`
 
-Defined in: [posapp/types/models.ts:52](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L52)
+Defined in: [posapp/types/models.ts:52](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L52)
 
 ##### discount\_percentage?
 
 > `optional` **discount\_percentage?**: `number`
 
-Defined in: [posapp/types/models.ts:51](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L51)
+Defined in: [posapp/types/models.ts:51](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L51)
 
 ##### has\_batch\_no?
 
 > `optional` **has\_batch\_no?**: `number`
 
-Defined in: [posapp/types/models.ts:32](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L32)
+Defined in: [posapp/types/models.ts:32](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L32)
 
 1 if the item tracks batch numbers, 0 otherwise.
 
@@ -153,7 +153,7 @@ Defined in: [posapp/types/models.ts:32](https://github.com/idibek-alimov/posawes
 
 > `optional` **has\_serial\_no?**: `number`
 
-Defined in: [posapp/types/models.ts:30](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L30)
+Defined in: [posapp/types/models.ts:30](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L30)
 
 1 if the item tracks serial numbers, 0 otherwise.
 
@@ -165,7 +165,7 @@ Defined in: [posapp/types/models.ts:30](https://github.com/idibek-alimov/posawes
 
 > `optional` **image?**: `string`
 
-Defined in: [posapp/types/models.ts:13](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L13)
+Defined in: [posapp/types/models.ts:13](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L13)
 
 ###### Inherited from
 
@@ -175,7 +175,7 @@ Defined in: [posapp/types/models.ts:13](https://github.com/idibek-alimov/posawes
 
 > `optional` **is\_stock\_item?**: `number`
 
-Defined in: [posapp/types/models.ts:34](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L34)
+Defined in: [posapp/types/models.ts:34](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L34)
 
 1 for stock items, 0 for service/non-stock items.
 
@@ -187,7 +187,7 @@ Defined in: [posapp/types/models.ts:34](https://github.com/idibek-alimov/posawes
 
 > **item\_code**: `string`
 
-Defined in: [posapp/types/models.ts:7](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L7)
+Defined in: [posapp/types/models.ts:7](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L7)
 
 ###### Inherited from
 
@@ -197,7 +197,7 @@ Defined in: [posapp/types/models.ts:7](https://github.com/idibek-alimov/posaweso
 
 > `optional` **item\_group?**: `string`
 
-Defined in: [posapp/types/models.ts:14](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L14)
+Defined in: [posapp/types/models.ts:14](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L14)
 
 ###### Inherited from
 
@@ -207,7 +207,7 @@ Defined in: [posapp/types/models.ts:14](https://github.com/idibek-alimov/posawes
 
 > **item\_name**: `string`
 
-Defined in: [posapp/types/models.ts:8](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L8)
+Defined in: [posapp/types/models.ts:8](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L8)
 
 ###### Inherited from
 
@@ -217,7 +217,7 @@ Defined in: [posapp/types/models.ts:8](https://github.com/idibek-alimov/posaweso
 
 > `optional` **item\_uoms?**: `Record`\<`string`, `any`\>[]
 
-Defined in: [posapp/types/models.ts:24](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L24)
+Defined in: [posapp/types/models.ts:24](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L24)
 
 ###### Inherited from
 
@@ -227,7 +227,7 @@ Defined in: [posapp/types/models.ts:24](https://github.com/idibek-alimov/posawes
 
 > `optional` **original\_currency?**: `string`
 
-Defined in: [posapp/types/models.ts:23](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L23)
+Defined in: [posapp/types/models.ts:23](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L23)
 
 ###### Inherited from
 
@@ -237,7 +237,7 @@ Defined in: [posapp/types/models.ts:23](https://github.com/idibek-alimov/posawes
 
 > `optional` **original\_rate?**: `number`
 
-Defined in: [posapp/types/models.ts:21](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L21)
+Defined in: [posapp/types/models.ts:21](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L21)
 
 ###### Inherited from
 
@@ -247,7 +247,7 @@ Defined in: [posapp/types/models.ts:21](https://github.com/idibek-alimov/posawes
 
 > `optional` **posa\_is\_offer?**: `boolean`
 
-Defined in: [posapp/types/models.ts:56](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L56)
+Defined in: [posapp/types/models.ts:56](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L56)
 
 True when this row was added by the offers engine (free item / promo).
 
@@ -255,7 +255,7 @@ True when this row was added by the offers engine (free item / promo).
 
 > **posa\_row\_id**: `string`
 
-Defined in: [posapp/types/models.ts:54](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L54)
+Defined in: [posapp/types/models.ts:54](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L54)
 
 Client-generated stable row identifier (UUID-like).
 
@@ -263,7 +263,7 @@ Client-generated stable row identifier (UUID-like).
 
 > `optional` **price\_list\_rate?**: `number`
 
-Defined in: [posapp/types/models.ts:58](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L58)
+Defined in: [posapp/types/models.ts:58](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L58)
 
 Original price before discount.
 
@@ -275,13 +275,13 @@ Original price before discount.
 
 > **qty**: `number`
 
-Defined in: [posapp/types/models.ts:46](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L46)
+Defined in: [posapp/types/models.ts:46](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L46)
 
 ##### rate
 
 > **rate**: `number`
 
-Defined in: [posapp/types/models.ts:50](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L50)
+Defined in: [posapp/types/models.ts:50](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L50)
 
 Effective unit price after discount, in the selected currency.
 
@@ -293,7 +293,7 @@ Effective unit price after discount, in the selected currency.
 
 > `optional` **serial\_no?**: `string` \| `null`
 
-Defined in: [posapp/types/models.ts:16](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L16)
+Defined in: [posapp/types/models.ts:16](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L16)
 
 ###### Inherited from
 
@@ -303,7 +303,7 @@ Defined in: [posapp/types/models.ts:16](https://github.com/idibek-alimov/posawes
 
 > `optional` **serial\_no\_data?**: `Record`\<`string`, `any`\>[]
 
-Defined in: [posapp/types/models.ts:25](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L25)
+Defined in: [posapp/types/models.ts:25](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L25)
 
 ###### Inherited from
 
@@ -313,7 +313,7 @@ Defined in: [posapp/types/models.ts:25](https://github.com/idibek-alimov/posawes
 
 > **standard\_rate**: `number`
 
-Defined in: [posapp/types/models.ts:11](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L11)
+Defined in: [posapp/types/models.ts:11](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L11)
 
 ###### Inherited from
 
@@ -323,7 +323,7 @@ Defined in: [posapp/types/models.ts:11](https://github.com/idibek-alimov/posawes
 
 > **stock\_qty**: `number`
 
-Defined in: [posapp/types/models.ts:10](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L10)
+Defined in: [posapp/types/models.ts:10](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L10)
 
 ###### Inherited from
 
@@ -333,7 +333,7 @@ Defined in: [posapp/types/models.ts:10](https://github.com/idibek-alimov/posawes
 
 > **uom**: `string`
 
-Defined in: [posapp/types/models.ts:12](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L12)
+Defined in: [posapp/types/models.ts:12](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L12)
 
 ###### Inherited from
 
@@ -343,7 +343,7 @@ Defined in: [posapp/types/models.ts:12](https://github.com/idibek-alimov/posawes
 
 ### Customer
 
-Defined in: [posapp/types/models.ts:156](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L156)
+Defined in: [posapp/types/models.ts:156](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L156)
 
 A customer record from the offline customer cache.
 
@@ -357,61 +357,61 @@ A customer record from the offline customer cache.
 
 > **customer\_group**: `string`
 
-Defined in: [posapp/types/models.ts:159](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L159)
+Defined in: [posapp/types/models.ts:159](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L159)
 
 ##### customer\_name
 
 > **customer\_name**: `string`
 
-Defined in: [posapp/types/models.ts:158](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L158)
+Defined in: [posapp/types/models.ts:158](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L158)
 
 ##### email\_id?
 
 > `optional` **email\_id?**: `string`
 
-Defined in: [posapp/types/models.ts:161](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L161)
+Defined in: [posapp/types/models.ts:161](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L161)
 
 ##### image?
 
 > `optional` **image?**: `string`
 
-Defined in: [posapp/types/models.ts:164](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L164)
+Defined in: [posapp/types/models.ts:164](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L164)
 
 ##### mobile\_no?
 
 > `optional` **mobile\_no?**: `string`
 
-Defined in: [posapp/types/models.ts:162](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L162)
+Defined in: [posapp/types/models.ts:162](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L162)
 
 ##### name
 
 > **name**: `string`
 
-Defined in: [posapp/types/models.ts:157](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L157)
+Defined in: [posapp/types/models.ts:157](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L157)
 
 ##### primary\_address?
 
 > `optional` **primary\_address?**: `string`
 
-Defined in: [posapp/types/models.ts:165](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L165)
+Defined in: [posapp/types/models.ts:165](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L165)
 
 ##### tax\_id?
 
 > `optional` **tax\_id?**: `string`
 
-Defined in: [posapp/types/models.ts:163](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L163)
+Defined in: [posapp/types/models.ts:163](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L163)
 
 ##### territory
 
 > **territory**: `string`
 
-Defined in: [posapp/types/models.ts:160](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L160)
+Defined in: [posapp/types/models.ts:160](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L160)
 
 ***
 
 ### CustomerSummary
 
-Defined in: [posapp/types/models.ts:169](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L169)
+Defined in: [posapp/types/models.ts:169](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L169)
 
 #### Extended by
 
@@ -427,37 +427,37 @@ Defined in: [posapp/types/models.ts:169](https://github.com/idibek-alimov/posawe
 
 > **customer\_name**: `string`
 
-Defined in: [posapp/types/models.ts:171](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L171)
+Defined in: [posapp/types/models.ts:171](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L171)
 
 ##### email\_id?
 
 > `optional` **email\_id?**: `string`
 
-Defined in: [posapp/types/models.ts:172](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L172)
+Defined in: [posapp/types/models.ts:172](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L172)
 
 ##### mobile\_no?
 
 > `optional` **mobile\_no?**: `string`
 
-Defined in: [posapp/types/models.ts:173](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L173)
+Defined in: [posapp/types/models.ts:173](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L173)
 
 ##### name
 
 > **name**: `string`
 
-Defined in: [posapp/types/models.ts:170](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L170)
+Defined in: [posapp/types/models.ts:170](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L170)
 
 ##### primary\_address?
 
 > `optional` **primary\_address?**: `string`
 
-Defined in: [posapp/types/models.ts:174](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L174)
+Defined in: [posapp/types/models.ts:174](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L174)
 
 ***
 
 ### DeliveryCharge
 
-Defined in: [posapp/types/models.ts:201](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L201)
+Defined in: [posapp/types/models.ts:201](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L201)
 
 A delivery-charge option that can be selected on the invoice.
 Populated from the `posa_delivery_charges` child table on the POS Profile.
@@ -472,7 +472,7 @@ Populated from the `posa_delivery_charges` child table on the POS Profile.
 
 > **rate**: `number`
 
-Defined in: [posapp/types/models.ts:204](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L204)
+Defined in: [posapp/types/models.ts:204](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L204)
 
 Charge amount in the company currency.
 
@@ -480,13 +480,13 @@ Charge amount in the company currency.
 
 > **title**: `string`
 
-Defined in: [posapp/types/models.ts:202](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L202)
+Defined in: [posapp/types/models.ts:202](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L202)
 
 ***
 
 ### InvoiceDoc
 
-Defined in: [posapp/types/models.ts:68](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L68)
+Defined in: [posapp/types/models.ts:68](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L68)
 
 The active POS Invoice document, mirroring the ERPNext POS Invoice doctype.
 This is the root object managed by `useInvoiceStore`.
@@ -502,7 +502,7 @@ Return invoices use negative `qty` and negative totals throughout.
 
 > `optional` **additional\_discount\_percentage?**: `number`
 
-Defined in: [posapp/types/models.ts:85](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L85)
+Defined in: [posapp/types/models.ts:85](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L85)
 
 Transaction-level percentage discount (0–100).
 
@@ -510,31 +510,31 @@ Transaction-level percentage discount (0–100).
 
 > **company**: `string`
 
-Defined in: [posapp/types/models.ts:74](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L74)
+Defined in: [posapp/types/models.ts:74](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L74)
 
 ##### customer
 
 > **customer**: `string`
 
-Defined in: [posapp/types/models.ts:75](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L75)
+Defined in: [posapp/types/models.ts:75](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L75)
 
 ##### customer\_name?
 
 > `optional` **customer\_name?**: `string`
 
-Defined in: [posapp/types/models.ts:76](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L76)
+Defined in: [posapp/types/models.ts:76](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L76)
 
 ##### delivery\_charges?
 
 > `optional` **delivery\_charges?**: `number`
 
-Defined in: [posapp/types/models.ts:86](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L86)
+Defined in: [posapp/types/models.ts:86](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L86)
 
 ##### discount\_amount?
 
 > `optional` **discount\_amount?**: `number`
 
-Defined in: [posapp/types/models.ts:83](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L83)
+Defined in: [posapp/types/models.ts:83](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L83)
 
 Transaction-level fixed discount amount (selected currency).
 
@@ -542,19 +542,19 @@ Transaction-level fixed discount amount (selected currency).
 
 > `optional` **doctype?**: `string`
 
-Defined in: [posapp/types/models.ts:71](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L71)
+Defined in: [posapp/types/models.ts:71](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L71)
 
 ##### grand\_total
 
 > **grand\_total**: `number`
 
-Defined in: [posapp/types/models.ts:79](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L79)
+Defined in: [posapp/types/models.ts:79](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L79)
 
 ##### is\_return?
 
 > `optional` **is\_return?**: `number`
 
-Defined in: [posapp/types/models.ts:89](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L89)
+Defined in: [posapp/types/models.ts:89](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L89)
 
 1 when this is a return/credit-note invoice.
 
@@ -562,13 +562,13 @@ Defined in: [posapp/types/models.ts:89](https://github.com/idibek-alimov/posawes
 
 > **items**: [`CartItem`](#cartitem)[]
 
-Defined in: [posapp/types/models.ts:77](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L77)
+Defined in: [posapp/types/models.ts:77](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L77)
 
 ##### name?
 
 > `optional` **name?**: `string`
 
-Defined in: [posapp/types/models.ts:70](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L70)
+Defined in: [posapp/types/models.ts:70](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L70)
 
 ERPNext document name, e.g. `"ACC-PSINV-2024-00001"`. Absent on unsaved drafts.
 
@@ -576,37 +576,37 @@ ERPNext document name, e.g. `"ACC-PSINV-2024-00001"`. Absent on unsaved drafts.
 
 > **net\_total**: `number`
 
-Defined in: [posapp/types/models.ts:80](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L80)
+Defined in: [posapp/types/models.ts:80](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L80)
 
 ##### payments
 
 > **payments**: [`Payment`](#payment)[]
 
-Defined in: [posapp/types/models.ts:78](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L78)
+Defined in: [posapp/types/models.ts:78](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L78)
 
 ##### pos\_profile?
 
 > `optional` **pos\_profile?**: `string`
 
-Defined in: [posapp/types/models.ts:92](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L92)
+Defined in: [posapp/types/models.ts:92](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L92)
 
 ##### posting\_date
 
 > **posting\_date**: `string`
 
-Defined in: [posapp/types/models.ts:72](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L72)
+Defined in: [posapp/types/models.ts:72](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L72)
 
 ##### posting\_time?
 
 > `optional` **posting\_time?**: `string`
 
-Defined in: [posapp/types/models.ts:73](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L73)
+Defined in: [posapp/types/models.ts:73](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L73)
 
 ##### return\_against?
 
 > `optional` **return\_against?**: `string`
 
-Defined in: [posapp/types/models.ts:91](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L91)
+Defined in: [posapp/types/models.ts:91](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L91)
 
 Name of the original invoice being returned against.
 
@@ -614,19 +614,19 @@ Name of the original invoice being returned against.
 
 > `optional` **taxes?**: [`Tax`](#tax)[]
 
-Defined in: [posapp/types/models.ts:87](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L87)
+Defined in: [posapp/types/models.ts:87](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L87)
 
 ##### total\_qty
 
 > **total\_qty**: `number`
 
-Defined in: [posapp/types/models.ts:81](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L81)
+Defined in: [posapp/types/models.ts:81](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L81)
 
 ***
 
 ### InvoiceDocRef
 
-Defined in: [posapp/types/models.ts:96](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L96)
+Defined in: [posapp/types/models.ts:96](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L96)
 
 #### Properties
 
@@ -634,19 +634,19 @@ Defined in: [posapp/types/models.ts:96](https://github.com/idibek-alimov/posawes
 
 > `optional` **doctype?**: `string`
 
-Defined in: [posapp/types/models.ts:98](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L98)
+Defined in: [posapp/types/models.ts:98](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L98)
 
 ##### name?
 
 > `optional` **name?**: `string`
 
-Defined in: [posapp/types/models.ts:97](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L97)
+Defined in: [posapp/types/models.ts:97](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L97)
 
 ***
 
 ### InvoiceMetadata
 
-Defined in: [posapp/types/models.ts:189](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L189)
+Defined in: [posapp/types/models.ts:189](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L189)
 
 Internal versioning metadata attached to the invoice store.
 `changeVersion` is incremented on every mutation and can be used to detect
@@ -662,7 +662,7 @@ stale renders or trigger watchers.
 
 > **changeVersion**: `number`
 
-Defined in: [posapp/types/models.ts:193](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L193)
+Defined in: [posapp/types/models.ts:193](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L193)
 
 Monotonically increasing counter, incremented on every store mutation.
 
@@ -670,7 +670,7 @@ Monotonically increasing counter, incremented on every store mutation.
 
 > **lastUpdated**: `number`
 
-Defined in: [posapp/types/models.ts:191](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L191)
+Defined in: [posapp/types/models.ts:191](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L191)
 
 Unix timestamp (ms) of the last mutation.
 
@@ -678,7 +678,7 @@ Unix timestamp (ms) of the last mutation.
 
 ### Item
 
-Defined in: [posapp/types/models.ts:6](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L6)
+Defined in: [posapp/types/models.ts:6](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L6)
 
 A catalogue item as stored in the offline IndexedDB cache.
 Fields mirror the ERPNext Item doctype; `[key: string]: any` accommodates
@@ -698,61 +698,61 @@ custom fields added by the Frappe installation.
 
 > `optional` **\_scale\_price?**: `number`
 
-Defined in: [posapp/types/models.ts:28](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L28)
+Defined in: [posapp/types/models.ts:28](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L28)
 
 ##### \_scale\_qty?
 
 > `optional` **\_scale\_qty?**: `number`
 
-Defined in: [posapp/types/models.ts:27](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L27)
+Defined in: [posapp/types/models.ts:27](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L27)
 
 ##### actual\_qty?
 
 > `optional` **actual\_qty?**: `number` \| `null`
 
-Defined in: [posapp/types/models.ts:18](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L18)
+Defined in: [posapp/types/models.ts:18](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L18)
 
 ##### batch\_no?
 
 > `optional` **batch\_no?**: `string` \| `null`
 
-Defined in: [posapp/types/models.ts:17](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L17)
+Defined in: [posapp/types/models.ts:17](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L17)
 
 ##### batch\_no\_data?
 
 > `optional` **batch\_no\_data?**: `Record`\<`string`, `any`\>[]
 
-Defined in: [posapp/types/models.ts:26](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L26)
+Defined in: [posapp/types/models.ts:26](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L26)
 
 ##### brand?
 
 > `optional` **brand?**: `string`
 
-Defined in: [posapp/types/models.ts:15](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L15)
+Defined in: [posapp/types/models.ts:15](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L15)
 
 ##### conversion\_factor?
 
 > `optional` **conversion\_factor?**: `number`
 
-Defined in: [posapp/types/models.ts:35](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L35)
+Defined in: [posapp/types/models.ts:35](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L35)
 
 ##### currency?
 
 > `optional` **currency?**: `string`
 
-Defined in: [posapp/types/models.ts:22](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L22)
+Defined in: [posapp/types/models.ts:22](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L22)
 
 ##### description?
 
 > `optional` **description?**: `string`
 
-Defined in: [posapp/types/models.ts:9](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L9)
+Defined in: [posapp/types/models.ts:9](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L9)
 
 ##### has\_batch\_no?
 
 > `optional` **has\_batch\_no?**: `number`
 
-Defined in: [posapp/types/models.ts:32](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L32)
+Defined in: [posapp/types/models.ts:32](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L32)
 
 1 if the item tracks batch numbers, 0 otherwise.
 
@@ -760,7 +760,7 @@ Defined in: [posapp/types/models.ts:32](https://github.com/idibek-alimov/posawes
 
 > `optional` **has\_serial\_no?**: `number`
 
-Defined in: [posapp/types/models.ts:30](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L30)
+Defined in: [posapp/types/models.ts:30](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L30)
 
 1 if the item tracks serial numbers, 0 otherwise.
 
@@ -768,13 +768,13 @@ Defined in: [posapp/types/models.ts:30](https://github.com/idibek-alimov/posawes
 
 > `optional` **image?**: `string`
 
-Defined in: [posapp/types/models.ts:13](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L13)
+Defined in: [posapp/types/models.ts:13](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L13)
 
 ##### is\_stock\_item?
 
 > `optional` **is\_stock\_item?**: `number`
 
-Defined in: [posapp/types/models.ts:34](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L34)
+Defined in: [posapp/types/models.ts:34](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L34)
 
 1 for stock items, 0 for service/non-stock items.
 
@@ -782,85 +782,85 @@ Defined in: [posapp/types/models.ts:34](https://github.com/idibek-alimov/posawes
 
 > **item\_code**: `string`
 
-Defined in: [posapp/types/models.ts:7](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L7)
+Defined in: [posapp/types/models.ts:7](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L7)
 
 ##### item\_group?
 
 > `optional` **item\_group?**: `string`
 
-Defined in: [posapp/types/models.ts:14](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L14)
+Defined in: [posapp/types/models.ts:14](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L14)
 
 ##### item\_name
 
 > **item\_name**: `string`
 
-Defined in: [posapp/types/models.ts:8](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L8)
+Defined in: [posapp/types/models.ts:8](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L8)
 
 ##### item\_uoms?
 
 > `optional` **item\_uoms?**: `Record`\<`string`, `any`\>[]
 
-Defined in: [posapp/types/models.ts:24](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L24)
+Defined in: [posapp/types/models.ts:24](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L24)
 
 ##### original\_currency?
 
 > `optional` **original\_currency?**: `string`
 
-Defined in: [posapp/types/models.ts:23](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L23)
+Defined in: [posapp/types/models.ts:23](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L23)
 
 ##### original\_rate?
 
 > `optional` **original\_rate?**: `number`
 
-Defined in: [posapp/types/models.ts:21](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L21)
+Defined in: [posapp/types/models.ts:21](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L21)
 
 ##### price\_list\_rate?
 
 > `optional` **price\_list\_rate?**: `number`
 
-Defined in: [posapp/types/models.ts:20](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L20)
+Defined in: [posapp/types/models.ts:20](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L20)
 
 ##### rate?
 
 > `optional` **rate?**: `number`
 
-Defined in: [posapp/types/models.ts:19](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L19)
+Defined in: [posapp/types/models.ts:19](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L19)
 
 ##### serial\_no?
 
 > `optional` **serial\_no?**: `string` \| `null`
 
-Defined in: [posapp/types/models.ts:16](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L16)
+Defined in: [posapp/types/models.ts:16](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L16)
 
 ##### serial\_no\_data?
 
 > `optional` **serial\_no\_data?**: `Record`\<`string`, `any`\>[]
 
-Defined in: [posapp/types/models.ts:25](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L25)
+Defined in: [posapp/types/models.ts:25](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L25)
 
 ##### standard\_rate
 
 > **standard\_rate**: `number`
 
-Defined in: [posapp/types/models.ts:11](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L11)
+Defined in: [posapp/types/models.ts:11](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L11)
 
 ##### stock\_qty
 
 > **stock\_qty**: `number`
 
-Defined in: [posapp/types/models.ts:10](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L10)
+Defined in: [posapp/types/models.ts:10](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L10)
 
 ##### uom
 
 > **uom**: `string`
 
-Defined in: [posapp/types/models.ts:12](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L12)
+Defined in: [posapp/types/models.ts:12](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L12)
 
 ***
 
 ### Payment
 
-Defined in: [posapp/types/models.ts:106](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L106)
+Defined in: [posapp/types/models.ts:106](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L106)
 
 A single payment line on an invoice (e.g. Cash, Card, Loyalty Points).
 
@@ -874,13 +874,13 @@ A single payment line on an invoice (e.g. Cash, Card, Loyalty Points).
 
 > `optional` **account?**: `string`
 
-Defined in: [posapp/types/models.ts:110](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L110)
+Defined in: [posapp/types/models.ts:110](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L110)
 
 ##### amount
 
 > **amount**: `number`
 
-Defined in: [posapp/types/models.ts:109](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L109)
+Defined in: [posapp/types/models.ts:109](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L109)
 
 Payment amount in the invoice currency. Negative for return/refund rows.
 
@@ -888,43 +888,43 @@ Payment amount in the invoice currency. Negative for return/refund rows.
 
 > `optional` **base\_amount?**: `number`
 
-Defined in: [posapp/types/models.ts:112](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L112)
+Defined in: [posapp/types/models.ts:112](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L112)
 
 ##### conversion\_rate?
 
 > `optional` **conversion\_rate?**: `number`
 
-Defined in: [posapp/types/models.ts:115](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L115)
+Defined in: [posapp/types/models.ts:115](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L115)
 
 ##### currency?
 
 > `optional` **currency?**: `string`
 
-Defined in: [posapp/types/models.ts:114](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L114)
+Defined in: [posapp/types/models.ts:114](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L114)
 
 ##### default?
 
 > `optional` **default?**: `boolean`
 
-Defined in: [posapp/types/models.ts:113](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L113)
+Defined in: [posapp/types/models.ts:113](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L113)
 
 ##### mode\_of\_payment
 
 > **mode\_of\_payment**: `string`
 
-Defined in: [posapp/types/models.ts:107](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L107)
+Defined in: [posapp/types/models.ts:107](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L107)
 
 ##### type?
 
 > `optional` **type?**: `string`
 
-Defined in: [posapp/types/models.ts:111](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L111)
+Defined in: [posapp/types/models.ts:111](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L111)
 
 ***
 
 ### POSProfile
 
-Defined in: [posapp/types/models.ts:137](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L137)
+Defined in: [posapp/types/models.ts:137](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L137)
 
 Key fields from the active POS Profile document.
 The full profile carries many additional `posa_*` feature-flag fields; they are
@@ -940,79 +940,79 @@ accessible via `[key: string]: any`.
 
 > **company**: `string`
 
-Defined in: [posapp/types/models.ts:139](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L139)
+Defined in: [posapp/types/models.ts:139](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L139)
 
 ##### currency
 
 > **currency**: `string`
 
-Defined in: [posapp/types/models.ts:140](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L140)
+Defined in: [posapp/types/models.ts:140](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L140)
 
 ##### expense\_account
 
 > **expense\_account**: `string`
 
-Defined in: [posapp/types/models.ts:144](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L144)
+Defined in: [posapp/types/models.ts:144](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L144)
 
 ##### ignore\_pricing\_rule?
 
 > `optional` **ignore\_pricing\_rule?**: `string` \| `number` \| `boolean`
 
-Defined in: [posapp/types/models.ts:145](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L145)
+Defined in: [posapp/types/models.ts:145](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L145)
 
 ##### income\_account
 
 > **income\_account**: `string`
 
-Defined in: [posapp/types/models.ts:143](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L143)
+Defined in: [posapp/types/models.ts:143](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L143)
 
 ##### name
 
 > **name**: `string`
 
-Defined in: [posapp/types/models.ts:138](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L138)
+Defined in: [posapp/types/models.ts:138](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L138)
 
 ##### posa\_brand\_logo?
 
 > `optional` **posa\_brand\_logo?**: `string`
 
-Defined in: [posapp/types/models.ts:149](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L149)
+Defined in: [posapp/types/models.ts:149](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L149)
 
 ##### posa\_brand\_name?
 
 > `optional` **posa\_brand\_name?**: `string`
 
-Defined in: [posapp/types/models.ts:147](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L147)
+Defined in: [posapp/types/models.ts:147](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L147)
 
 ##### posa\_brand\_short\_name?
 
 > `optional` **posa\_brand\_short\_name?**: `string`
 
-Defined in: [posapp/types/models.ts:148](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L148)
+Defined in: [posapp/types/models.ts:148](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L148)
 
 ##### posa\_enable\_custom\_branding?
 
 > `optional` **posa\_enable\_custom\_branding?**: `string` \| `number` \| `boolean`
 
-Defined in: [posapp/types/models.ts:146](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L146)
+Defined in: [posapp/types/models.ts:146](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L146)
 
 ##### selling\_price\_list
 
 > **selling\_price\_list**: `string`
 
-Defined in: [posapp/types/models.ts:142](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L142)
+Defined in: [posapp/types/models.ts:142](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L142)
 
 ##### warehouse
 
 > **warehouse**: `string`
 
-Defined in: [posapp/types/models.ts:141](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L141)
+Defined in: [posapp/types/models.ts:141](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L141)
 
 ***
 
 ### StoredCustomer
 
-Defined in: [posapp/types/models.ts:178](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L178)
+Defined in: [posapp/types/models.ts:178](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L178)
 
 #### Extends
 
@@ -1028,7 +1028,7 @@ Defined in: [posapp/types/models.ts:178](https://github.com/idibek-alimov/posawe
 
 > **customer\_name**: `string`
 
-Defined in: [posapp/types/models.ts:171](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L171)
+Defined in: [posapp/types/models.ts:171](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L171)
 
 ###### Inherited from
 
@@ -1038,7 +1038,7 @@ Defined in: [posapp/types/models.ts:171](https://github.com/idibek-alimov/posawe
 
 > `optional` **email\_id?**: `string`
 
-Defined in: [posapp/types/models.ts:172](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L172)
+Defined in: [posapp/types/models.ts:172](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L172)
 
 ###### Inherited from
 
@@ -1048,7 +1048,7 @@ Defined in: [posapp/types/models.ts:172](https://github.com/idibek-alimov/posawe
 
 > `optional` **mobile\_no?**: `string`
 
-Defined in: [posapp/types/models.ts:173](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L173)
+Defined in: [posapp/types/models.ts:173](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L173)
 
 ###### Inherited from
 
@@ -1058,7 +1058,7 @@ Defined in: [posapp/types/models.ts:173](https://github.com/idibek-alimov/posawe
 
 > **name**: `string`
 
-Defined in: [posapp/types/models.ts:170](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L170)
+Defined in: [posapp/types/models.ts:170](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L170)
 
 ###### Inherited from
 
@@ -1068,7 +1068,7 @@ Defined in: [posapp/types/models.ts:170](https://github.com/idibek-alimov/posawe
 
 > `optional` **primary\_address?**: `string`
 
-Defined in: [posapp/types/models.ts:174](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L174)
+Defined in: [posapp/types/models.ts:174](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L174)
 
 ###### Inherited from
 
@@ -1078,13 +1078,13 @@ Defined in: [posapp/types/models.ts:174](https://github.com/idibek-alimov/posawe
 
 > `optional` **tax\_id?**: `string`
 
-Defined in: [posapp/types/models.ts:179](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L179)
+Defined in: [posapp/types/models.ts:179](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L179)
 
 ***
 
 ### Tax
 
-Defined in: [posapp/types/models.ts:122](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L122)
+Defined in: [posapp/types/models.ts:122](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L122)
 
 A tax/charge row applied to the invoice, matching the ERPNext Sales Taxes and Charges table.
 
@@ -1098,25 +1098,25 @@ A tax/charge row applied to the invoice, matching the ERPNext Sales Taxes and Ch
 
 > `optional` **account\_head?**: `string`
 
-Defined in: [posapp/types/models.ts:124](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L124)
+Defined in: [posapp/types/models.ts:124](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L124)
 
 ##### charge\_type?
 
 > `optional` **charge\_type?**: `string`
 
-Defined in: [posapp/types/models.ts:123](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L123)
+Defined in: [posapp/types/models.ts:123](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L123)
 
 ##### description?
 
 > `optional` **description?**: `string`
 
-Defined in: [posapp/types/models.ts:128](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L128)
+Defined in: [posapp/types/models.ts:128](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L128)
 
 ##### rate?
 
 > `optional` **rate?**: `number`
 
-Defined in: [posapp/types/models.ts:126](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L126)
+Defined in: [posapp/types/models.ts:126](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L126)
 
 Tax rate as a percentage (e.g. `15` for 15%).
 
@@ -1124,7 +1124,7 @@ Tax rate as a percentage (e.g. `15` for 15%).
 
 > `optional` **tax\_amount?**: `number`
 
-Defined in: [posapp/types/models.ts:127](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L127)
+Defined in: [posapp/types/models.ts:127](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L127)
 
 ## Type Aliases
 
@@ -1132,7 +1132,7 @@ Defined in: [posapp/types/models.ts:127](https://github.com/idibek-alimov/posawe
 
 > **CustomerInfo** = `Record`\<`string`, `unknown`\>
 
-Defined in: [posapp/types/models.ts:182](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L182)
+Defined in: [posapp/types/models.ts:182](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L182)
 
 ***
 
@@ -1140,4 +1140,4 @@ Defined in: [posapp/types/models.ts:182](https://github.com/idibek-alimov/posawe
 
 > **PartialInvoiceDoc** = `Partial`\<[`InvoiceDoc`](#invoicedoc)\> & [`InvoiceDocRef`](#invoicedocref)
 
-Defined in: [posapp/types/models.ts:101](https://github.com/idibek-alimov/posawesome/blob/58043ce71f2ca794b7cefc6d5df981c720d4afab/frontend/src/posapp/types/models.ts#L101)
+Defined in: [posapp/types/models.ts:101](https://github.com/idibek-alimov/posawesome/blob/23db397bd2d7e8c700211241a334d724ab7e896a/frontend/src/posapp/types/models.ts#L101)
