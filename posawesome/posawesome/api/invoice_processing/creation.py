@@ -1509,17 +1509,26 @@ def update_invoice(data):
     customer_name = invoice_doc.get("customer")
     if customer_name and not frappe.db.exists("Customer", customer_name):
         try:
+            cg = (
+                frappe.db.get_value("Customer Group", {"is_group": 0}, "name")
+                or "Individual"
+            )
+            ter = (
+                frappe.db.get_value("Territory", {"is_group": 0}, "name")
+                or "All Territories"
+            )
             cust = frappe.get_doc(
                 {
                     "doctype": "Customer",
                     "customer_name": customer_name,
-                    "customer_group": "All Customer Groups",
-                    "territory": "All Territories",
+                    "customer_group": cg,
+                    "territory": ter,
                     "customer_type": "Individual",
                 }
             )
             cust.flags.ignore_permissions = True
-            cust.insert()
+            cust.flags.ignore_mandatory = True
+            cust.insert(ignore_permissions=True)
             invoice_doc.customer = cust.name
             invoice_doc.customer_name = cust.customer_name
         except Exception as e:

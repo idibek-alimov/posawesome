@@ -179,7 +179,7 @@ export default {
 			});
 		},
 		setActiveGiftCoupons() {
-			if (!this.customer) return;
+			if (!this.customer || this.customer === "Гость") return;
 			const company = this.pos_profile?.company || this.uiStore?.posProfile?.company;
 			if (!company) return;
 			const vm = this;

@@ -467,14 +467,18 @@ def create_customer(
                     "gender": gender,
                 }
             )
-            if customer_group:
+            if customer_group and not frappe.db.get_value("Customer Group", customer_group, "is_group"):
                 customer.customer_group = customer_group
             else:
-                customer.customer_group = "All Customer Groups"
-            if territory:
+                customer.customer_group = (
+                    frappe.db.get_value("Customer Group", {"is_group": 0}, "name") or "Individual"
+                )
+            if territory and not frappe.db.get_value("Territory", territory, "is_group"):
                 customer.territory = territory
             else:
-                customer.territory = "All Territories"
+                customer.territory = (
+                    frappe.db.get_value("Territory", {"is_group": 0}, "name") or "All Territories"
+                )
 
             customer.save()
 
