@@ -23,6 +23,7 @@
 				:menu-props="{ closeOnContentClick: false }"
 				@update:menu="onCustomerMenuToggle"
 				@update:modelValue="onCustomerChange"
+				@click:clear="onCustomerClear"
 				@update:search="onCustomerSearch"
 				@keydown.enter="handleEnter"
 				:virtual-scroll="true"
@@ -363,15 +364,41 @@ export default {
 			});
 		};
 
+		const defaultCustomerName = computed(() => {
+			return props.pos_profile?.customer || customersStore.posProfile?.customer || "Гость";
+		});
+
+		const onCustomerClear = () => {
+			const fallback = defaultCustomerName.value;
+			tempSelectedCustomer.value = fallback;
+			internalCustomer.value = fallback;
+			customersStore.setSelectedCustomer(fallback);
+		};
+
 		watch(
 			selectedCustomer,
 			(value) => {
+				if (!value) {
+					const fallback = defaultCustomerName.value;
+					if (fallback) {
+						customersStore.setSelectedCustomer(fallback);
+						internalCustomer.value = fallback;
+					}
+					return;
+				}
 				if (!isMenuOpen.value) {
 					internalCustomer.value = value || null;
 				}
 			},
 			{ immediate: true },
 		);
+
+		onMounted(() => {
+			if (!selectedCustomer.value && defaultCustomerName.value) {
+				customersStore.setSelectedCustomer(defaultCustomerName.value);
+				internalCustomer.value = defaultCustomerName.value;
+			}
+		});
 
 		watch(
 			() => props.pos_profile,
@@ -410,6 +437,10 @@ export default {
 				customersStore.setSelectedCustomer(tempSelectedCustomer.value);
 			} else if (selectedCustomer.value) {
 				internalCustomer.value = selectedCustomer.value;
+			} else {
+				const fallback = defaultCustomerName.value;
+				internalCustomer.value = fallback;
+				customersStore.setSelectedCustomer(fallback);
 			}
 			tempSelectedCustomer.value = null;
 		};
@@ -453,6 +484,11 @@ export default {
 		};
 
 		const onCustomerChange = (val) => {
+			if (!val) {
+				onCustomerClear();
+				return;
+			}
+
 			if (val && val === selectedCustomer.value) {
 				internalCustomer.value = selectedCustomer.value;
 				toastStore.show({

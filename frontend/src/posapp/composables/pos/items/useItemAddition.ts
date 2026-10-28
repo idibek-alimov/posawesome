@@ -1067,7 +1067,11 @@ export function useItemAddition() {
 		if (context.update_price_list) context.update_price_list();
 
 		// Always reset to default customer after invoice
-		context.customer = context.pos_profile.customer;
+		const defaultCustomer = context.pos_profile?.customer || "Гость";
+		context.customer = defaultCustomer;
+		if (context.customersStore?.setSelectedCustomer) {
+			context.customersStore.setSelectedCustomer(defaultCustomer);
+		}
 
 		context.eventBus.emit("set_customer_readonly", false);
 		context.invoiceType =

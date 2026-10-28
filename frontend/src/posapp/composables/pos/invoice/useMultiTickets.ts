@@ -34,7 +34,7 @@ const LEGACY_STORAGE_KEY = "posa_active_draft_backup";
 const TOTAL_SLOTS = 5;
 const DEBOUNCE_MS = 300;
 
-export function createEmptySlot(id: number, defaultCustomer: string | null = null): TicketSlot {
+export function createEmptySlot(id: number, defaultCustomer: string | null = "Гость"): TicketSlot {
 	const nowdate =
 		typeof (globalThis as any).frappe?.datetime?.nowdate === "function"
 			? (globalThis as any).frappe.datetime.nowdate()
@@ -43,7 +43,7 @@ export function createEmptySlot(id: number, defaultCustomer: string | null = nul
 	return {
 		id,
 		items: [],
-		customer: defaultCustomer,
+		customer: defaultCustomer || "Гость",
 		customerName: "",
 		invoiceType: "Invoice",
 		postingDate: nowdate,
@@ -102,7 +102,7 @@ export function useMultiTickets(options: { posProfile?: any; eventBus?: any } = 
 	let stopWatcher: (() => void) | null = null;
 
 	const defaultProfileCustomer = computed(() => {
-		return options.posProfile?.customer || null;
+		return options.posProfile?.customer || "Гость";
 	});
 
 	/**
@@ -126,7 +126,7 @@ export function useMultiTickets(options: { posProfile?: any; eventBus?: any } = 
 			name = slot.customer;
 		}
 
-		if (name && name !== "Розничный покупатель" && name !== "Walk-in Customer") {
+		if (name && name !== "Гость" && name !== "Розничный покупатель" && name !== "Walk-in Customer" && name !== "WalkIn Customer") {
 			// Truncate customer name if too long
 			const shortName = name.length > 10 ? name.slice(0, 9) + "…" : name;
 			return `№${num}: ${shortName} (${count})`;

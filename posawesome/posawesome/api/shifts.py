@@ -101,8 +101,46 @@ def check_opening_shift(user):
     return data
 
 
+def ensure_default_customer(pos_profile_doc=None) -> str:
+    default_name = "Гость"
+    try:
+        if not frappe.db.exists("Customer", default_name):
+            customer_group = (
+                frappe.db.get_value("Customer Group", {"is_group": 0}, "name")
+                or "Individual"
+            )
+            territory = (
+                frappe.db.get_value("Territory", {"is_group": 0}, "name")
+                or "All Territories"
+            )
+            doc = frappe.get_doc(
+                {
+                    "doctype": "Customer",
+                    "customer_name": default_name,
+                    "customer_type": "Individual",
+                    "customer_group": customer_group,
+                    "territory": territory,
+                }
+            )
+            doc.flags.ignore_mandatory = True
+            doc.flags.ignore_permissions = True
+            doc.insert(ignore_permissions=True)
+            frappe.db.commit()
+
+        if pos_profile_doc:
+            if not pos_profile_doc.get("customer") or pos_profile_doc.customer in ("WalkIn Customer", "Walk-in Customer"):
+                pos_profile_doc.customer = default_name
+                if getattr(pos_profile_doc, "name", None) and frappe.db.exists("POS Profile", pos_profile_doc.name):
+                    pos_profile_doc.db_set("customer", default_name)
+    except Exception as e:
+        frappe.log_error(f"Error ensuring default customer: {e}", "POS Awesome Default Customer")
+
+    return default_name
+
+
 def update_opening_shift_data(data, pos_profile):
     data["pos_profile"] = frappe.get_doc("POS Profile", pos_profile)
+    ensure_default_customer(data["pos_profile"])
     if data["pos_profile"].get("posa_language"):
         frappe.local.lang = data["pos_profile"].posa_language
     data["company"] = frappe.get_doc("Company", data["pos_profile"].company)
