@@ -28,6 +28,7 @@
 		>
 			<!-- Dynamic padding wrapper -->
 			<div class="dynamic-padding">
+				<MultiTicketTabs :pos-profile="pos_profile" />
 				<v-alert
 					type="info"
 					density="compact"
@@ -294,6 +295,7 @@
 
 <script>
 import format from "../../format";
+import MultiTicketTabs from "./invoice/MultiTicketTabs.vue";
 import InvoiceCustomerSection from "./invoice/InvoiceCustomerSection.vue";
 import DeliveryCharges from "./invoice/DeliveryCharges.vue";
 import PostingDateRow from "./invoice/PostingDateRow.vue";
@@ -472,6 +474,7 @@ export default {
 	},
 
 	components: {
+		MultiTicketTabs,
 		InvoiceCustomerSection,
 		DeliveryCharges,
 		PostingDateRow,

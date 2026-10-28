@@ -11,7 +11,7 @@
 					class="payment-submit-btn payment-footer-btn font-weight-bold"
 					data-pos-keyboard-target="payment-submit"
 					data-testid="payment-submit"
-					:aria-keyshortcuts="showKeyboardShortcuts ? 'Control+Enter Meta+Enter' : undefined"
+					:aria-keyshortcuts="showKeyboardShortcuts ? 'Enter Control+Enter' : undefined"
 					@click="$emit('submit')"
 					:loading="loading"
 					:disabled="loading || validatePayment"
@@ -20,7 +20,7 @@
 					<v-icon start icon="mdi-cart-check" class="mr-1" />
 					<span>{{ __("1. Обычная продажа") }}</span>
 					<kbd v-if="showKeyboardShortcuts" class="payment-footer-btn__shortcut">
-						Ctrl+Enter
+						Enter
 					</kbd>
 				</v-btn>
 			</v-col>
@@ -34,7 +34,7 @@
 					data-pos-keyboard-target="payment-submit-print"
 					data-testid="payment-submit-print"
 					:aria-keyshortcuts="
-						showKeyboardShortcuts ? 'Control+Shift+Enter Meta+Shift+Enter' : undefined
+						showKeyboardShortcuts ? 'F11 Shift+Enter Control+Shift+Enter' : undefined
 					"
 					@click="$emit('submit-and-print')"
 					:loading="loading"
@@ -43,7 +43,7 @@
 					<v-icon start icon="mdi-receipt-text-check" class="mr-1" />
 					<span>{{ __("2. Продажа с чеком (Фискальная)") }}</span>
 					<kbd v-if="showKeyboardShortcuts" class="payment-footer-btn__shortcut">
-						Ctrl+Shift+Enter
+						F11 / Shift+Enter
 					</kbd>
 				</v-btn>
 			</v-col>
@@ -56,10 +56,14 @@
 					class="mt-2 pa-1 payment-cancel-btn payment-footer-btn"
 					data-pos-keyboard-target="payment-cancel"
 					data-testid="payment-cancel"
+					:aria-keyshortcuts="showKeyboardShortcuts ? 'Escape' : undefined"
 					@click="$emit('cancel')"
 				>
 					<v-icon start icon="mdi-close-circle-outline" class="mr-1" />
-					{{ __("Отмена оплаты") }}
+					<span>{{ __("Отмена оплаты") }}</span>
+					<kbd v-if="showKeyboardShortcuts" class="payment-footer-btn__shortcut">
+						Esc
+					</kbd>
 				</v-btn>
 			</v-col>
 		</v-row>
@@ -72,7 +76,10 @@ defineProps({
 	validatePayment: Boolean,
 	highlightSubmit: Boolean,
 	compact: Boolean,
-	showKeyboardShortcuts: Boolean,
+	showKeyboardShortcuts: {
+		type: Boolean,
+		default: true,
+	},
 });
 
 defineEmits(["submit", "submit-and-print", "cancel"]);

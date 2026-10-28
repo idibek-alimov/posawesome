@@ -502,4 +502,71 @@ describe("invoiceShortcuts", () => {
 
 		expect(focusItemField).toHaveBeenCalledWith(0, "qty");
 	});
+
+	it("uses F11 to open the payment dialog and prevents browser fullscreen", async () => {
+		const show_payment = vi.fn();
+		const vm = {
+			...createVm(),
+			show_payment,
+		};
+		const event = new KeyboardEvent("keydown", {
+			key: "F11",
+			code: "F11",
+			bubbles: true,
+			cancelable: true,
+		});
+
+		await (invoiceShortcuts as any).handleInvoiceShortcut.call(vm, event);
+
+		expect(show_payment).toHaveBeenCalledTimes(1);
+		expect(event.defaultPrevented).toBe(true);
+	});
+
+	it("uses Ctrl+Enter to open the payment dialog from cart", async () => {
+		const show_payment = vi.fn();
+		const vm = {
+			...createVm(),
+			show_payment,
+		};
+		const event = new KeyboardEvent("keydown", {
+			key: "Enter",
+			code: "Enter",
+			ctrlKey: true,
+			bubbles: true,
+			cancelable: true,
+		});
+
+		await (invoiceShortcuts as any).handleInvoiceShortcut.call(vm, event);
+
+		expect(show_payment).toHaveBeenCalledTimes(1);
+		expect(event.defaultPrevented).toBe(true);
+	});
+
+	it("does not intercept shortcuts when paymentVisible is true", async () => {
+		const show_payment = vi.fn();
+		const vm = {
+			...createVm(),
+			paymentVisible: true,
+			show_payment,
+		};
+		const eventF11 = new KeyboardEvent("keydown", {
+			key: "F11",
+			code: "F11",
+			bubbles: true,
+			cancelable: true,
+		});
+		const eventEnter = new KeyboardEvent("keydown", {
+			key: "Enter",
+			code: "Enter",
+			bubbles: true,
+			cancelable: true,
+		});
+
+		await (invoiceShortcuts as any).handleInvoiceShortcut.call(vm, eventF11);
+		await (invoiceShortcuts as any).handleInvoiceShortcut.call(vm, eventEnter);
+
+		expect(show_payment).not.toHaveBeenCalled();
+		expect(eventF11.defaultPrevented).toBe(false);
+		expect(eventEnter.defaultPrevented).toBe(false);
+	});
 });

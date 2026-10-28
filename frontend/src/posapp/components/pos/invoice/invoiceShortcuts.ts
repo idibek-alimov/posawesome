@@ -231,7 +231,20 @@ const invoiceShortcuts: Record<string, unknown> & ThisType<InvoiceShortcutsVm> =
 				return;
 			}
 
+			if (this.paymentVisible) {
+				return;
+			}
+
 			const key = event.key;
+			const isCtrlOrMeta = event.ctrlKey || event.metaKey;
+			const isEnter = key === "Enter" || event.code === "Enter" || event.code === "NumpadEnter";
+
+			// F11 or Ctrl+Enter (or legacy F9) opens payment dialog from cart
+			if (key === "F11" || key === "F9" || (isCtrlOrMeta && isEnter && !event.shiftKey)) {
+				consumeEvent(event);
+				this.show_payment?.();
+				return;
+			}
 
 			if (shouldEnterInvoiceGridFromArrow(event)) {
 				const count = this.items?.length || 0;
@@ -280,12 +293,6 @@ const invoiceShortcuts: Record<string, unknown> & ThisType<InvoiceShortcutsVm> =
 			if (key === "F8") {
 				consumeEvent(event);
 				this.eventBus.emit("lock_pos_screen");
-				return;
-			}
-
-			if (key === "F9") {
-				consumeEvent(event);
-				this.show_payment?.();
 				return;
 			}
 

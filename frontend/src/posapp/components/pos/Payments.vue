@@ -22,40 +22,39 @@
 			></v-progress-linear>
 			<div ref="paymentContainer" class="overflow-y-auto payment-scroll">
 				<div :class="['payment-sections', { 'payment-sections--dialog': dialogMode }]">
-					<section class="payment-section payment-section--summary">
-						<div class="payment-section__header">
-							<h3 class="payment-section__title">{{ __("Payment Summary") }}</h3>
-						</div>
-						<PaymentSummary
+					<!-- 1. Totals & Reverse Discount (Phase 2) -->
+					<section class="payment-section payment-section--totals">
+						<InvoiceTotals
 							:invoice_doc="invoice_doc"
-							:total_payments_display="total_payments_display"
-							:diff_payment_display="diff_payment_display"
+							:displayCurrency="displayCurrency"
+							:diff_payment="diff_payment"
 							:diff_label="diff_label"
-							:diff-payment="diff_payment"
-							:change_due="change_due"
-							:paid_change="paid_change"
-							:credit_change="credit_change"
-							:paid_change_rules="paid_change_rules"
+							:item-discount-total="paymentItemDiscountTotal"
 							:currencySymbol="currencySymbol"
 							:formatCurrency="formatCurrency"
-							:gift-card-applied-amount="giftCardAppliedAmount"
-							:gift-card-code="giftCardRedemptions[0]?.gift_card_code || ''"
-							@show-paid-amount="showPaidAmount"
-							@show-diff-payment="showDiffPayment"
-							@show-paid-change="showPaidChange"
-							@update-credit-change="handleCreditChangeUpdate"
+							:customer-info="customer_info"
+							:available-points-amount="available_points_amount"
+							:loyalty-amount="Number(loyalty_amount) || 0"
+							:payable="netInvoiceSettlementAmount"
+							:discount-locked="discountLocked"
+							@update-discount="handleDiscountUpdate"
+							@update-loyalty="(v) => handleRedemptionFormattedCurrency({ field: 'loyalty_amount', value: v })"
+							@request-manager="requireManagerForDiscount()"
 						/>
 					</section>
 
+					<!-- 2. Single-Screen Flat Payment (Phase 3) -->
 					<section
-						v-if="is_cashback && invoice_doc"
+						v-if="invoice_doc"
 						class="payment-section payment-section--methods"
 					>
-						<div class="payment-section__header">
-							<h3 class="payment-section__title">{{ __("Payment Methods") }}</h3>
-						</div>
 						<PaymentMethods
+							ref="paymentMethodsRef"
 							:payments="visiblePaymentMethods"
+							:invoice-doc="invoice_doc"
+							:payable="netInvoiceSettlementAmount"
+							:paid-change="paid_change"
+							:diff-payment="diff_payment"
 							:currency="invoice_doc.currency"
 							:isReturn="invoice_doc.is_return"
 							:requestPaymentField="request_payment_field"
@@ -75,170 +74,17 @@
 							@set-rest-amount="set_rest_amount"
 							@open-gift-card="openGiftCardDialog"
 						/>
-						<PaymentGiftCardSection
-							:enabled="Boolean(pos_profile?.posa_use_gift_cards)"
-							:expanded="giftCardInlineExpanded"
-							:applied-amount="giftCardAppliedAmount"
-							:card-code="giftCardCode || giftCardRedemptions[0]?.gift_card_code || ''"
-							:redeem-amount="giftCardAmount"
-							:balance="giftCardBalance"
-							:status="giftCardStatus"
-							:loading="giftCardLoading"
-							:error-message="giftCardError"
-							:format-currency="(value) => formatCurrency(value, invoice_doc.currency)"
-							@toggle="toggleGiftCardInline"
-							@update:card-code="giftCardCode = $event"
-							@update:redeem-amount="giftCardAmount = $event"
-							@check-balance="checkGiftCardBalance"
-							@apply="applyGiftCardRedemption"
-							@clear="clearGiftCardRedemption"
-						/>
 					</section>
 
-					<section class="payment-section payment-section--adjustments">
-						<div class="payment-section__header">
-							<h3 class="payment-section__title">{{ __("Redemption and Totals") }}</h3>
-						</div>
-						<PaymentRedemption
-							:invoice-doc="invoice_doc"
-							:customer-info="customer_info"
-							:pos-profile="pos_profile"
-							:available-points-amount="available_points_amount"
-							:loyalty-amount="loyalty_amount"
-							:available-customer-credit="available_customer_credit"
-							:redeem-customer-credit="redeem_customer_credit"
-							:redeemed-customer-credit="redeemed_customer_credit"
-							:format-currency="formatCurrency"
-							:format-float="formatFloat"
-							:currency-symbol="currencySymbol"
-							@set-formatted-currency="handleRedemptionFormattedCurrency"
-						/>
-						<InvoiceTotals
-							:invoice_doc="invoice_doc"
-							:displayCurrency="displayCurrency"
-							:diff_payment="diff_payment"
-							:diff_label="diff_label"
-							:item-discount-total="paymentItemDiscountTotal"
-							:currencySymbol="currencySymbol"
-							:formatCurrency="formatCurrency"
-							:customer-info="customer_info"
-							:available-points-amount="available_points_amount"
-							:loyalty-amount="Number(loyalty_amount) || 0"
-							:payable="netInvoiceSettlementAmount"
-							:discount-locked="discountLocked"
-							@update-discount="handleDiscountUpdate"
-							@update-loyalty="(v) => handleRedemptionFormattedCurrency({ field: 'loyalty_amount', value: v })"
-							@request-manager="requireManagerForDiscount()"
-						/>
-						<div class="payment-section__subsection">
-							<h3 class="payment-section__title payment-section__title--subsection">
-								{{ __("Fulfillment Details") }}
-							</h3>
-						</div>
-						<PaymentAdditionalInfo
-							:invoice-doc="invoice_doc"
-							:pos-profile="pos_profile"
-							:invoice-type="invoiceType"
-							:return-validity-enabled="returnValidityEnabled"
-							:return-validity-min-date="returnValidityMinDate"
-							:addresses="addresses"
-							:new-delivery-date="new_delivery_date"
-							:return-valid-upto-date="return_valid_upto_date"
-							:address-filter="addressFilter"
-							@update:new-delivery-date="
-								(val) => {
-									new_delivery_date = val;
-									update_delivery_date();
-								}
-							"
-							@update:return-valid-upto-date="
-								(val) => {
-									return_valid_upto_date = val;
-									updateReturnValidUpto();
-								}
-							"
-							@new-address="new_address"
-						/>
-						<PaymentPurchaseOrder
-							:invoice-doc="invoice_doc"
-							:pos-profile="pos_profile"
-							:new-po-date="new_po_date"
-							@update:new-po-date="
-								(val) => {
-									new_po_date = val;
-									update_po_date();
-								}
-							"
-						/>
-					</section>
-
-					<section class="payment-section payment-section--settlement">
-						<div class="payment-section__header">
-							<h3 class="payment-section__title">{{ __("Credit and Output") }}</h3>
-						</div>
-						<PaymentOptions
-							:invoice-doc="invoice_doc"
-							:pos-profile="pos_profile"
-							:diff-payment="diff_payment"
-							:credit-change="credit_change"
-							:is-write-off-change="is_write_off_change"
-							:is-credit-sale="is_credit_sale"
-							:is-cashback="is_cashback"
-							:is-credit-return="is_credit_return"
-							:new-credit-due-date="new_credit_due_date"
-							:credit-due-days="credit_due_days"
-							:credit-due-presets="credit_due_presets"
-							:write-off-amount="invoice_doc.write_off_amount || Math.max(diff_payment, 0)"
-							:write-off-max-amount="writeOffProfileLimit"
-							:redeem-customer-credit="redeem_customer_credit"
-							:available-customer-credit="available_customer_credit"
-							:redeemed-customer-credit="redeemed_customer_credit"
-							:customer-credit-sources="customer_credit_dict.length"
-							:format-currency="formatCurrency"
-							@update:is-write-off-change="is_write_off_change = $event"
-							@update:is-credit-sale="is_credit_sale = $event"
-							@update:is-cashback="is_cashback = $event"
-							@update:is-credit-return="is_credit_return = $event"
-							@update:new-credit-due-date="
-								(val) => {
-									new_credit_due_date = val;
-									update_credit_due_date();
-								}
-							"
-							@update:credit-due-days="credit_due_days = $event"
-							@update:write-off-amount="handleWriteOffAmountUpdate"
-							@apply-due-preset="applyDuePreset"
-							@update:redeem-customer-credit="redeem_customer_credit = $event"
-							@get-available-credit="get_available_credit"
-						/>
-						<PaymentCustomerCreditDetails
-							:invoice-doc="invoice_doc"
-							:available-customer-credit="available_customer_credit"
-							:redeem-customer-credit="redeem_customer_credit"
-							:customer-credit-dict="customer_credit_dict"
-							:credit-source-label="creditSourceLabel"
-							:format-currency="formatCurrency"
-							:currency-symbol="currencySymbol"
-							@set-formatted-currency="
-								(data) =>
-									setFormatedCurrency(data.target, data.field, null, false, data.value)
-							"
-						/>
-					</section>
-
+					<!-- 3. Sales Person (clean compact row, hiding Delivery, PO and Credit details) -->
 					<section class="payment-section payment-section--meta">
-						<div class="payment-section__header">
-							<h3 class="payment-section__title">{{ __("Sales Person and Print") }}</h3>
-						</div>
 						<PaymentSelectionFields
 							:sales-persons="sales_persons"
 							:sales-person="sales_person"
 							:readonly="readonly"
 							:print-formats="print_formats"
 							:print-format="print_format"
-							:show-print-format="
-								parseBooleanSetting(pos_profile?.posa_allow_select_print_format_in_payments)
-							"
+							:show-print-format="false"
 							@update:sales-person="sales_person = $event"
 							@update:print-format="print_format = $event"
 						/>
@@ -254,7 +100,7 @@
 				:validatePayment="validatePayment"
 				:highlightSubmit="highlightSubmit"
 				:compact="dialogMode"
-				:show-keyboard-shortcuts="counterGridMode"
+				:show-keyboard-shortcuts="true"
 				@submit="submit"
 				@submit-and-print="submit(undefined, false, true)"
 				@cancel="back_to_invoice"
@@ -438,6 +284,7 @@ const last_payment_change_was_cash = ref(null);
 const backgroundStatusCheck = ref(null);
 const paymentVisible = ref(false);
 const paymentRoot = ref(null);
+const paymentMethodsRef = ref(null);
 const paymentContainer = ref(null);
 const submitButton = ref(null);
 const _shortcutHandlers = ref({});
@@ -1162,7 +1009,7 @@ const finishSubmissionNavigation = (clearInvoice = false) => {
 const buildProfilePaymentLines = () => {
 	const profilePayments = Array.isArray(pos_profile.value?.payments) ? pos_profile.value.payments : [];
 
-	return profilePayments
+	const lines = profilePayments
 		.filter((payment) => payment?.mode_of_payment)
 		.map((payment, index) => ({
 			mode_of_payment: payment.mode_of_payment,
@@ -1172,6 +1019,18 @@ const buildProfilePaymentLines = () => {
 			type: payment.type,
 			default: payment.default === 1 || payment.default === true || index === 0 ? 1 : 0,
 		}));
+
+	const hasBank = lines.some((p) => String(p.type || "").toLowerCase() === "bank" || !isCashLikePayment(p));
+	if (!hasBank) {
+		lines.push({
+			mode_of_payment: "Credit Card",
+			amount: 0,
+			base_amount: 0,
+			type: "Bank",
+			default: 0,
+		});
+	}
+	return lines;
 };
 
 const paymentCurrencyContext = (doc = invoice_doc.value) => ({
@@ -1875,11 +1734,108 @@ const submitInvoiceWrapper = async (print, callbackOverrides = {}, options = {})
 	}
 };
 
+const isTextEditableElement = (el) => {
+	if (!el) return false;
+	if (el.isContentEditable) return true;
+	const tag = (el.tagName || "").toLowerCase();
+	if (tag === "textarea" || tag === "select") return true;
+	if (tag === "input") {
+		const type = (el.type || "text").toLowerCase();
+		return !["button", "submit", "reset", "checkbox", "radio", "range", "color"].includes(type);
+	}
+	return false;
+};
+
+const shouldAllowSpaceForExactCash = (target) => {
+	if (!target) return true;
+	if (target.classList?.contains("cash-input") || target.closest?.(".cash-input-box")) {
+		return true;
+	}
+	if (isTextEditableElement(target)) {
+		return false;
+	}
+	return true;
+};
+
+const triggerExactCash = () => {
+	if (paymentMethodsRef.value?.setExactCash) {
+		paymentMethodsRef.value.setExactCash();
+	} else {
+		const primaryCash =
+			visiblePaymentMethods.value?.find((p) => isCashLikePayment(p)) ||
+			visiblePaymentMethods.value?.[0];
+		if (primaryCash) {
+			set_full_amount(primaryCash, Boolean(invoice_doc.value?.is_return));
+		}
+	}
+};
+
 // Keyboard Shortcuts
 const handlePaymentShortcut = (event) => {
 	if (event.defaultPrevented || submissionInFlight.value || loading.value) return;
 	if (event.repeat) return;
 	if (!paymentVisible.value) return;
+
+	// 1. ESC / Escape -> Close payment dialog and return to active cart
+	if (event.key === "Escape" || event.key === "Esc") {
+		event.preventDefault();
+		event.stopPropagation();
+		back_to_invoice();
+		return;
+	}
+
+	// 2. Exact Cash: '=' everywhere, or 'Space' in cash input / non-text targets
+	const isExactKey = event.key === "=" || event.code === "Equal" || event.code === "NumpadEqual";
+	const isSpaceKey = event.key === " " || event.code === "Space";
+
+	if (isExactKey || (isSpaceKey && shouldAllowSpaceForExactCash(event.target))) {
+		event.preventDefault();
+		event.stopPropagation();
+		triggerExactCash();
+		return;
+	}
+
+	// 3. Fiscal Sale (Print receipt / TP809): F11 or Shift+Enter or Ctrl+Shift+Enter
+	const isF11 = event.key === "F11" || event.code === "F11";
+	const isEnter = event.key === "Enter" || event.code === "Enter" || event.code === "NumpadEnter";
+	const isShiftEnter = isEnter && event.shiftKey;
+
+	if (isF11 || isShiftEnter) {
+		event.preventDefault();
+		event.stopPropagation();
+		if (typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+			document.activeElement.blur();
+		}
+		submit(null, false, true);
+		return;
+	}
+
+	// 4. Simple Sale (No receipt): Enter (without Shift) or Ctrl+Enter
+	if (isEnter && !event.shiftKey) {
+		if (document.activeElement?.closest?.(".payment-cancel-btn")) {
+			event.preventDefault();
+			event.stopPropagation();
+			back_to_invoice();
+			return;
+		}
+		if (document.activeElement?.closest?.(".payment-submit-print-btn")) {
+			event.preventDefault();
+			event.stopPropagation();
+			if (typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+				document.activeElement.blur();
+			}
+			submit(null, false, true);
+			return;
+		}
+
+		event.preventDefault();
+		event.stopPropagation();
+		if (typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+			document.activeElement.blur();
+		}
+		submit(null, false, false);
+		return;
+	}
 
 	if (props.counterGridMode) {
 		const counterShortcut = resolveCounterGridPaymentShortcut(event, visiblePaymentMethods.value.length);
@@ -2253,7 +2209,7 @@ watch(selectedCustomer, (newCustomer, oldCustomer) => {
 // Lifecycle
 onMounted(() => {
 	_shortcutHandlers.value.handlePaymentShortcut = handlePaymentShortcut.bind(this);
-	document.addEventListener("keydown", _shortcutHandlers.value.handlePaymentShortcut);
+	document.addEventListener("keydown", _shortcutHandlers.value.handlePaymentShortcut, true);
 
 	syncStore.syncPendingInvoices();
 	eventBus.on("network-online", () => syncStore.syncPendingInvoices());
@@ -2357,7 +2313,7 @@ onBeforeUnmount(() => {
 	clearBackgroundStatusCheck();
 
 	if (_shortcutHandlers.value.handlePaymentShortcut) {
-		document.removeEventListener("keydown", _shortcutHandlers.value.handlePaymentShortcut);
+		document.removeEventListener("keydown", _shortcutHandlers.value.handlePaymentShortcut, true);
 	}
 });
 

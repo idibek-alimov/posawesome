@@ -80,7 +80,21 @@
 		<!-- 4. Amount to pay -->
 		<div class="ct-total">
 			<span>{{ isReturn ? frappe._("К возврату") : frappe._("К оплате") }}</span>
-			<strong>{{ money(Math.abs(payable)) }}</strong>
+			<strong v-if="isReturn">{{ money(Math.abs(payable)) }}</strong>
+			<div v-else class="ct-net-wrap">
+				<input
+					class="ct-net-input"
+					inputmode="decimal"
+					:value="netEditing ? netInput : formatNet(payable)"
+					:readonly="discountLocked"
+					:title="frappe._('Договорная сумма: введите итог, скидка рассчитается автоматически')"
+					@focus="onNetFocus"
+					@input="onNetInput($event.target.value)"
+					@blur="onNetBlur"
+					@keydown.enter.stop="$event.target.blur()"
+				/>
+				<span class="ct-net-cur">{{ displayCurrency }}</span>
+			</div>
 		</div>
 
 		<!-- 5. Points that will be earned -->
@@ -163,6 +177,44 @@ const onPercentInput = (value) => {
 	percentInput.value = value;
 	amountInput.value = "";
 	emit("update-discount", { amount: 0, percentage: toNumber(value) });
+};
+
+// ---- agreed net (reverse discount) ----
+const netInput = ref("");
+const netEditing = ref(false);
+const formatNet = (v) => props.formatCurrency(Math.max(v, 0), props.displayCurrency);
+const onNetFocus = (event) => {
+	if (props.discountLocked) {
+		event?.target?.blur?.();
+		emit("request-manager");
+		return;
+	}
+	netEditing.value = true;
+	netInput.value = String(Math.max(props.payable, 0));
+	event?.target?.select?.();
+};
+const onNetInput = (value) => {
+	if (props.discountLocked) return;
+	netInput.value = value;
+	if (String(value).trim() === "") return;
+	let net = Math.max(toNumber(value), 0);
+	// Net cannot exceed the amount without discount
+	const maxNet = props.payable + discountAmount.value;
+	if (net > maxNet) {
+		net = maxNet;
+		netInput.value = String(net);
+		frappe.show_alert?.({
+			message: frappe._("Договорная сумма не может быть больше суммы покупки"),
+			indicator: "orange",
+		});
+	}
+	const newDiscount = Math.max(discountAmount.value + (props.payable - net), 0);
+	amountInput.value = newDiscount > 0 ? String(newDiscount) : "";
+	percentInput.value = "";
+	emit("update-discount", { amount: newDiscount, percentage: 0 });
+};
+const onNetBlur = () => {
+	netEditing.value = false;
 };
 
 // ---- loyalty ----
@@ -279,6 +331,34 @@ const pointsToEarn = computed(() => {
 
 .ct-total strong {
 	font-size: 1.6rem;
+	color: rgb(var(--v-theme-primary));
+}
+
+.ct-net-wrap {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 6px;
+}
+
+.ct-net-input {
+	width: 9ch;
+	min-width: 6ch;
+	text-align: right;
+	font-size: 1.6rem;
+	font-weight: 700;
+	color: rgb(var(--v-theme-primary));
+	background: transparent;
+	border: 0;
+	border-bottom: 2px dashed rgba(var(--v-theme-primary), 0.4);
+	outline: none;
+}
+
+.ct-net-input:focus {
+	border-bottom-style: solid;
+}
+
+.ct-net-cur {
+	font-weight: 700;
 	color: rgb(var(--v-theme-primary));
 }
 
