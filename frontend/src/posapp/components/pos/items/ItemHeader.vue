@@ -114,7 +114,7 @@
 					variant="solo"
 					color="primary"
 					class="pos-themed-input header-qty-input--hero"
-					:label="frappe._('QTY')"
+					:label="frappe._('QTY') === 'QTY' ? 'Количество' : frappe._('QTY')"
 					hide-details
 					data-pos-keyboard-target="item-qty"
 					:model-value="qtyInput"

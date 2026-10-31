@@ -9,18 +9,18 @@
 		<div v-if="isCounterGrid" class="counter-grid-summary" data-testid="counter-grid-summary">
 			<div class="counter-grid-summary__metrics">
 				<div class="counter-grid-summary__metric">
-					<span>{{ __("Gross") }}</span>
+					<span>{{ __("Gross") === "Gross" ? "Сумма без скидки" : __("Gross") }}</span>
 					<strong>{{ currencySymbol(displayCurrency) }}{{ formatCurrency(grossTotal) }}</strong>
 				</div>
 				<div class="counter-grid-summary__metric">
-					<span>{{ __("Item discount") }}</span>
+					<span>{{ __("Item discount") === "Item discount" ? "Скидка на товары" : __("Item discount") }}</span>
 					<strong
 						>{{ currencySymbol(displayCurrency)
 						}}{{ formatCurrency(total_items_discount_amount) }}</strong
 					>
 				</div>
 				<div class="counter-grid-summary__metric counter-grid-summary__metric--qty">
-					<span>{{ __("Quantity") }}</span>
+					<span>{{ __("Quantity") === "Quantity" ? "Количество" : __("Quantity") }}</span>
 					<strong>{{ formatFloat(total_qty, hide_qty_decimals ? 0 : undefined) }}</strong>
 				</div>
 				<div class="counter-grid-summary__discount">
@@ -74,7 +74,7 @@
 					/>
 				</div>
 				<div class="counter-grid-summary__metric counter-grid-summary__metric--total">
-					<span>{{ __("Net total") }}</span>
+					<span>{{ __("Net total") === "Net total" ? "Итого" : __("Net total") }}</span>
 					<strong>{{ currencySymbol(displayCurrency) }}{{ formatCurrency(subtotal) }}</strong>
 				</div>
 			</div>
@@ -127,19 +127,19 @@
 
 				<div v-if="!useCompactSaleDock" class="summary-hero">
 					<div class="summary-hero__copy">
-						<span class="summary-hero__eyebrow">{{ __("Total to Pay") }}</span>
+						<span class="summary-hero__eyebrow">{{ __("Total to Pay") === "Total to Pay" ? "Итого к оплате" : __("Total to Pay") }}</span>
 						<strong class="summary-hero__amount">
 							{{ currencySymbol(displayCurrency) }}{{ formatCurrency(subtotal) }}
 						</strong>
 						<div class="summary-hero__meta">
 							<span
 								>{{ formatFloat(total_qty, hide_qty_decimals ? 0 : undefined) }}
-								{{ __("qty") }}</span
+								{{ __("qty") === "qty" ? "Количество" : __("qty") }}</span
 							>
 							<span>
 								{{ currencySymbol(displayCurrency)
 								}}{{ formatCurrency(total_items_discount_amount) }}
-								{{ __("discount") }}
+								{{ __("discount") === "discount" ? "скидка" : __("discount") }}
 							</span>
 						</div>
 					</div>

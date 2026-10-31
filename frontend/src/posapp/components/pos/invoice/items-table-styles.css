@@ -606,9 +606,9 @@
 	gap: 4px;
 	padding: 4px 8px;
 	border-radius: 8px;
-	border: 1px solid var(--pos-primary-variant);
-	background: var(--pos-primary-container);
-	color: var(--pos-primary-text);
+	border: 1px solid transparent;
+	background: transparent;
+	color: var(--pos-text-primary, #111827);
 	font-weight: 700;
 	cursor: pointer;
 	transition: all 0.2s ease;
@@ -617,8 +617,8 @@
 }
 
 .posa-cart-table__editor-display:hover {
-	border-color: var(--pos-primary);
-	background: var(--pos-hover-bg);
+	border-color: var(--pos-border-light, #cbd5e1);
+	background: var(--pos-hover-bg, rgba(0, 0, 0, 0.04));
 	box-shadow: 0 1px 3px var(--pos-shadow-light);
 }
 
@@ -626,6 +626,7 @@
 	opacity: 0.75;
 	font-size: 0.7em;
 	font-weight: 600;
+	color: inherit;
 }
 
 /* Input field overrides within the table */

@@ -571,6 +571,7 @@ const memoDeps = computed(() => {
 		isEditingUom.value,
 		isEditingDiscountPercent.value,
 		isEditingDiscountAmount.value,
+		hasDiscount.value,
 	];
 });
 
@@ -1032,6 +1033,7 @@ function handleDiscountAmountPaste(event) {
 	font-weight: 700;
 	font-size: 1.5rem;
 	text-align: left;
+	color: var(--pos-text-primary, #111827);
 	font-family:
 		"SF Pro Display", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans Arabic", "Tahoma",
 		sans-serif;
@@ -1051,6 +1053,7 @@ function handleDiscountAmountPaste(event) {
 	margin-right: 3px;
 	font-size: 0.95rem;
 	font-weight: 600;
+	color: var(--pos-text-primary, #111827);
 }
 
 .negative-number {
@@ -1269,7 +1272,7 @@ td[data-column-key="item_name"] {
 	border-color: var(--pos-primary, #60a5fa);
 }
 
-/* Discount red highlight */
+/* Discount red highlight - only when product has discount */
 .discount-highlight-red {
 	color: #ef4444 !important;
 	font-weight: 800 !important;
@@ -1277,11 +1280,12 @@ td[data-column-key="item_name"] {
 
 .posa-cart-table__editor-display--discounted {
 	background-color: rgba(239, 68, 68, 0.12) !important;
+	border: 1px solid rgba(239, 68, 68, 0.28) !important;
 	border-radius: 6px;
 	padding: 2px 6px;
 }
 
-/* Rate green highlight when discount is available */
+/* Rate green highlight when discount is available - only when product has discount */
 .rate-highlight-green {
 	color: #10b981 !important;
 	font-weight: 800 !important;
@@ -1289,7 +1293,16 @@ td[data-column-key="item_name"] {
 
 .posa-cart-table__editor-display--rate-discounted {
 	background-color: rgba(16, 185, 129, 0.12) !important;
+	border: 1px solid rgba(16, 185, 129, 0.28) !important;
 	border-radius: 6px;
 	padding: 2px 6px;
+}
+
+:global(.v-theme--dark) .discount-highlight-red {
+	color: #f87171 !important;
+}
+
+:global(.v-theme--dark) .rate-highlight-green {
+	color: #34d399 !important;
 }
 </style>

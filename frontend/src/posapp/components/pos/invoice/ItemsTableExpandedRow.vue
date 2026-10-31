@@ -150,7 +150,7 @@
 								density="compact"
 								variant="outlined"
 								color="primary"
-								:label="frappe._('Price List Rate')"
+								:label="frappe._('Price List Rate') === 'Price List Rate' ? 'Цена без скидки' : frappe._('Price List Rate')"
 								class="pos-themed-input"
 								hide-details
 								:model-value="formatCurrency(item.price_list_rate ?? 0)"

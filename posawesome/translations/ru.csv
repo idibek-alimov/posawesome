@@ -901,7 +901,7 @@ Preparing background sync,Подготовка фоновой синхрониз
 "Press OK to continue offline with a warning, or Cancel to retry.","Нажмите «ОК», чтобы продолжить работу в автономном режиме с предупреждением, или «Отмена», чтобы повторить попытку."
 Previous unit of measure,Предыдущая единица измерения
 Price List,Прайс-лист
-Price List Rate,Прайс-лист
+Price List Rate,Цена без скидки
 Price list rate updated locally only,Стоимость прайс-листа обновляется только локально
 Pricing & Discounts,Цены и скидки
 Pricing Rule,Правило ценообразования
@@ -925,7 +925,8 @@ Prorated return discount,Пропорциональная скидка на во
 Purchase Amount,Сумма покупки
 Purchase Invoices,Счета за покупку
 Purchase Order created,Заказ на поставку создан
-Qty,Кол-во
+Qty,Количество
+QTY,Количество
 Qualified,Квалифицированный
 Quantity,Количество
 Quantity exceeds available stock,Количество превышает доступный запас
@@ -936,7 +937,8 @@ QZ Tray connected.,Лоток QZ подключен.
 QZ Tray is manually disconnected. Press Connect to enable it again.,"QZ Tray отключен вручную. Нажмите «Подключиться», чтобы снова включить его."
 QZ Tray is not connected.,Лоток QZ не подключен.
 QZ Tray Setup,Настройка лотка QZ
-Rate,Оценить
+Rate,Цена
+Price,Цена
 Rate adjusted to maximum allowed discount,Ставка скорректирована с учетом максимально допустимой скидки
 Ready,Готово
 Ready to resume,Готов возобновить
@@ -1239,6 +1241,17 @@ Top Up Card,Карта пополнения счета
 Top Up Mode,Режим пополнения счета
 Top Variant,Лучший вариант
 Total,Итого
+Total to Pay,Итого к оплате
+Total to pay,Итого к оплате
+qty,Количество
+discount,скидка
+Discount,Скидка
+Net total,Итого
+Net Total,Итого
+Gross,Сумма без скидки
+Item discount,Скидка на товары
+Additional Discount,Дополнительная скидка
+Additional Discount %,Доп. скидка %
 Total Amount,Общая сумма
 Total Change,Полное изменение
 Total Charges,Общая сумма сборов

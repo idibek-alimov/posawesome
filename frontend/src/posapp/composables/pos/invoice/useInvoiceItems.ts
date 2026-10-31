@@ -83,10 +83,10 @@ export function useInvoiceItems(invoiceType: Ref<string>) {
 			key: "item_name",
 			required: true,
 		},
-		{ title: __("QTY"), key: "qty", align: "center", required: true },
+		{ title: __("Количество"), key: "qty", align: "center", required: true },
 		{ title: __("UOM"), key: "uom", align: "center", required: false },
 		{
-			title: __("Price List Rate"),
+			title: __("Цена без скидки"),
 			key: "price_list_rate",
 			align: "end",
 			required: false,
@@ -104,7 +104,7 @@ export function useInvoiceItems(invoiceType: Ref<string>) {
 			align: "end",
 			required: false,
 		},
-		{ title: __("Rate"), key: "rate", align: "center", required: true },
+		{ title: __("Цена"), key: "rate", align: "center", required: true },
 		{ title: __("Amount"), key: "amount", align: "center", required: true },
 		{
 			title: __("Offer?"),
@@ -151,9 +151,16 @@ export function useInvoiceItems(invoiceType: Ref<string>) {
 		selected_columns.value = normalizeSelectedColumns(columns);
 	};
 	const items_headers = computed(() => {
-		return available_columns.value.filter(
-			(col) => selected_columns.value.includes(col.key) || col.required || col.key === "discount_percentage",
-		);
+		return available_columns.value
+			.filter(
+				(col) => selected_columns.value.includes(col.key) || col.required || col.key === "discount_percentage",
+			)
+			.map((col) => {
+				if (col.key === "qty") return { ...col, title: __("Количество") };
+				if (col.key === "price_list_rate") return { ...col, title: __("Цена без скидки") };
+				if (col.key === "rate") return { ...col, title: __("Цена") };
+				return col;
+			});
 	});
 
 	const loadColumnPreferences = () => {

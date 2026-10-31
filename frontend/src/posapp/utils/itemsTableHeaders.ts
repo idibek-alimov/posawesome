@@ -55,8 +55,8 @@ export function getItemsTableHeaders(context: "pos" | "purchase" | string, posPr
             sortable: true,
             key: "item_code",
         },
-        { title: __("Rate"), key: "rate", align: "start" },
-        { title: __("Available QTY"), key: "actual_qty", align: "start" },
+        { title: __("Rate") === "Rate" || __("Rate") === "Оценить" ? "Цена" : __("Rate"), key: "rate", align: "start" },
+        { title: __("Available QTY") === "Available QTY" ? "Доступно" : __("Available QTY"), key: "actual_qty", align: "start" },
         { title: __("Short Code"), key: "custom_short_code", align: "start", sortable: true },
     ];
 
