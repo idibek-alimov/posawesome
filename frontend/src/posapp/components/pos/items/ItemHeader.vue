@@ -1,20 +1,24 @@
 <template>
 	<div class="sticky-header">
-		<v-row class="items">
+		<v-row class="items align-center">
 			<v-col
-				class="pb-0"
+				class="py-0"
 				:cols="posProfile.posa_input_qty ? 8 : 12"
 				:sm="posProfile.posa_input_qty ? 9 : 12"
 			>
 				<div class="search-field-shell" @keydown.capture="handleSearchKeydownCapture">
 					<v-text-field
-						density="compact"
 						clearable
 						autofocus
 						variant="solo"
 						color="primary"
-						class="pos-themed-input"
-						:label="
+						class="pos-themed-input product-search-input--hero"
+						:placeholder="
+							searchCombobox
+								? __('Search saleable items')
+								: 'Поиск или сканирование товара'
+						"
+						:aria-label="
 							searchCombobox
 								? __('Search saleable items')
 								: 'Поиск или сканирование товара'
@@ -105,12 +109,11 @@
 					</div>
 				</div>
 			</v-col>
-			<v-col cols="4" sm="3" class="pb-0" v-if="posProfile.posa_input_qty">
+			<v-col cols="4" sm="3" class="py-0" v-if="posProfile.posa_input_qty">
 				<v-text-field
-					density="compact"
 					variant="solo"
 					color="primary"
-					class="pos-themed-input"
+					class="pos-themed-input header-qty-input--hero"
 					:label="frappe._('QTY')"
 					hide-details
 					data-pos-keyboard-target="item-qty"
@@ -321,7 +324,7 @@ defineExpose({
 	top: 0;
 	z-index: 5;
 	background: var(--pos-surface);
-	padding: 12px 12px 0 12px;
+	padding: 12px;
 	border-bottom: 1px solid var(--pos-border);
 	margin-bottom: 0;
 }
@@ -431,6 +434,155 @@ defineExpose({
 .search-field-shell :deep(.v-field-label) {
 	color: var(--pos-primary-variant) !important;
 	opacity: 1;
+}
+
+/* Hero Product Search Input (84px height, vertically centered) */
+.search-field-shell :deep(.v-input) {
+	--v-input-control-height: 84px !important;
+}
+
+.search-field-shell :deep(.v-field) {
+	min-height: 84px !important;
+	height: 84px !important;
+	--v-input-control-height: 84px !important;
+	--v-field-padding-top: 0px !important;
+	--v-field-padding-bottom: 0px !important;
+	--v-field-input-padding-top: 0px !important;
+	--v-field-input-padding-bottom: 0px !important;
+	padding: 0 18px !important;
+	border-radius: 16px !important;
+	box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06) !important;
+	display: flex !important;
+	align-items: center !important;
+}
+
+.search-field-shell :deep(.v-field__field) {
+	height: 100% !important;
+	min-height: 84px !important;
+	display: flex !important;
+	align-items: center !important;
+	align-self: center !important;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.search-field-shell :deep(.v-field__input) {
+	height: 100% !important;
+	display: flex !important;
+	align-items: center !important;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.search-field-shell :deep(.v-field__input input),
+.search-field-shell :deep(input) {
+	height: 52px !important;
+	line-height: normal !important;
+	font-size: 2.2rem !important;
+	font-weight: 700 !important;
+	color: var(--pos-text-primary) !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	align-self: center !important;
+	box-sizing: border-box !important;
+}
+
+.search-field-shell :deep(input::placeholder) {
+	font-size: 1.8rem !important;
+	font-weight: 500 !important;
+	color: var(--pos-primary-variant) !important;
+	opacity: 0.8 !important;
+	line-height: normal !important;
+	vertical-align: middle !important;
+}
+
+/* Ensure no label overlaps the typed input */
+.search-field-shell :deep(.v-label),
+.search-field-shell :deep(.v-field-label) {
+	display: none !important;
+}
+
+.search-field-shell :deep(.v-field__prepend-inner) {
+	align-self: center !important;
+	padding: 0 !important;
+	margin: 0 14px 0 0 !important;
+	display: flex !important;
+	align-items: center !important;
+}
+
+.search-field-shell :deep(.v-field__prepend-inner .v-icon) {
+	font-size: 38px !important;
+	width: 38px !important;
+	height: 38px !important;
+}
+
+.search-field-shell :deep(.v-field__append-inner) {
+	align-self: center !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	display: flex !important;
+	align-items: center !important;
+	gap: 8px !important;
+}
+
+.search-field-shell :deep(.v-field__clearable) {
+	align-self: center !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	display: flex !important;
+	align-items: center !important;
+}
+
+.search-field-shell :deep(.v-field__clearable .v-icon) {
+	font-size: 30px !important;
+	width: 30px !important;
+	height: 30px !important;
+}
+
+.search-field-shell :deep(.v-field__append-inner .v-btn) {
+	width: 46px !important;
+	height: 46px !important;
+	align-self: center !important;
+}
+
+.search-field-shell :deep(.v-field__append-inner .v-btn .v-icon) {
+	font-size: 28px !important;
+}
+
+/* Matching 84px QTY input (if enabled) */
+.header-qty-input--hero :deep(.v-field) {
+	min-height: 84px !important;
+	height: 84px !important;
+	--v-input-control-height: 84px !important;
+	border-radius: 16px !important;
+	box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06) !important;
+}
+
+.header-qty-input--hero :deep(.v-field__field) {
+	height: 84px !important;
+	min-height: 84px !important;
+	align-items: center !important;
+}
+
+.header-qty-input--hero :deep(.v-field__input),
+.header-qty-input--hero :deep(.v-field__input input),
+.header-qty-input--hero :deep(input) {
+	min-height: 84px !important;
+	height: 84px !important;
+	font-size: 2.2rem !important;
+	line-height: 84px !important;
+	font-weight: 700 !important;
+	text-align: center;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+}
+
+.header-qty-input--hero :deep(.v-label.v-field-label),
+.header-qty-input--hero :deep(input::placeholder) {
+	font-size: 1.65rem !important;
+	line-height: 1.2 !important;
+	text-align: center;
+	width: 100%;
 }
 
 @media (max-width: 768px) {

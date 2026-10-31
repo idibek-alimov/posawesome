@@ -100,6 +100,7 @@ export const useInvoiceStore = defineStore("invoice", () => {
 	const totalQty = ref(0);
 	const grossTotal = ref(0);
 	const discountTotal = ref(0);
+	const lastTouchedRowId = ref<string | null>(null);
 
 	/**
 	 * Bumps `metadata.changeVersion` and records `lastUpdated = Date.now()`.
@@ -444,6 +445,7 @@ export const useInvoiceStore = defineStore("invoice", () => {
 		});
 
 		if (addedIds.length > 0) {
+			lastTouchedRowId.value = addedIds[addedIds.length - 1] ?? null;
 			if (index >= 0 && index < itemOrder.value.length) {
 				itemOrder.value.splice(index, 0, ...addedIds);
 			} else if (index === 0) {
@@ -531,6 +533,7 @@ export const useInvoiceStore = defineStore("invoice", () => {
 
 		const before = cloneItem(item);
 		updater(item);
+		lastTouchedRowId.value = rowId;
 		applyLineTotalsDiff(before, item);
 		touch();
 		return item;
@@ -743,6 +746,7 @@ export const useInvoiceStore = defineStore("invoice", () => {
 		deliveryCharges,
 		deliveryChargesRate,
 		selectedDeliveryCharge,
+		lastTouchedRowId,
 		// Setters
 		setDiscountAmount,
 		setAdditionalDiscount,

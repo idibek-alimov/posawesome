@@ -60,6 +60,16 @@ export function useResponsive() {
 			containerHeightVh = 64;
 		}
 
+		const desktopContainerHeight = Math.max(280, windowHeight.value - 328);
+		const containerHeightValue = isPhone.value
+			? `${containerHeightVh}vh`
+			: `${desktopContainerHeight}px`;
+
+		const leftContainerHeight = desktopContainerHeight + 216 + 8;
+		const leftContainerHeightValue = isPhone.value
+			? `${containerHeightVh}vh`
+			: `${leftContainerHeight}px`;
+
 		let bottomSafeSpace = 24;
 		if (windowWidth.value < 600) {
 			bottomSafeSpace = isShortViewport.value ? 176 : 196;
@@ -73,7 +83,9 @@ export function useResponsive() {
 			"--dynamic-md": `${dynamicSpacing.value.md}px`,
 			"--dynamic-lg": `${dynamicSpacing.value.lg}px`,
 			"--dynamic-xl": `${dynamicSpacing.value.xl}px`,
-			"--container-height": `${containerHeightVh}vh`,
+			"--container-height": containerHeightValue,
+			"--left-container-height": leftContainerHeightValue,
+			"--bottom-bar-height": "216px",
 			"--card-height": `${cardHeightVh}vh`,
 			"--bottom-safe-space": `${bottomSafeSpace}px`,
 			"--viewport-height": `${windowHeight.value}px`,

@@ -86,8 +86,13 @@ export async function add_item(context: any, item: any, options: any = {}) {
 	}
 	applyReturnDiscountProration(context);
 
+	if ((res as any)?.posa_row_id && context?.invoiceStore) {
+		context.invoiceStore.lastTouchedRowId = (res as any).posa_row_id;
+	}
+
 	if (
 		res &&
+		!options?.keepSearchFocus &&
 		shouldFocusCartQtyAfterItemAdd(context.pos_profile) &&
 		context.eventBus &&
 		typeof context.eventBus.emit === "function"
@@ -118,26 +123,6 @@ export async function add_item(context: any, item: any, options: any = {}) {
 			typeof item?.qty === "number" ? item.qty : parseFloat(item?.qty);
 		const shouldAnnounce = Number.isFinite(rawQty) ? rawQty > 0 : true;
 
-		if (shouldAnnounce) {
-			const addedQty = Number.isFinite(rawQty) ? Math.abs(rawQty) : 1;
-			const rawPrecision = Number(context.float_precision);
-			const precision = Number.isInteger(rawPrecision)
-				? Math.min(Math.max(rawPrecision, 0), 6)
-				: 2;
-			const displayQty = Number.isInteger(addedQty)
-				? addedQty
-				: Number(addedQty.toFixed(precision));
-			const itemName = item?.item_name || item?.item_code || __("Item");
-			const detail = __("{0} (Qty: {1})", [itemName, displayQty]);
-
-			context.toastStore.show({
-				title: __("Item {0} added to invoice", [itemName]),
-				summary: __("Items added to invoice"),
-				detail,
-				color: "success",
-				groupId: "invoice-item-added",
-			});
-		}
 	}
 
 	return res;

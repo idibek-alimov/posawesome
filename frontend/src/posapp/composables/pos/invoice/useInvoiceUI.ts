@@ -135,31 +135,12 @@ export function useInvoiceUI() {
 	};
 
 	const loadInvoiceHeight = () => {
-		const defaultHeight = getDefaultInvoiceHeight();
 		try {
-			if (!canResizeInvoicePanel()) {
-				invoiceHeight.value = clampInvoiceHeight(
-					defaultHeight,
-					defaultHeight,
-				);
-				return;
-			}
-			const saved = localStorage.getItem("posawesome_invoice_height");
-			invoiceHeight.value = clampInvoiceHeight(
-				saved || defaultHeight,
-				defaultHeight,
-			);
-			localStorage.setItem(
-				"posawesome_invoice_height",
-				invoiceHeight.value,
-			);
+			localStorage.removeItem("posawesome_invoice_height");
 		} catch (e) {
-			console.error("Failed to load invoice height:", e);
-			invoiceHeight.value = clampInvoiceHeight(
-				defaultHeight,
-				defaultHeight,
-			);
+			// ignore storage errors
 		}
+		invoiceHeight.value = null;
 	};
 
 	const confirmPaymentSubmission = (initialAmount = 0) => {

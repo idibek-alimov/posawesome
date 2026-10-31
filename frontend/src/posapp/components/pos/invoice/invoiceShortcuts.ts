@@ -222,6 +222,8 @@ interface InvoiceShortcutsVm {
 		cellEdge?: "first" | "last";
 	}) => void;
 	enterInvoiceItemsGridFromArrow?: (_key?: string) => void;
+	add_one?: (_item: any) => void;
+	subtract_one?: (_item: any) => void;
 }
 
 const invoiceShortcuts: Record<string, unknown> & ThisType<InvoiceShortcutsVm> =
@@ -244,6 +246,76 @@ const invoiceShortcuts: Record<string, unknown> & ThisType<InvoiceShortcutsVm> =
 				consumeEvent(event);
 				this.show_payment?.();
 				return;
+			}
+
+			const getTargetItem = () => {
+				const items = this.items || [];
+				if (!items.length) return null;
+				const lastId = (this as any).invoiceStore?.lastTouchedRowId || (this as any).lastTouchedRowId;
+				if (lastId) {
+					const found = items.find((it: any) => it.posa_row_id === lastId);
+					if (found) return found;
+				}
+				return items[0] || items[items.length - 1];
+			};
+
+			// Fast Cashier workflow (myFin / MARKET pattern):
+			// "Insert" key: immediately increase quantity of the current / last item (+1)
+			if (key === "Insert" || event.code === "Insert") {
+				const count = this.items?.length || 0;
+				if (count > 0) {
+					consumeEvent(event);
+					const targetItem = getTargetItem();
+					if (targetItem) {
+						this.add_one?.(targetItem);
+					}
+					return;
+				}
+			}
+
+			// "ArrowRight" / "ArrowLeft":
+			// If not editing text with active content in an input field:
+			// ArrowRight -> increment quantity of current item (+1)
+			// ArrowLeft  -> decrement quantity of current item (-1)
+			const target = event.target as HTMLElement | null;
+			const isEditingTextWithContent =
+				isTextEditingTarget(target) &&
+				Boolean(
+					(target as HTMLInputElement).value &&
+					(target as HTMLInputElement).value.trim().length > 0,
+				);
+
+			if (
+				!isEditingTextWithContent &&
+				!event.altKey &&
+				!event.ctrlKey &&
+				!event.metaKey &&
+				!hasVisibleOverlay()
+			) {
+				const count = this.items?.length || 0;
+				if (count > 0) {
+					if (key === "ArrowRight") {
+						consumeEvent(event);
+						const targetItem = getTargetItem();
+						if (targetItem) {
+							this.add_one?.(targetItem);
+						}
+						return;
+					}
+					if (key === "ArrowLeft") {
+						consumeEvent(event);
+						const targetItem = getTargetItem();
+						if (targetItem) {
+							const absQty = Math.abs(Number((targetItem as any)?.qty) || 0);
+							if (absQty <= 1) {
+								this.eventBus?.emit("confirm_remove_item", targetItem);
+							} else {
+								this.subtract_one?.(targetItem);
+							}
+						}
+						return;
+					}
+				}
 			}
 
 			if (shouldEnterInvoiceGridFromArrow(event)) {

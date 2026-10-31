@@ -313,18 +313,6 @@ export function useScannerInput(options: ScannerInputOptions = {}) {
 				pendingScanCode.value = code;
 				searchFromScanner.value = true;
 
-				// Show feedback
-				if (toastStore) {
-					toastStore.show({
-						title: __("Scanning for: {0}", [code]),
-						summary: __("Scanning items"),
-						detail: code,
-						color: "info",
-						timeout: 2000,
-						key: "scanner-progress",
-					});
-				}
-
 				if (onScanHandler.value) {
 					await (onScanHandler.value as any)(code);
 				}

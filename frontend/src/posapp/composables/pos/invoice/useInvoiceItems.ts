@@ -35,6 +35,7 @@ import type { Ref } from "vue";
 import { useInvoiceStore } from "../../../stores/invoiceStore";
 import { useToastStore } from "../../../stores/toastStore";
 import { useUIStore } from "../../../stores/uiStore";
+import { bus } from "../../../bus";
 import { useStockUtils } from "../shared/useStockUtils";
 import { useItemAddition } from "../items/useItemAddition";
 import { parseBooleanSetting } from "../../../utils/stock";
@@ -43,7 +44,6 @@ import {
 	saveDeliveryChargesCache,
 } from "../../../../offline/index";
 import format from "../../../format";
-import { bus } from "../../../bus";
 
 // @ts-ignore
 const __ = window.__ || ((s) => s);
@@ -152,7 +152,7 @@ export function useInvoiceItems(invoiceType: Ref<string>) {
 	};
 	const items_headers = computed(() => {
 		return available_columns.value.filter(
-			(col) => selected_columns.value.includes(col.key) || col.required,
+			(col) => selected_columns.value.includes(col.key) || col.required || col.key === "discount_percentage",
 		);
 	});
 
@@ -160,7 +160,12 @@ export function useInvoiceItems(invoiceType: Ref<string>) {
 		try {
 			const saved = localStorage.getItem("posawesome_selected_columns");
 			if (saved) {
-				setSelectedColumns(JSON.parse(saved));
+				const cols = JSON.parse(saved);
+				const normalized = Array.isArray(cols) ? cols : [];
+				if (!normalized.includes("discount_percentage")) {
+					normalized.push("discount_percentage");
+				}
+				setSelectedColumns(normalized);
 			} else if (pos_profile.value) {
 				// Default selection based on POS Profile
 				setSelectedColumns(
@@ -168,11 +173,7 @@ export function useInvoiceItems(invoiceType: Ref<string>) {
 						.filter((col) => {
 							if (col.required) return true;
 							if (col.key === "price_list_rate") return true;
-							if (
-								col.key === "discount_percentage" &&
-								pos_profile.value?.posa_display_discount_percentage
-							)
-								return true;
+							if (col.key === "discount_percentage") return true;
 							if (
 								col.key === "discount_amount" &&
 								pos_profile.value?.posa_display_discount_amount
@@ -182,6 +183,8 @@ export function useInvoiceItems(invoiceType: Ref<string>) {
 						})
 						.map((col) => col.key),
 				);
+			} else {
+				setSelectedColumns(["price_list_rate", "discount_percentage"]);
 			}
 		} catch (e) {
 			console.error("Failed to load column preferences:", e);
@@ -445,11 +448,7 @@ export function useInvoiceItems(invoiceType: Ref<string>) {
 		const proposed = (item.qty || 0) + delta;
 
 		if (proposed === 0) {
-			removeItem(item, {
-				invoiceStore,
-				items: invoiceStore.items,
-				pos_profile: pos_profile.value,
-			});
+			bus.emit("confirm_remove_item", item);
 			return;
 		}
 		setFormatedQty(item, "qty", null, false, proposed);

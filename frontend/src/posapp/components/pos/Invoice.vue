@@ -12,19 +12,18 @@
 		<v-card
 			ref="invoiceCard"
 			:style="{
-				height: isCounterGridPresentation ? 'auto' : invoiceHeight || 'var(--container-height)',
-				maxHeight: isCounterGridPresentation ? 'none' : invoiceHeight || 'var(--container-height)',
-				resize: !isCounterGridPresentation && canResizeInvoicePanel() ? 'vertical' : 'none',
+				height: isCounterGridPresentation ? 'auto' : 'var(--container-height)',
+				maxHeight: isCounterGridPresentation ? 'none' : 'var(--container-height)',
+				minHeight: isCounterGridPresentation ? 'auto' : 'var(--container-height)',
+				resize: 'none',
 				overflow: isCounterGridPresentation ? 'hidden' : 'auto',
 			}"
 			:class="[
-				'cards my-0 py-0 mt-3 resizable invoice-main-card',
+				'cards my-0 py-0 mt-3 invoice-main-card',
 				'pos-themed-card',
 				{ 'return-mode': isReturnInvoice },
 				{ 'invoice-main-card--counter-grid': isCounterGridPresentation },
 			]"
-			@mouseup="saveInvoiceHeight($refs.invoiceCard)"
-			@touchend="saveInvoiceHeight($refs.invoiceCard)"
 		>
 			<!-- Dynamic padding wrapper -->
 			<div class="dynamic-padding">
@@ -1631,6 +1630,10 @@ export default {
 	display: flex;
 	flex-direction: column;
 	flex: 0 0 auto;
+	height: var(--container-height) !important;
+	max-height: var(--container-height) !important;
+	min-height: var(--container-height) !important;
+	resize: none !important;
 	overflow: auto !important;
 	min-width: 0;
 }

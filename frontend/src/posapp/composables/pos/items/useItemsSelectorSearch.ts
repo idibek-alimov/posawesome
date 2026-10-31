@@ -239,6 +239,15 @@ export const useItemsSelectorSearch = ({
 		if (!match && Array.isArray(new_item.barcodes)) {
 			match = new_item.barcodes.some((bc) => String(bc) === search);
 		}
+		if (!match && new_item.custom_short_code && String(new_item.custom_short_code).trim().toLowerCase() === search.trim().toLowerCase()) {
+			match = true;
+		}
+		if (!match && new_item.item_code && String(new_item.item_code).trim().toLowerCase() === search.trim().toLowerCase()) {
+			match = true;
+		}
+		if (!match && displayedItems.length === 1) {
+			match = true;
+		}
 
 		if (vm.flags && vm.flags.serial_no) {
 			new_item.to_set_serial_no = vm.flags.serial_no;
@@ -415,12 +424,20 @@ export const useItemsSelectorSearch = ({
 		const vm = getVm();
 		if (!vm) return;
 
-		if (getHighlightedIndex(itemSelection || vm.itemSelection) >= 0) {
+		const selection = itemSelection || vm.itemSelection;
+		const displayed = Array.isArray(vm.displayedItems) ? vm.displayedItems : [];
+
+		if (getHighlightedIndex(selection) < 0 && displayed.length === 1) {
+			selection?.highlightFirstItem?.();
+		}
+
+		if (getHighlightedIndex(selection) >= 0) {
 			if (event && typeof event.preventDefault === "function") {
 				event.preventDefault();
 			}
-			(itemSelection || vm.itemSelection).selectHighlightedItem({
+			selection.selectHighlightedItem({
 				postAddFocus: event?.shiftKey ? "qty" : "default",
+				keepSearchFocus: !event?.shiftKey,
 			});
 			return;
 		}

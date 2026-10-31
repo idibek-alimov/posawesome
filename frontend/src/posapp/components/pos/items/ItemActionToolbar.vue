@@ -1,10 +1,11 @@
 <template>
 	<v-card
-		class="cards mb-0 mt-3 dynamic-padding"
+		class="cards item-action-toolbar-card pos-bottom-bar mb-0 mt-3 py-2 px-3 rounded-lg pos-themed-card"
 		:class="{ 'cards--with-mobile-offset': reserveBottomDockSpace }"
 	>
-		<v-row no-gutters align="center" justify="center" class="dynamic-spacing-sm">
-			<v-col cols="12" class="mb-2">
+		<div class="toolbar-inner-container">
+			<!-- Row 1: Items Group selection -->
+			<div class="toolbar-row toolbar-row--select">
 				<v-select
 					:items="itemsGroup"
 					:label="frappe._('Items Group')"
@@ -12,21 +13,13 @@
 					variant="solo"
 					hide-details
 					:model-value="modelValue"
+					class="item-group-select"
 					@update:model-value="$emit('update:modelValue', $event)"
 				></v-select>
-			</v-col>
-			<v-col cols="12" class="mb-2" v-if="posProfile.posa_enable_price_list_dropdown !== false">
-				<v-text-field
-					density="compact"
-					variant="solo"
-					color="primary"
-					:label="frappe._('Price List')"
-					hide-details
-					:model-value="activePriceList"
-					readonly
-				></v-text-field>
-			</v-col>
-			<v-col cols="12" sm="4" class="dynamic-margin-xs">
+			</div>
+
+			<!-- Row 2: View toggle (List/Card) + Offers + Coupons -->
+			<div class="toolbar-row toolbar-row--actions">
 				<v-btn-toggle
 					:model-value="itemsView"
 					@update:model-value="$emit('update:itemsView', $event)"
@@ -39,32 +32,32 @@
 					<v-btn size="small" value="list">{{ __("List") }}</v-btn>
 					<v-btn size="small" value="card">{{ __("Card") }}</v-btn>
 				</v-btn-toggle>
-			</v-col>
-			<v-col cols="6" sm="4" class="dynamic-margin-xs">
-				<v-btn
-					size="small"
-					block
-					color="warning"
-					variant="text"
-					@click="$emit('open-offers')"
-					class="action-btn-consistent"
-				>
-					{{ offersCount }} {{ __("Offers") }}
-				</v-btn>
-			</v-col>
-			<v-col cols="6" sm="4" class="dynamic-margin-xs">
-				<v-btn
-					size="small"
-					block
-					color="primary"
-					variant="text"
-					@click="$emit('open-coupons')"
-					class="action-btn-consistent"
-				>
-					{{ couponsCount }} {{ __("Coupons") }}
-				</v-btn>
-			</v-col>
-		</v-row>
+
+				<div class="toolbar-badge-buttons">
+					<v-btn
+						size="small"
+						color="warning"
+						variant="tonal"
+						@click="$emit('open-offers')"
+						class="action-btn-consistent"
+					>
+						<v-icon start size="16">mdi-tag-outline</v-icon>
+						{{ offersCount }} {{ __("Offers") }}
+					</v-btn>
+
+					<v-btn
+						size="small"
+						color="primary"
+						variant="tonal"
+						@click="$emit('open-coupons')"
+						class="action-btn-consistent"
+					>
+						<v-icon start size="16">mdi-ticket-percent-outline</v-icon>
+						{{ couponsCount }} {{ __("Coupons") }}
+					</v-btn>
+				</div>
+			</div>
+		</div>
 	</v-card>
 </template>
 
@@ -87,47 +80,80 @@ defineEmits(["update:modelValue", "update:itemsView", "open-offers", "open-coupo
 </script>
 
 <style scoped>
-.action-btn-consistent {
-	height: 36px !important;
-	margin-top: var(--dynamic-xs) !important;
-	padding: var(--pos-space-2) var(--pos-space-3) !important;
-	transition: var(--transition-normal) !important;
-	border-radius: var(--pos-radius-sm) !important;
-	text-transform: none !important;
-	font-weight: 600 !important;
-}
-
-.action-btn-consistent:hover {
-	background-color: rgba(var(--v-theme-primary), 0.1) !important;
-	transform: none !important;
-}
-
-.view-toggle-btn {
-	height: 36px;
-	border: 1px solid var(--pos-border-light);
-	border-radius: var(--pos-radius-sm);
-}
-
-.dynamic-padding {
-	padding: var(--dynamic-sm);
-}
-
-.dynamic-spacing-sm {
-	padding: var(--dynamic-sm) !important;
-}
-
-.cards {
+.item-action-toolbar-card {
 	background-color: var(--pos-surface-muted) !important;
-	margin-top: var(--dynamic-sm) !important;
-	padding: var(--dynamic-sm) !important;
 	border: 1px solid var(--pos-border-light);
-	border-radius: var(--pos-radius-md) !important;
-	box-shadow: none !important;
 	position: sticky;
 	bottom: 0;
 	z-index: 7;
 	min-width: 0;
-	overflow: visible;
+	overflow: hidden;
+}
+
+@media (min-width: 960px) {
+	.pos-bottom-bar {
+		height: var(--bottom-bar-height, 108px) !important;
+		min-height: var(--bottom-bar-height, 108px) !important;
+		max-height: var(--bottom-bar-height, 108px) !important;
+		box-sizing: border-box;
+	}
+}
+
+.toolbar-inner-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	height: 100%;
+	gap: 6px;
+}
+
+.toolbar-row--select {
+	flex: 0 0 auto;
+}
+
+.toolbar-row--select :deep(.v-field) {
+	border-radius: var(--pos-radius-sm, 6px);
+}
+
+.toolbar-row--actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	flex: 0 0 auto;
+}
+
+.toolbar-badge-buttons {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.action-btn-consistent {
+	height: 32px !important;
+	min-height: 32px !important;
+	padding: 0 12px !important;
+	border-radius: var(--pos-radius-sm, 6px) !important;
+	text-transform: none !important;
+	font-weight: 600 !important;
+	font-size: 0.8rem !important;
+	transition: var(--transition-normal) !important;
+}
+
+.action-btn-consistent:hover {
+	transform: translateY(-1px);
+}
+
+.view-toggle-btn {
+	height: 32px !important;
+	border: 1px solid var(--pos-border-light);
+	border-radius: var(--pos-radius-sm, 6px);
+}
+
+.view-toggle-btn :deep(.v-btn) {
+	height: 30px !important;
+	font-size: 0.78rem !important;
+	font-weight: 600 !important;
 }
 
 .cards--with-mobile-offset {
@@ -135,33 +161,32 @@ defineEmits(["update:modelValue", "update:itemsView", "open-offers", "open-coupo
 }
 
 @media (max-width: 1099px) {
-	.cards {
+	.item-action-toolbar-card {
 		position: static;
 	}
 }
 
 @media (max-width: 768px) {
-	.dynamic-padding {
-		padding: var(--dynamic-xs);
-	}
-
-	.dynamic-spacing-sm {
-		padding: var(--dynamic-xs) !important;
+	.toolbar-row--actions {
+		flex-wrap: wrap;
 	}
 
 	.view-toggle-btn {
 		width: 100%;
 	}
 
+	.toolbar-badge-buttons {
+		width: 100%;
+		justify-content: space-between;
+	}
+
 	.action-btn-consistent {
-		padding: var(--dynamic-xs) !important;
-		font-size: 0.875rem !important;
-		min-height: 42px !important;
+		flex: 1;
 	}
 }
 
 @media (max-width: 480px) {
-	.cards {
+	.item-action-toolbar-card {
 		padding: var(--dynamic-xs) !important;
 		position: static;
 	}

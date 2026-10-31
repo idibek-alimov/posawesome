@@ -396,26 +396,28 @@ const showMoreActions = computed(
 .classic-actions {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: 10px;
 	width: 100%;
+	height: 100%;
+	justify-content: center;
 }
 
 .classic-secondary-actions {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 5px;
+	gap: 6px;
 	align-items: center;
 	justify-content: flex-end;
 }
 
 .secondary-action-btn {
-	height: 30px !important;
-	min-height: 30px !important;
-	padding: 0 9px !important;
-	font-size: 0.76rem !important;
+	height: 34px !important;
+	min-height: 34px !important;
+	padding: 0 10px !important;
+	font-size: 0.82rem !important;
 	font-weight: 600 !important;
 	text-transform: none !important;
-	border-radius: 6px !important;
+	border-radius: 8px !important;
 	border: 1px solid var(--pos-outline) !important;
 	background: var(--pos-surface-muted) !important;
 	color: var(--pos-text-secondary) !important;
@@ -473,17 +475,17 @@ const showMoreActions = computed(
 }
 
 .pay-btn--hero {
-	min-height: 54px !important;
-	height: 54px !important;
-	font-size: 1.35rem !important;
-	font-weight: 800 !important;
-	letter-spacing: 0.04em !important;
-	border-radius: 12px !important;
+	min-height: 96px !important;
+	height: 96px !important;
+	font-size: 1.8rem !important;
+	font-weight: 900 !important;
+	letter-spacing: 0.05em !important;
+	border-radius: 14px !important;
 }
 
 .pay-btn__label {
-	font-weight: 800;
-	letter-spacing: 0.03em;
+	font-weight: 900;
+	letter-spacing: 0.04em;
 }
 
 /* Responsive optimizations */

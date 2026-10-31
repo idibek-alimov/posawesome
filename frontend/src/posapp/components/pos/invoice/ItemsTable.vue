@@ -16,7 +16,6 @@
 			ref="virtualTable"
 			:headers="responsiveHeaders"
 			:items="displayItems"
-			show-expand
 			item-value="posa_row_id"
 			class="posa-cart-table elevation-2 pos-themed-card"
 			:class="[tableClasses, { 'posa-cart-table--counter-grid': counterGrid }]"
@@ -90,6 +89,7 @@
 					@toggle-expand="openItemHistory(item)"
 					@open-batch-serial="openBatchSerialSelector"
 					@remove-item="removeItem"
+					@open-qty-dialog="openQtyDialog"
 					@click="handleRowClick($event, item)"
 				/>
 			</template>
@@ -151,6 +151,20 @@
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
+
+		<RemoveItemConfirmDialog
+			v-model="removeConfirmDialog"
+			:item="removeConfirmItem"
+			@confirm="onConfirmRemoveItem"
+			@cancel="onCancelRemoveItem"
+		/>
+
+		<QuantityKeypadDialog
+			v-model="qtyDialog"
+			:item="qtyDialogTarget"
+			:hide-decimals="hide_qty_decimals"
+			@submit="handleQtyDialogSubmit"
+		/>
 	</div>
 </template>
 
@@ -163,6 +177,8 @@ import { logComponentRender } from "../../../utils/perf";
 import CartItemRow from "./CartItemRow.vue";
 import CounterGridEntryRow from "./CounterGridEntryRow.vue";
 import ItemSalesHistoryModal from "./ItemSalesHistoryModal.vue";
+import RemoveItemConfirmDialog from "./RemoveItemConfirmDialog.vue";
+import QuantityKeypadDialog from "./QuantityKeypadDialog.vue";
 
 import { useItemsTableSearch } from "../../../composables/pos/items/useItemsTableSearch";
 import { useItemsTableDragDrop } from "../../../composables/pos/items/useItemsTableDragDrop";
@@ -323,7 +339,7 @@ const dynamicHeaderProps = computed(() => ({
 	class: `responsive-header container-${breakpoint.value}`,
 }));
 
-const finalVisibleColumns = computed(() => [...responsiveHeaders.value, DATA_TABLE_EXPAND_COLUMN]);
+const finalVisibleColumns = computed(() => responsiveHeaders.value);
 const navigableGridColumnKeys = computed(() => getNavigableCartColumnKeys(finalVisibleColumns.value));
 const gridContainerClasses = computed(() => ({
 	"posa-cart-grid-active": gridMode.value !== "inactive",
@@ -893,6 +909,50 @@ const handleQtyChange = (item: any, event: any) => {
 	eventBus?.emit("recalculate_return_discount", { defer: true });
 };
 
+const removeConfirmDialog = ref(false);
+const removeConfirmItem = ref<any>(null);
+
+const requestRemoveConfirmation = (item: any) => {
+	if (!item) return;
+	removeConfirmItem.value = item;
+	removeConfirmDialog.value = true;
+};
+
+const qtyDialog = ref(false);
+const qtyDialogTarget = ref<any>(null);
+
+const openQtyDialog = (item: any) => {
+	qtyDialogTarget.value = item;
+	qtyDialog.value = true;
+};
+
+const handleQtyDialogSubmit = (newQty: number) => {
+	if (!qtyDialogTarget.value) return;
+	const targetItem = qtyDialogTarget.value;
+	qtyDialog.value = false;
+
+	if (newQty <= 0) {
+		requestRemoveConfirmation(targetItem);
+	} else {
+		const finalQty = props.isReturnInvoice ? -Math.abs(newQty) : Math.abs(newQty);
+		handleQtyUpdate(targetItem, finalQty);
+	}
+};
+
+const onConfirmRemoveItem = (item: any) => {
+	if (item) {
+		props.removeItem(item);
+		eventBus?.emit("recalculate_return_discount", { defer: true });
+	}
+	removeConfirmItem.value = null;
+	removeConfirmDialog.value = false;
+};
+
+const onCancelRemoveItem = () => {
+	removeConfirmItem.value = null;
+	removeConfirmDialog.value = false;
+};
+
 const handleMinusClick = (item: any) => {
 	// Replacement rows should still be removed directly.
 	if (item.posa_is_replace) {
@@ -900,15 +960,15 @@ const handleMinusClick = (item: any) => {
 		return;
 	}
 
-	// magnitude-based removal: only remove if qty magnitude <= 1
-	// This handles -1 for returns and 1 for normal invoices correctly
+	// If qty magnitude <= 1, stop at 1 and show popup confirmation
 	const absQty = Math.abs(item.qty || 0);
 	if (absQty <= 1) {
-		props.removeItem(item);
-	} else {
-		// subtract_one handles the sign-aware logic (e.g. -5 -> -4 in returns)
-		props.subtractOne(item);
+		requestRemoveConfirmation(item);
+		return;
 	}
+
+	// subtract_one handles the sign-aware logic (e.g. -5 -> -4 in returns)
+	props.subtractOne(item);
 	eventBus?.emit("recalculate_return_discount", { defer: true });
 };
 
@@ -959,12 +1019,8 @@ const handleDiscountAmountUpdate = (item: any, newDiscount: any) => {
 	props.calcPrices(item, newDiscount, { target: { id: "discount_amount" } });
 };
 
-const handleRowClick = (event: any, item: any) => {
+const handleRowClick = (_event: any, item: any) => {
 	rememberSelectedRow(getItemIndex(item));
-	if (isEditableElement(event.target as HTMLElement)) {
-		return;
-	}
-	openItemHistory(item);
 };
 
 const focusItemField = (index: number, field: CartShortcutField, options?: CartFieldFocusOptions) => {
@@ -1154,10 +1210,12 @@ onMounted(() => {
 		rows: items.value?.length || 0,
 	});
 	eventBus?.on?.("open_batch_serial_selector", openBatchSerialSelector);
+	eventBus?.on?.("confirm_remove_item", requestRemoveConfirmation);
 });
 
 onBeforeUnmount(() => {
 	eventBus?.off?.("open_batch_serial_selector", openBatchSerialSelector);
+	eventBus?.off?.("confirm_remove_item", requestRemoveConfirmation);
 	merge.clearMergeCache();
 });
 
@@ -1169,6 +1227,8 @@ defineExpose({
 	openSelectedItemWorkspace,
 	focusCounterGridEntry,
 	clearCounterGridEntry,
+	handleMinusClick,
+	requestRemoveConfirmation,
 });
 </script>
 

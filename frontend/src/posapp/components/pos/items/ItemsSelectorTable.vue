@@ -116,6 +116,9 @@
 					{{ formatActualQty(item.actual_qty) }}
 				</span>
 			</template>
+			<template v-slot:item.custom_short_code="{ item }">
+				<span class="short-code-cell">{{ item.custom_short_code || item.short_code || "" }}</span>
+			</template>
 		</v-data-table-virtual>
 	</div>
 </template>

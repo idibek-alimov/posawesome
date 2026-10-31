@@ -399,24 +399,6 @@ export function useScanProcessor(context: ScanProcessorContext) {
 				? requestedQty
 				: Number(requestedQty.toFixed(precision));
 
-			if (eventBus && eventBus.emit) {
-				toastStore.show({
-					title: __("Item {0} added to invoice", [itemName]),
-					summary: __("Items added to invoice"),
-					detail: __("{0} (Qty: {1})", [itemName, displayQty]),
-					color: "success",
-					key: "invoice-item-added",
-				});
-			} else if (typeof frappe !== "undefined" && frappe.show_alert) {
-				frappe.show_alert(
-					{
-						message: `Added: ${itemName}`,
-						indicator: "green",
-					},
-					3,
-				);
-			}
-
 			// Clear search after successful addition and refocus input via context callback
 			if (context.onItemAdded) context.onItemAdded();
 		} finally {

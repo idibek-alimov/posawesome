@@ -236,19 +236,7 @@
 				</div>
 			</v-expand-transition>
 		</v-card>
-		<ItemActionToolbar
-			v-if="presentation !== 'counter-grid-dialog'"
-			v-model="item_group"
-			:items-group="items_group"
-			v-model:items-view="items_view"
-			:pos-profile="pos_profile"
-			:active-price-list="active_price_list"
-			:offers-count="offersCount"
-			:coupons-count="couponsCount"
-			:reserve-bottom-dock-space="context === 'pos' && responsive.windowWidth.value < 1100"
-			@open-offers="uiStore.setActiveView('offers')"
-			@open-coupons="uiStore.setActiveView('coupons')"
-		/>
+
 
 		<!-- New Item Dialog -->
 		<NewItemDialog
@@ -289,7 +277,7 @@ import { storeToRefs } from "pinia";
 import * as _ from "lodash";
 
 import CameraScanner from "./CameraScanner.vue";
-import ItemActionToolbar from "./ItemActionToolbar.vue";
+
 import ItemSettingsDialog from "./ItemSettingsDialog.vue";
 import ItemHeader from "./ItemHeader.vue";
 import ItemsSelectorCards from "./ItemsSelectorCards.vue";
@@ -1046,6 +1034,8 @@ const add_item = async (item, optionsOrQty: any = {}) => {
 						itemCode: focusedLine?.item_code || item?.item_code,
 					});
 				}, 0);
+			} else if (addedLine) {
+				focusSearchInput();
 			}
 			return addedLine || null;
 		}
@@ -2046,6 +2036,10 @@ defineExpose({
 
 .selection-card {
 	border-radius: 22px;
+	height: var(--left-container-height, calc(var(--container-height) + var(--bottom-bar-height, 216px) + 8px)) !important;
+	max-height: var(--left-container-height, calc(var(--container-height) + var(--bottom-bar-height, 216px) + 8px)) !important;
+	min-height: var(--left-container-height, calc(var(--container-height) + var(--bottom-bar-height, 216px) + 8px)) !important;
+	resize: none !important;
 }
 
 .selector-section-card {

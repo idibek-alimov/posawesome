@@ -19,7 +19,7 @@ type ItemSelectionContext = {
 	addItem:
 		| ((
 				_item: SelectableItem,
-				_options?: { postAddFocus?: "default" | "qty" },
+				_options?: { postAddFocus?: "default" | "qty"; keepSearchFocus?: boolean },
 		  ) => Promise<void> | void)
 		| null;
 	clearSearch: (() => void) | null;
@@ -226,7 +226,7 @@ export function useItemSelection() {
 	// --- Selection Logic ---
 
 	async function selectHighlightedItem(
-		options: { postAddFocus?: "default" | "qty" } = {},
+		options: { postAddFocus?: "default" | "qty"; keepSearchFocus?: boolean } = {},
 	) {
 		if (
 			!Array.isArray(ctx.displayedItems) ||
@@ -246,7 +246,10 @@ export function useItemSelection() {
 		}
 
 		if (ctx.addItem) {
-			await ctx.addItem(item, options);
+			await ctx.addItem(item, {
+				...options,
+				keepSearchFocus: options.keepSearchFocus !== false && options.postAddFocus !== "qty",
+			});
 		}
 
 		clearHighlightedItem();
@@ -353,7 +356,12 @@ export function useItemSelection() {
 		{ item }: { item: SelectableItem },
 	) {
 		triggerFlyAnimation(event, true);
-		if (ctx.addItem) await ctx.addItem(item);
+		if (ctx.addItem) {
+			await ctx.addItem(item, { keepSearchFocus: true });
+		}
+		clearHighlightedItem();
+		if (ctx.clearSearch) ctx.clearSearch();
+		if (ctx.focusItemSearch) ctx.focusItemSearch();
 	}
 
 	function handleSearchKeydown(event: KeyboardEvent) {

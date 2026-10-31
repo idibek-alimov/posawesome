@@ -1,6 +1,6 @@
 <template>
 	<v-card
-		class="cards sticky-summary-card mb-0 py-2 px-3 rounded-lg pos-themed-card"
+		class="cards sticky-summary-card pos-bottom-bar mb-0 py-2 px-3 rounded-lg pos-themed-card"
 		:class="{
 			'sticky-summary-card--dock-safe': useCompactSaleDock && !isCounterGrid,
 			'counter-grid-summary-card': isCounterGrid,
@@ -127,6 +127,7 @@
 
 				<div v-if="!useCompactSaleDock" class="summary-hero">
 					<div class="summary-hero__copy">
+						<span class="summary-hero__eyebrow">{{ __("Total to Pay") }}</span>
 						<strong class="summary-hero__amount">
 							{{ currencySymbol(displayCurrency) }}{{ formatCurrency(subtotal) }}
 						</strong>
@@ -810,21 +811,34 @@ defineExpose({
 	box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.08);
 }
 
+@media (min-width: 960px) {
+	.pos-bottom-bar {
+		height: var(--bottom-bar-height, 216px) !important;
+		min-height: var(--bottom-bar-height, 216px) !important;
+		max-height: var(--bottom-bar-height, 216px) !important;
+		box-sizing: border-box;
+	}
+}
+
 .sticky-summary-card--dock-safe {
 	margin-bottom: calc(var(--bottom-safe-space) + 8px);
 }
 
 .summary-content {
 	row-gap: 6px;
+	height: 100%;
 }
 
 .summary-hero {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 14px;
-	padding: 14px 16px;
-	border-radius: 20px;
+	gap: 16px;
+	padding: 14px 20px;
+	border-radius: 16px;
+	height: 100%;
+	min-height: 196px;
+	box-sizing: border-box;
 	background:
 		linear-gradient(135deg, rgba(var(--v-theme-primary), 0.12), rgba(var(--v-theme-success), 0.08)),
 		var(--pos-surface-muted);
@@ -839,26 +853,27 @@ defineExpose({
 }
 
 .summary-hero__eyebrow {
-	font-size: 0.72rem;
+	font-size: 0.85rem;
 	font-weight: 700;
 	text-transform: uppercase;
-	letter-spacing: 0;
+	letter-spacing: 0.05em;
 	color: var(--pos-text-secondary);
 }
 
 .summary-hero__amount {
-	font-size: clamp(1.8rem, 2.6vw, 2.5rem);
-	font-weight: 800;
-	letter-spacing: -0.02em;
-	line-height: 1.05;
+	font-size: clamp(2.8rem, 4.4vw, 4.2rem);
+	font-weight: 900;
+	letter-spacing: -0.03em;
+	line-height: 1;
 	color: var(--pos-text-primary);
 }
 
 .summary-hero__meta {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 8px 14px;
-	font-size: 0.84rem;
+	gap: 8px 16px;
+	font-size: 1rem;
+	font-weight: 600;
 	color: var(--pos-text-secondary);
 }
 

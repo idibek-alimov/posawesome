@@ -32,7 +32,8 @@ export function getResponsiveVisibleHeaders(
 				header.key === "item_name" ||
 				header.key === "qty" ||
 				header.key === "actions" ||
-				header.key === "amount"
+				header.key === "amount" ||
+				header.key === "discount_percentage"
 			) {
 				return true;
 			}
@@ -58,7 +59,7 @@ export function buildFinalVisibleColumns(
 ) {
 	const visibleHeaders = getResponsiveVisibleHeaders(headers, width);
 
-	if (options.showExpand === false) {
+	if (!options.showExpand) {
 		return visibleHeaders;
 	}
 
