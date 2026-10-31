@@ -21,7 +21,7 @@ for unit testing but are not part of the public API contract — they may change
 
 > **applyLocalPricingRules**(`params`): `object`
 
-Defined in: [lib/pricingEngine.ts:776](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L776)
+Defined in: [lib/pricingEngine.ts:776](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L776)
 
 #### Parameters
 
@@ -81,7 +81,7 @@ Defined in: [lib/pricingEngine.ts:776](https://github.com/idibek-alimov/posaweso
 
 > **collectCandidates**(`item?`, `indexBundle?`): `AnyRecord`[]
 
-Defined in: [lib/pricingEngine.ts:168](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L168)
+Defined in: [lib/pricingEngine.ts:168](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L168)
 
 Collects all pricing-rule candidates applicable to `item` from the pre-built index.
 
@@ -112,7 +112,7 @@ Pre-built lookup maps produced by `usePricingRulesStore`.
 
 > **computeFreeItems**(`params`): `AnyRecord`[]
 
-Defined in: [lib/pricingEngine.ts:790](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L790)
+Defined in: [lib/pricingEngine.ts:790](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L790)
 
 #### Parameters
 
@@ -176,7 +176,7 @@ Defined in: [lib/pricingEngine.ts:790](https://github.com/idibek-alimov/posaweso
 
 > **evaluatePricingRules**(`__namedParameters`): `object`
 
-Defined in: [lib/pricingEngine.ts:545](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L545)
+Defined in: [lib/pricingEngine.ts:545](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L545)
 
 Evaluates all applicable pricing rules for a single cart item in one pass.
 
@@ -266,7 +266,7 @@ Input fields (all part of the single destructured argument):
 
 > **evaluateTransactionPricingRules**(`__namedParameters`): `object`
 
-Defined in: [lib/pricingEngine.ts:744](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L744)
+Defined in: [lib/pricingEngine.ts:744](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L744)
 
 Evaluates rules whose ERPNext scope is the whole transaction exactly once.
 Transaction rules are header-level rules: their quantity and amount thresholds
@@ -322,7 +322,7 @@ use cart totals and a fixed discount amount must not be repeated per item/qty.
 
 > **inDateRange**(`currentDate`, `start`, `end`): `boolean`
 
-Defined in: [lib/pricingEngine.ts:57](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L57)
+Defined in: [lib/pricingEngine.ts:57](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L57)
 
 Returns `true` when `currentDate` falls within the `[start, end]` range.
 A missing `start` or `end` is treated as unbounded. A missing or unparseable
@@ -352,7 +352,7 @@ A missing `start` or `end` is treated as unbounded. A missing or unparseable
 
 > **matchParty**(`rule`, `customer`, `customerGroup`, `territory`): `boolean`
 
-Defined in: [lib/pricingEngine.ts:92](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L92)
+Defined in: [lib/pricingEngine.ts:92](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L92)
 
 Returns `true` when the pricing rule's customer/group/territory restrictions are
 satisfied by the current invoice context.
@@ -386,7 +386,7 @@ A rule with no restrictions on a dimension always passes that dimension's check.
 
 > **matchPriceListAndCurrency**(`rule`, `priceList`, `currency`): `boolean`
 
-Defined in: [lib/pricingEngine.ts:123](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L123)
+Defined in: [lib/pricingEngine.ts:123](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L123)
 
 #### Parameters
 
@@ -412,7 +412,7 @@ Defined in: [lib/pricingEngine.ts:123](https://github.com/idibek-alimov/posaweso
 
 > **round**(`value`, `precision?`): `number`
 
-Defined in: [lib/pricingEngine.ts:40](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L40)
+Defined in: [lib/pricingEngine.ts:40](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L40)
 
 Rounds `value` to `precision` decimal places using symmetric (half-up) rounding.
 Non-finite inputs return `0`.
@@ -437,7 +437,7 @@ Non-finite inputs return `0`.
 
 > **ruleSort**(`a`, `b`): `number`
 
-Defined in: [lib/pricingEngine.ts:212](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L212)
+Defined in: [lib/pricingEngine.ts:212](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L212)
 
 #### Parameters
 
@@ -459,7 +459,7 @@ Defined in: [lib/pricingEngine.ts:212](https://github.com/idibek-alimov/posaweso
 
 > **PricingRuleIndexBundle** = `object`
 
-Defined in: [lib/pricingEngine.ts:18](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L18)
+Defined in: [lib/pricingEngine.ts:18](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L18)
 
 #### Properties
 
@@ -467,28 +467,28 @@ Defined in: [lib/pricingEngine.ts:18](https://github.com/idibek-alimov/posawesom
 
 > `optional` **byBrand?**: `Map`\<`string`, `AnyRecord`[]\>
 
-Defined in: [lib/pricingEngine.ts:21](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L21)
+Defined in: [lib/pricingEngine.ts:21](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L21)
 
 ##### byGroup?
 
 > `optional` **byGroup?**: `Map`\<`string`, `AnyRecord`[]\>
 
-Defined in: [lib/pricingEngine.ts:20](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L20)
+Defined in: [lib/pricingEngine.ts:20](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L20)
 
 ##### byItem?
 
 > `optional` **byItem?**: `Map`\<`string`, `AnyRecord`[]\>
 
-Defined in: [lib/pricingEngine.ts:19](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L19)
+Defined in: [lib/pricingEngine.ts:19](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L19)
 
 ##### general?
 
 > `optional` **general?**: `AnyRecord`[]
 
-Defined in: [lib/pricingEngine.ts:22](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L22)
+Defined in: [lib/pricingEngine.ts:22](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L22)
 
 ##### preSorted?
 
 > `optional` **preSorted?**: `boolean`
 
-Defined in: [lib/pricingEngine.ts:23](https://github.com/idibek-alimov/posawesome/blob/44e61ba900f17c78bbc34887ba773edafbcd0151/frontend/src/lib/pricingEngine.ts#L23)
+Defined in: [lib/pricingEngine.ts:23](https://github.com/idibek-alimov/posawesome/blob/41871234a836389b3b84e10447d3409de1903cf2/frontend/src/lib/pricingEngine.ts#L23)
