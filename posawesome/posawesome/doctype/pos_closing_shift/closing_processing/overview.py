@@ -629,6 +629,50 @@ def get_closing_shift_overview(pos_opening_shift):
         currency_row["total"] += movement_amount
         currency_row["company_currency_total"] += movement_amount
 
+    # Also include Quick Expenses paid from POS till cash
+    pos_cash_account = frappe.db.get_value(
+        "Mode of Payment Account",
+        {"parent": cash_mode_of_payment, "company": opening_shift_doc.company},
+        "default_account",
+    )
+    quick_expenses = frappe.get_all(
+        "Quick Expense",
+        filters={"pos_opening_shift": opening_shift_doc.name, "docstatus": 1},
+        fields=["expense_category", "amount", "paid_from", "mode_of_payment"],
+    )
+    for qe in quick_expenses:
+        is_cash = (
+            (pos_cash_account and qe.get("paid_from") == pos_cash_account)
+            or qe.get("mode_of_payment") == cash_mode_of_payment
+            or not qe.get("paid_from")
+        )
+        if not is_cash:
+            continue
+        qe_amount = abs(flt(qe.get("amount")))
+        if not qe_amount:
+            continue
+        cash_movement_count += 1
+        cash_movement_company_currency_total += qe_amount
+
+        movement_type = f"Расход: {qe.get('expense_category') or 'Прочие'}"
+        type_row = cash_movement_totals_by_type.setdefault(
+            movement_type,
+            {"movement_type": movement_type, "total": 0},
+        )
+        type_row["total"] += qe_amount
+
+        currency_row = cash_movement_totals_by_currency.setdefault(
+            company_currency,
+            {
+                "currency": company_currency,
+                "total": 0,
+                "company_currency_total": 0,
+                "exchange_rates": set(),
+            },
+        )
+        currency_row["total"] += qe_amount
+        currency_row["company_currency_total"] += qe_amount
+
     if cash_mode_of_payment:
         for row in payments_by_mode.values():
             if row["mode_of_payment"] != cash_mode_of_payment:

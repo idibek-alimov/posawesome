@@ -31,6 +31,16 @@ const routes = [
 		meta: { title: "Payments", layout: "default", loadingMessage: "Loading payments..." },
 	},
 	{
+		path: "/expenses",
+		component: () =>
+			import("../components/pos/expenses/PosExpenseDesk.vue"),
+		meta: {
+			title: "Expenses",
+			layout: "default",
+			loadingMessage: "Loading expenses...",
+		},
+	},
+	{
 		path: "/gift-cards",
 		component: () => import("../components/pos/wallet/GiftCardsView.vue"),
 		meta: {

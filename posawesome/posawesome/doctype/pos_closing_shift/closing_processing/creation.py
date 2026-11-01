@@ -217,17 +217,40 @@ def make_closing_shift_from_opening(opening_shift):
         fields=["amount"],
     )
     cash_movement_total = sum(flt(row.get("amount")) for row in cash_movements)
-    if cash_movement_total:
+
+    # Deduct Quick Expenses paid from POS till cash during this shift
+    quick_cash_expenses = frappe.get_all(
+        "Quick Expense",
+        filters={"pos_opening_shift": opening_shift.get("name"), "docstatus": 1},
+        fields=["amount", "paid_from", "mode_of_payment"],
+    )
+    pos_cash_account = frappe.db.get_value(
+        "Mode of Payment Account",
+        {"parent": cash_mode_of_payment, "company": closing_shift.company},
+        "default_account",
+    )
+    quick_cash_total = sum(
+        flt(row.get("amount"))
+        for row in quick_cash_expenses
+        if (
+            (pos_cash_account and row.get("paid_from") == pos_cash_account)
+            or row.get("mode_of_payment") == cash_mode_of_payment
+            or not row.get("paid_from")
+        )
+    )
+
+    total_cash_deduction = cash_movement_total + quick_cash_total
+    if total_cash_deduction:
         existing_cash = [pay for pay in payments if pay.mode_of_payment == cash_mode_of_payment]
         if existing_cash:
-            existing_cash[0].expected_amount -= cash_movement_total
+            existing_cash[0].expected_amount -= total_cash_deduction
         else:
             payments.append(
                 frappe._dict(
                     {
                         "mode_of_payment": cash_mode_of_payment,
                         "opening_amount": 0,
-                        "expected_amount": -cash_movement_total,
+                        "expected_amount": -total_cash_deduction,
                     }
                 )
             )
