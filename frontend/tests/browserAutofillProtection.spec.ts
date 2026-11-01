@@ -45,8 +45,6 @@ describe("browser autofill protection", () => {
 		const fields = [
 			[invoiceSummary, "pos-counter-additional-discount"],
 			[invoiceSummary, "pos-counter-additional-discount-percent"],
-			[invoiceSummary, "pos-invoice-additional-discount"],
-			[invoiceSummary, "pos-invoice-additional-discount-percent"],
 			[posShell, "pos-mobile-additional-discount"],
 			[posShell, "pos-mobile-additional-discount-percent"],
 		] as const;

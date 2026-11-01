@@ -163,17 +163,11 @@ export function sync_invoice_customer_details(
 			context.invoice_doc.customer_name = activeCustomer;
 		}
 		if (!details) return;
-		if (details.customer_address)
-			context.invoice_doc.customer_address = details.customer_address;
-		if (details.territory)
-			context.invoice_doc.territory = details.territory;
-		if (details.customer_group)
-			context.invoice_doc.customer_group = details.customer_group;
-		if (details.contact_person)
-			context.invoice_doc.contact_person = details.contact_person;
-		if (details.shipping_address)
-			context.invoice_doc.shipping_address_name =
-				details.shipping_address;
+		context.invoice_doc.customer_address = details.customer_address || null;
+		context.invoice_doc.territory = details.territory || null;
+		context.invoice_doc.customer_group = details.customer_group || null;
+		context.invoice_doc.contact_person = details.contact_person || null;
+		context.invoice_doc.shipping_address_name = details.shipping_address || null;
 	}
 }
 

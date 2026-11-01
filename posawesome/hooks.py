@@ -15,6 +15,8 @@ source_link = "https://github.com/defendicon/POS-Awesome-V15"
 # installs/loads ERPNext first and refuses to install without it.
 required_apps = ["erpnext"]
 
+persistent_cache_keys = ["posawesome:terminal-state"]
+
 # Includes in <head>
 # ------------------
 

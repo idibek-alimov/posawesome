@@ -22,73 +22,78 @@
 			></v-progress-linear>
 			<div ref="paymentContainer" class="overflow-y-auto payment-scroll">
 				<div :class="['payment-sections', { 'payment-sections--dialog': dialogMode }]">
-					<!-- 1. Totals & Reverse Discount (Phase 2) -->
-					<section class="payment-section payment-section--totals">
-						<InvoiceTotals
-							:invoice_doc="invoice_doc"
-							:displayCurrency="displayCurrency"
-							:diff_payment="diff_payment"
-							:diff_label="diff_label"
-							:item-discount-total="paymentItemDiscountTotal"
-							:currencySymbol="currencySymbol"
-							:formatCurrency="formatCurrency"
-							:customer-info="customer_info"
-							:available-points-amount="available_points_amount"
-							:loyalty-amount="Number(loyalty_amount) || 0"
-							:payable="netInvoiceSettlementAmount"
-							:discount-locked="discountLocked"
-							@update-discount="handleDiscountUpdate"
-							@update-loyalty="(v) => handleRedemptionFormattedCurrency({ field: 'loyalty_amount', value: v })"
-							@request-manager="requireManagerForDiscount()"
-						/>
-					</section>
+					<!-- Left Column: Equation (Totals/Discount/Net), Loyalty & Sales Person -->
+					<div class="payment-col payment-col--left">
+						<section class="payment-section payment-section--totals">
+							<InvoiceTotals
+								:invoice_doc="invoice_doc"
+								:displayCurrency="displayCurrency"
+								:diff_payment="diff_payment"
+								:diff_label="diff_label"
+								:item-discount-total="paymentItemDiscountTotal"
+								:currencySymbol="currencySymbol"
+								:formatCurrency="formatCurrency"
+								:customer-info="customer_info"
+								:available-points-amount="available_points_amount"
+								:loyalty-amount="Number(loyalty_amount) || 0"
+								:payable="netInvoiceSettlementAmount"
+								:discount-locked="discountLocked"
+								@update-discount="handleDiscountUpdate"
+								@update-loyalty="(v) => handleRedemptionFormattedCurrency({ field: 'loyalty_amount', value: v })"
+								@request-manager="requireManagerForDiscount()"
+							/>
+						</section>
 
-					<!-- 2. Single-Screen Flat Payment (Phase 3) -->
-					<section
-						v-if="invoice_doc"
-						class="payment-section payment-section--methods"
-					>
-						<PaymentMethods
-							ref="paymentMethodsRef"
-							:payments="visiblePaymentMethods"
-							:invoice-doc="invoice_doc"
-							:payable="netInvoiceSettlementAmount"
-							:paid-change="paid_change"
-							:diff-payment="diff_payment"
-							:currency="invoice_doc.currency"
-							:isReturn="invoice_doc.is_return"
-							:requestPaymentField="request_payment_field"
-							:currencySymbol="currencySymbol"
-							:formatCurrency="formatCurrency"
-							:isNumber="isNumber"
-							:getVisibleDenominations="getVisibleDenominations"
-							:isCashLikePayment="isCashLikePayment"
-							:isMpesaC2bPayment="is_mpesa_c2b_payment"
-							:isGiftCardPayment="isGiftCardPayment"
-							:show-keyboard-shortcuts="counterGridMode"
-							@update-amount="handlePaymentAmountChange"
-							@set-full-amount="set_full_amount"
-							@set-denomination="setPaymentToDenomination"
-							@mpesa-dialog="mpesa_c2b_dialog"
-							@request-payment="request_payment"
-							@set-rest-amount="set_rest_amount"
-							@open-gift-card="openGiftCardDialog"
-						/>
-					</section>
+						<!-- Sales Person (clean compact row) -->
+						<section class="payment-section payment-section--meta">
+							<PaymentSelectionFields
+								:sales-persons="sales_persons"
+								:sales-person="sales_person"
+								:readonly="readonly"
+								:print-formats="print_formats"
+								:print-format="print_format"
+								:show-print-format="false"
+								@update:sales-person="sales_person = $event"
+								@update:print-format="print_format = $event"
+							/>
+						</section>
+					</div>
 
-					<!-- 3. Sales Person (clean compact row, hiding Delivery, PO and Credit details) -->
-					<section class="payment-section payment-section--meta">
-						<PaymentSelectionFields
-							:sales-persons="sales_persons"
-							:sales-person="sales_person"
-							:readonly="readonly"
-							:print-formats="print_formats"
-							:print-format="print_format"
-							:show-print-format="false"
-							@update:sales-person="sales_person = $event"
-							@update:print-format="print_format = $event"
-						/>
-					</section>
+					<!-- Right Column: Single-Screen Flat Payment & Bottom Hero Total -->
+					<div class="payment-col payment-col--right">
+						<section
+							v-if="invoice_doc"
+							class="payment-section payment-section--methods"
+						>
+							<PaymentMethods
+								ref="paymentMethodsRef"
+								:payments="visiblePaymentMethods"
+								:invoice-doc="invoice_doc"
+								:payable="netInvoiceSettlementAmount"
+								:paid-change="paid_change"
+								:diff-payment="diff_payment"
+								:currency="invoice_doc.currency"
+								:isReturn="invoice_doc.is_return"
+								:requestPaymentField="request_payment_field"
+								:currencySymbol="currencySymbol"
+								:formatCurrency="formatCurrency"
+								:isNumber="isNumber"
+								:getVisibleDenominations="getVisibleDenominations"
+								:isCashLikePayment="isCashLikePayment"
+								:isMpesaC2bPayment="is_mpesa_c2b_payment"
+								:isGiftCardPayment="isGiftCardPayment"
+								:show-keyboard-shortcuts="counterGridMode"
+								:loyalty-amount="Number(loyalty_amount) || Number(invoice_doc.loyalty_amount) || 0"
+								@update-amount="handlePaymentAmountChange"
+								@set-full-amount="set_full_amount"
+								@set-denomination="setPaymentToDenomination"
+								@mpesa-dialog="mpesa_c2b_dialog"
+								@request-payment="request_payment"
+								@set-rest-amount="set_rest_amount"
+								@open-gift-card="openGiftCardDialog"
+							/>
+						</section>
+					</div>
 				</div>
 			</div>
 		</v-card>
@@ -155,6 +160,46 @@
 			@skip-fiscal="handleFiscalSkip"
 			@cancel="fiscalFallbackOpen = false"
 		/>
+
+		<!-- Checkout Validation Alert Modal -->
+		<v-dialog
+			v-model="checkoutValidationDialog.show"
+			max-width="440px"
+			persistent
+			:retain-focus="false"
+		>
+			<v-card class="checkout-validation-card pa-5 elevation-16 rounded-xl">
+				<div class="text-center pt-2">
+					<div
+						class="checkout-val-icon-wrap mb-3 mx-auto"
+						:class="`checkout-val-icon-wrap--${checkoutValidationDialog.color}`"
+					>
+						<v-icon
+							:icon="checkoutValidationDialog.icon"
+							size="38"
+							:color="checkoutValidationDialog.color"
+						/>
+					</div>
+					<h3 class="text-h6 font-weight-bold mb-2 text-slate-800">
+						{{ checkoutValidationDialog.title }}
+					</h3>
+					<p class="text-body-2 text-grey-darken-1 px-2 mb-5 line-height-relaxed">
+						{{ checkoutValidationDialog.message }}
+					</p>
+					<v-btn
+						:color="checkoutValidationDialog.color === 'error' ? 'error' : 'primary'"
+						variant="flat"
+						size="large"
+						rounded="lg"
+						block
+						class="font-weight-bold text-none checkout-val-btn"
+						@click="checkoutValidationDialog.show = false"
+					>
+						{{ __("Понятно") }}
+					</v-btn>
+				</div>
+			</v-card>
+		</v-dialog>
 	</div>
 </template>
 
@@ -1657,6 +1702,90 @@ const handleFiscalSkip = async () => {
 	});
 };
 
+// Checkout Validation Modal State
+const checkoutValidationDialog = ref({
+	show: false,
+	title: "",
+	message: "",
+	icon: "mdi-alert-circle",
+	color: "warning",
+});
+
+const showCheckoutWarning = (title, message, icon = "mdi-alert-circle", color = "warning") => {
+	checkoutValidationDialog.value = {
+		show: true,
+		title,
+		message,
+		icon,
+		color,
+	};
+};
+
+const validateCheckoutRequirements = () => {
+	const doc = invoice_doc.value;
+	if (!doc) return false;
+
+	// 1. Mandatory Sales Person validation
+	const hasSalesPersonSelected = Boolean(
+		String(sales_person.value || "").trim() ||
+		String(doc.custom_sales_person || "").trim() ||
+		(Array.isArray(doc.sales_team) && doc.sales_team.some((st) => String(st?.sales_person || "").trim()))
+	);
+
+	if (!hasSalesPersonSelected) {
+		showCheckoutWarning(
+			__("Выберите продавца"),
+			__("Для завершения продажи обязательно выберите продавца из списка."),
+			"mdi-account-alert",
+			"warning",
+		);
+		return false;
+	}
+
+	// 2. Full payment validation (Underpayment is NOT allowed)
+	if (!doc.is_return) {
+		const invoiceTotal = flt(doc.rounded_total || doc.grand_total, currency_precision.value);
+		const currentTotalPayments = flt(total_payments.value, currency_precision.value);
+		const diff = flt(invoiceTotal - currentTotalPayments, currency_precision.value);
+
+		// If underpaid (left to pay > 0.001)
+		if (invoiceTotal > 0 && diff > 0.001) {
+			const remainingFormatted = `${formatCurrency(diff)} ${displayCurrency.value || ""}`.trim();
+			showCheckoutWarning(
+				__("Неполная оплата"),
+				__("Внесенная сумма меньше итоговой суммы чека ({0} {1}). Оплата должна быть внесена полностью. Осталось доплатить: {2}.", [
+					formatCurrency(invoiceTotal),
+					displayCurrency.value || "",
+					remainingFormatted,
+				]),
+				"mdi-cash-remove",
+				"error",
+			);
+			return false;
+		}
+
+		// If overpayment in non-cash methods (cash overpayment is allowed with change)
+		if (diff < -0.001) {
+			const cashPayment = (doc.payments || [])
+				.filter((p) => String(p.mode_of_payment || "").toLowerCase().includes("cash") || p.type === "Cash")
+				.reduce((sum, p) => sum + flt(p.amount, currency_precision.value), 0);
+
+			const nonCashTotal = flt(currentTotalPayments - cashPayment, currency_precision.value);
+			if (nonCashTotal > invoiceTotal + 0.001) {
+				showCheckoutWarning(
+					__("Превышение суммы оплаты"),
+					__("Безналичная оплата не может превышать итоговую сумму чека. Сдача выдается только с наличных платежей."),
+					"mdi-alert-circle",
+					"warning",
+				);
+				return false;
+			}
+		}
+	}
+
+	return true;
+};
+
 // Submission Wrapper
 const submit = async (_event, payment_received = false, print = false) => {
 	await submitInvoiceWrapper(print, undefined, {
@@ -1666,6 +1795,10 @@ const submit = async (_event, payment_received = false, print = false) => {
 
 const submitInvoiceWrapper = async (print, callbackOverrides = {}, options = {}) => {
 	if (submissionInFlight.value) {
+		return;
+	}
+
+	if (!validateCheckoutRequirements()) {
 		return;
 	}
 
@@ -2379,48 +2512,20 @@ defineExpose({
 .payment-sections--dialog {
 	display: grid;
 	grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-	gap: var(--pos-space-2);
+	gap: 16px;
 	align-items: start;
-	grid-template-areas:
-		"summary adjustments"
-		"methods adjustments"
-		"settlement adjustments"
-		"settlement meta";
 }
 
-.payment-section {
-	background: var(--pos-surface-muted);
-	border: 1px solid var(--pos-border-light);
-	border-radius: var(--pos-radius-md);
-	padding: var(--pos-space-3);
+.payment-col {
 	display: flex;
 	flex-direction: column;
-	gap: var(--pos-space-3);
+	gap: 14px;
+	min-width: 0;
 }
 
 .payment-sections--dialog .payment-section {
-	padding: 10px;
+	padding: 12px;
 	gap: 10px;
-}
-
-.payment-sections--dialog .payment-section--summary {
-	grid-area: summary;
-}
-
-.payment-sections--dialog .payment-section--methods {
-	grid-area: methods;
-}
-
-.payment-sections--dialog .payment-section--settlement {
-	grid-area: settlement;
-}
-
-.payment-sections--dialog .payment-section--adjustments {
-	grid-area: adjustments;
-}
-
-.payment-sections--dialog .payment-section--meta {
-	grid-area: meta;
 }
 
 .payment-section--summary {
@@ -2609,5 +2714,36 @@ defineExpose({
 		margin-top: 0;
 		padding-bottom: calc(env(safe-area-inset-bottom) + 4px);
 	}
+}
+
+/* Checkout Validation Modal Styling */
+.checkout-validation-card {
+	background: #ffffff !important;
+	border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.checkout-val-icon-wrap {
+	width: 68px;
+	height: 68px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.checkout-val-icon-wrap--warning {
+	background: #fffbeb;
+	border: 2px solid #fef3c7;
+}
+
+.checkout-val-icon-wrap--error {
+	background: #fef2f2;
+	border: 2px solid #fee2e2;
+}
+
+.checkout-val-btn {
+	height: 46px !important;
+	font-size: 1rem !important;
+	letter-spacing: 0.01em;
 }
 </style>

@@ -310,6 +310,7 @@ export async function reload_current_invoice_from_backend(context: any) {
 			// delegate to loader.js load_invoice
 			await load_invoice(context, doc, {
 				preserveAdditionalDiscountPercentage: true,
+				preserveCustomer: true,
 			});
 			return doc;
 		}

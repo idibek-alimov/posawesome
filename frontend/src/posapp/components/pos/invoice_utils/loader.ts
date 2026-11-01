@@ -151,6 +151,7 @@ export async function load_invoice(
 	const {
 		preserveAdditionalDiscountPercentage = false,
 		preserveStickies = false,
+		preserveCustomer = true,
 	} = options || {};
 	const usePercentageDiscount = Boolean(
 		context.pos_profile?.posa_use_percentage_discount,
@@ -176,7 +177,7 @@ export async function load_invoice(
 		: null;
 
 	if (context.clear_invoice) {
-		context.clear_invoice({ preserveStickies });
+		context.clear_invoice({ preserveStickies, preserveCustomer });
 	}
 
 	// Restore stickies if they aren't provided in the data
@@ -318,7 +319,19 @@ export async function load_invoice(
 		});
 	}
 
-	context.customer = data.customer;
+	const loadedCustomer = data.customer || context.customer;
+	if (loadedCustomer) {
+		context.customer = loadedCustomer;
+		if (context.customersStore?.setSelectedCustomer) {
+			context.customersStore.setSelectedCustomer(loadedCustomer);
+		}
+		if (context.fetch_customer_details) {
+			context.fetch_customer_details();
+		}
+		if (context.fetch_customer_balance) {
+			context.fetch_customer_balance();
+		}
+	}
 	if (context.set_delivery_charges) await context.set_delivery_charges();
 
 	context.posting_date = context.formatDateForBackend

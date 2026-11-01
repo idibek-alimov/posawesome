@@ -1183,13 +1183,42 @@ def _clear_stale_party_fields_for_customer_change(
     return invoice_doc
 
 
+def _sanitize_party_contact(invoice_doc):
+    if not invoice_doc:
+        return
+    contact_person = invoice_doc.get("contact_person")
+    customer = invoice_doc.get("customer")
+    if contact_person and customer:
+        contact_belongs = frappe.db.exists(
+            "Dynamic Link",
+            {
+                "link_doctype": "Customer",
+                "link_name": customer,
+                "parenttype": "Contact",
+                "parent": contact_person,
+            },
+        )
+        if not contact_belongs:
+            invoice_doc.contact_person = None
+            if hasattr(invoice_doc, "contact_display"):
+                invoice_doc.contact_display = None
+            if hasattr(invoice_doc, "contact_mobile"):
+                invoice_doc.contact_mobile = None
+            if hasattr(invoice_doc, "contact_email"):
+                invoice_doc.contact_email = None
+
+
 def _get_mutable_invoice_doc(data, doctype, pos_profile, company):
     invoice_name = (data or {}).get("name")
     if not invoice_name:
-        return frappe.get_doc(data)
+        doc = frappe.get_doc(data)
+        _sanitize_party_contact(doc)
+        return doc
 
     if not frappe.db.exists(doctype, invoice_name):
-        return frappe.get_doc(_build_fresh_invoice_payload(data, doctype))
+        doc = frappe.get_doc(_build_fresh_invoice_payload(data, doctype))
+        _sanitize_party_contact(doc)
+        return doc
 
     invoice_doc = _get_scoped_invoice_doc(
         doctype,
@@ -2259,6 +2288,7 @@ def submit_in_background_job(kwargs):
 
         _apply_invoice_gift_card_settlement(invoice_doc, data)
         _normalize_return_payment_rows(invoice_doc, invoice_doc.get("conversion_rate") or 1)
+        _sanitize_party_contact(invoice_doc)
 
         invoice_doc = _save_draft_with_latest_timestamp(invoice_doc)
         _normalize_return_payment_rows(invoice_doc, invoice_doc.get("conversion_rate") or 1)

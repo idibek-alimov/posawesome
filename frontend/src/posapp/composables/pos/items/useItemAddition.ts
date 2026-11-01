@@ -1028,9 +1028,9 @@ export function useItemAddition() {
 	// Reset all invoice fields to default/empty values
 	const clearInvoice = (
 		context,
-		options: { preserveStickies?: boolean } = {},
+		options: { preserveStickies?: boolean; preserveCustomer?: boolean } = {},
 	) => {
-		const { preserveStickies = false } = options;
+		const { preserveStickies = false, preserveCustomer = false } = options;
 		const previousInvoiceType = context.invoiceType;
 		const wasReturn =
 			previousInvoiceType === "Return" ||
@@ -1066,11 +1066,13 @@ export function useItemAddition() {
 		// Reset price list to default
 		if (context.update_price_list) context.update_price_list();
 
-		// Always reset to default customer after invoice
-		const defaultCustomer = context.pos_profile?.customer || "Гость";
-		context.customer = defaultCustomer;
-		if (context.customersStore?.setSelectedCustomer) {
-			context.customersStore.setSelectedCustomer(defaultCustomer);
+		// Always reset to default customer after invoice unless preserved (e.g. when loading an invoice)
+		if (!preserveCustomer) {
+			const defaultCustomer = context.pos_profile?.customer || "Гость";
+			context.customer = defaultCustomer;
+			if (context.customersStore?.setSelectedCustomer) {
+				context.customersStore.setSelectedCustomer(defaultCustomer);
+			}
 		}
 
 		context.eventBus.emit("set_customer_readonly", false);

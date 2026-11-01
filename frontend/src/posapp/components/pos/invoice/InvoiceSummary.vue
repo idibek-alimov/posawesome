@@ -129,75 +129,18 @@
 					<div class="summary-hero__copy">
 						<span class="summary-hero__eyebrow">{{ __("Total to Pay") === "Total to Pay" ? "Итого к оплате" : __("Total to Pay") }}</span>
 						<strong class="summary-hero__amount">
-							{{ currencySymbol(displayCurrency) }}{{ formatCurrency(subtotal) }}
+							{{ formatCurrency(subtotal) }}
 						</strong>
 						<div class="summary-hero__meta">
-							<span
-								>{{ formatFloat(total_qty, hide_qty_decimals ? 0 : undefined) }}
-								{{ __("qty") === "qty" ? "Количество" : __("qty") }}</span
-							>
-							<span>
-								{{ currencySymbol(displayCurrency)
-								}}{{ formatCurrency(total_items_discount_amount) }}
+							<span class="summary-hero__qty">
+								<strong class="summary-hero__qty-val">{{ formatFloat(total_qty, hide_qty_decimals ? 0 : undefined) }}</strong>
+								{{ __("qty") === "qty" ? "Количество" : __("qty") }}
+							</span>
+							<span class="summary-hero__discount">
+								<strong class="summary-hero__discount-val">{{ formatCurrency(total_items_discount_amount) }}</strong>
 								{{ __("discount") === "discount" ? "скидка" : __("discount") }}
 							</span>
 						</div>
-					</div>
-
-					<div class="summary-hero__field-wrap">
-						<v-text-field
-							v-if="!pos_profile.posa_use_percentage_discount"
-							ref="additionalDiscountField"
-							v-model="additionalDiscountDisplay"
-							name="pos-invoice-additional-discount"
-							autocomplete="transaction-amount"
-							inputmode="decimal"
-							data-1p-ignore="true"
-							data-lpignore="true"
-							data-bwignore="true"
-							@update:model-value="handleAdditionalDiscountUpdate"
-							@focus="handleAdditionalDiscountFocus"
-							@blur="handleAdditionalDiscountBlur"
-							:label="frappe._('Additional Discount')"
-							prepend-inner-icon="mdi-cash-minus"
-							variant="solo"
-							density="compact"
-							color="warning"
-							:prefix="currencySymbol(pos_profile.currency)"
-							:disabled="
-								(!pos_profile.posa_allow_user_to_edit_additional_discount && !managerUnlocked) ||
-								!!discount_percentage_offer_name
-							"
-							class="summary-field summary-field--dock"
-						/>
-
-						<v-text-field
-							v-else
-							ref="additionalDiscountField"
-							v-model="additionalDiscountPercentageDisplay"
-							name="pos-invoice-additional-discount-percent"
-							autocomplete="transaction-amount"
-							inputmode="decimal"
-							data-1p-ignore="true"
-							data-lpignore="true"
-							data-bwignore="true"
-							@update:model-value="handleAdditionalDiscountPercentageUpdate"
-							@change="$emit('update_discount_umount')"
-							@focus="handleAdditionalDiscountPercentageFocus"
-							@blur="handleAdditionalDiscountPercentageBlur"
-							:rules="[isNumber]"
-							:label="frappe._('Additional Discount %')"
-							suffix="%"
-							prepend-inner-icon="mdi-percent"
-							variant="solo"
-							density="compact"
-							color="warning"
-							:disabled="
-								(!pos_profile.posa_allow_user_to_edit_additional_discount && !managerUnlocked) ||
-								!!discount_percentage_offer_name
-							"
-							class="summary-field summary-field--dock"
-						/>
 					</div>
 				</div>
 			</v-col>
@@ -865,7 +808,13 @@ defineExpose({
 	font-weight: 900;
 	letter-spacing: -0.03em;
 	line-height: 1;
-	color: var(--pos-text-primary);
+	color: #16a34a !important;
+}
+
+:global(.v-theme--dark) .summary-hero__amount,
+.v-theme--dark .summary-hero__amount,
+[data-theme="dark"] .summary-hero__amount {
+	color: #34d399 !important;
 }
 
 .summary-hero__meta {
@@ -877,8 +826,20 @@ defineExpose({
 	color: var(--pos-text-secondary);
 }
 
-.summary-hero__field-wrap {
-	width: min(260px, 100%);
+.summary-hero__qty-val {
+	font-weight: 800;
+	color: var(--pos-text-primary);
+}
+
+.summary-hero__discount-val {
+	font-weight: 800;
+	color: #dc2626 !important;
+}
+
+:global(.v-theme--dark) .summary-hero__discount-val,
+.v-theme--dark .summary-hero__discount-val,
+[data-theme="dark"] .summary-hero__discount-val {
+	color: #f87171 !important;
 }
 
 .invoice-summary-actions {
@@ -932,10 +893,6 @@ defineExpose({
 		flex-direction: column;
 		align-items: stretch;
 		padding: 12px;
-	}
-
-	.summary-hero__field-wrap {
-		width: 100%;
 	}
 
 	.invoice-summary-actions {

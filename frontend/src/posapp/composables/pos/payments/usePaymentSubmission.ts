@@ -707,8 +707,7 @@ export function usePaymentSubmission(options: PaymentSubmissionOptions) {
 			}
 
 			if (
-				!profile.posa_allow_partial_payment &&
-				effective_total_payments < invoice_total &&
+				effective_total_payments < invoice_total - 0.001 &&
 				invoice_total > 0
 			) {
 				throw new Error(__("The amount paid is not complete"));

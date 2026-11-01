@@ -85,6 +85,12 @@ export async function show_payment(context: any) {
 		invoice_doc.currency = context.selected_currency || context.pos_profile.currency;
 		invoice_doc.conversion_rate = context.conversion_rate || 1;
 		invoice_doc.plc_conversion_rate = context._getPlcConversionRate ? context._getPlcConversionRate() : 1;
+		if (!invoice_doc.customer && context.customer) {
+			invoice_doc.customer = context.customer;
+		}
+		if (!invoice_doc.customer_name && (context.customer_info?.customer_name || context.customer)) {
+			invoice_doc.customer_name = context.customer_info?.customer_name || context.customer;
+		}
 
 		if (invoice_doc.discount_amount !== undefined && invoice_doc.discount_amount !== null) {
 			context.discount_amount = context.flt(invoice_doc.discount_amount, context.currency_precision);

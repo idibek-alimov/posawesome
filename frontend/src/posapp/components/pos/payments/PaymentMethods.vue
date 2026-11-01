@@ -5,6 +5,7 @@
 			<button
 				type="button"
 				class="mode-pill"
+				data-pos-keyboard-target="payment-action"
 				:class="{ 'mode-pill--active': activeMode === 'cash' }"
 				@click="setPaymentMode('cash')"
 			>
@@ -15,6 +16,7 @@
 			<button
 				type="button"
 				class="mode-pill"
+				data-pos-keyboard-target="payment-action"
 				:class="{ 'mode-pill--active': activeMode === 'bank' }"
 				@click="setPaymentMode('bank')"
 			>
@@ -25,6 +27,7 @@
 			<button
 				type="button"
 				class="mode-pill"
+				data-pos-keyboard-target="payment-action"
 				:class="{ 'mode-pill--active': activeMode === 'split' }"
 				@click="setPaymentMode('split')"
 			>
@@ -44,6 +47,7 @@
 						<input
 							ref="cashInputRef"
 							class="cash-input"
+							data-pos-keyboard-target="payment-amount"
 							inputmode="decimal"
 							:value="cashDisplayValue"
 							:placeholder="formatCurrency(payable)"
@@ -137,23 +141,26 @@
 				</div>
 			</div>
 
-			<div class="bank-picker-section">
+			<div v-if="availableBankMethods.length" class="bank-picker-section">
 				<label class="bank-picker-label">{{ frappe._("Выберите банк или платежную систему") }}:</label>
 				<div class="bank-grid">
 					<button
-						v-for="bank in banksList"
+						v-for="bank in availableBankMethods"
 						:key="bank.id"
 						type="button"
 						class="bank-chip"
-						:class="{ 'bank-chip--active': selectedBankId === bank.id }"
+						:class="{ 'bank-chip--active': selectedBankMop === bank.mode_of_payment }"
 						:style="{ '--bank-brand-color': bank.color }"
 						@click="chooseBank(bank)"
 					>
 						<span class="bank-chip__indicator" :style="{ backgroundColor: bank.color }"></span>
-						<span class="bank-chip__name">{{ bank.label }}</span>
-						<span v-if="selectedBankId === bank.id" class="bank-chip__check">✓</span>
+						<span class="bank-chip__name">{{ bank.icon }} {{ bank.label }}</span>
+						<span v-if="selectedBankMop === bank.mode_of_payment" class="bank-chip__check">✓</span>
 					</button>
 				</div>
+			</div>
+			<div v-else class="bank-empty-note">
+				<span>{{ frappe._("Нет активных безналичных счетов. Добавьте кошелек в Money Hub с галочкой 'Принимать в POS'.") }}</span>
 			</div>
 
 			<div class="bank-info-note">
@@ -180,6 +187,7 @@
 					<div class="cash-input-box cash-input-box--sm">
 						<input
 							class="cash-input"
+							data-pos-keyboard-target="payment-amount"
 							inputmode="decimal"
 							:value="currentCashAmount > 0 ? String(currentCashAmount) : ''"
 							placeholder="0.00"
@@ -224,17 +232,17 @@
 						<span class="cash-currency">{{ currency }}</span>
 					</div>
 					<!-- Bank picker for split -->
-					<div class="bank-grid bank-grid--compact">
+					<div v-if="availableBankMethods.length" class="bank-grid bank-grid--compact">
 						<button
-							v-for="bank in banksList"
+							v-for="bank in availableBankMethods"
 							:key="bank.id"
 							type="button"
 							class="bank-chip bank-chip--sm"
-							:class="{ 'bank-chip--active': selectedBankId === bank.id }"
+							:class="{ 'bank-chip--active': selectedBankMop === bank.mode_of_payment }"
 							:style="{ '--bank-brand-color': bank.color }"
 							@click="chooseBank(bank)"
 						>
-							<span class="bank-chip__name">{{ bank.label }}</span>
+							<span class="bank-chip__name">{{ bank.icon }} {{ bank.label }}</span>
 						</button>
 					</div>
 				</div>
@@ -259,6 +267,27 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- 4. Hero Bottom Payable Banner -->
+		<div class="checkout-hero-payable">
+			<div v-if="loyaltyAmount > 0" class="hero-loyalty-chips">
+				<span class="hero-chip hero-chip--invoice">
+					🧾 {{ frappe._("Сумма чека") }}: <strong>{{ formatCurrency(payable + loyaltyAmount) }} {{ currency }}</strong>
+				</span>
+				<span class="hero-chip hero-chip--points">
+					⭐ {{ frappe._("Оплачено баллами") }}: <strong>−{{ formatCurrency(loyaltyAmount) }} {{ currency }}</strong>
+				</span>
+			</div>
+			<div class="hero-payable-main">
+				<span class="hero-payable-label">
+					{{ isReturn ? frappe._("ИТОГО К ВОЗВРАТУ") : (loyaltyAmount > 0 ? frappe._("ИТОГО К ОПЛАТЕ ДЕНЬГАМИ") : frappe._("ИТОГО К ОПЛАТЕ")) }}
+				</span>
+				<div class="hero-payable-val-wrap">
+					<span class="hero-payable-val">{{ formatCurrency(payable) }}</span>
+					<span class="hero-payable-cur">{{ currency }}</span>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -277,6 +306,10 @@ const props = defineProps({
 		default: () => ({}),
 	},
 	payable: {
+		type: Number,
+		default: 0,
+	},
+	loyaltyAmount: {
 		type: Number,
 		default: 0,
 	},
@@ -330,28 +363,77 @@ const cashTextEntry = ref("");
 // Somoni banknote values
 const somoniBanknotes = [5, 10, 20, 50, 100, 200, 500];
 
-// Banks list in Tajikistan
-const banksList = [
-	{ id: "Alif", label: "Alif (Алиф)", color: "#00a651" },
-	{ id: "DC", label: "Dushanbe City (DC)", color: "#0072bc" },
-	{ id: "Korti Milli", label: "Корти милли", color: "#f39200" },
-	{ id: "Other", label: "Другой банк", color: "#64748b" },
-];
-const selectedBankId = ref("Alif");
-const currentBankLabel = computed(() => {
-	const b = banksList.find((item) => item.id === selectedBankId.value);
-	return b ? b.label : selectedBankId.value;
+// Money Wallets dynamically loaded from Money Hub
+const moneyWallets = ref([]);
+
+const getBrandColor = (name = "") => {
+	const n = name.toLowerCase();
+	if (n.includes("alif") || n.includes("алиф")) return "#00a651";
+	if (n.includes("dc") || n.includes("dushanbe") || n.includes("сити")) return "#0072bc";
+	if (n.includes("eskat") || n.includes("эсхат")) return "#e53e3e";
+	if (n.includes("korti") || n.includes("милли")) return "#f39200";
+	return "#805ad5";
+};
+
+const getBrandIcon = (name = "", wtype = "") => {
+	const n = name.toLowerCase();
+	if (n.includes("eskat") || n.includes("эсхат") || wtype === "Bank") return "🏦";
+	if (n.includes("korti") || n.includes("card") || n.includes("карт")) return "💳";
+	return "📱";
+};
+
+// Available non-cash payment methods on this invoice / POS Profile
+const availableBankMethods = computed(() => {
+	const list = (props.payments || []).filter((p) => !props.isCashLikePayment(p));
+
+	return list.map((p) => {
+		const wallet = moneyWallets.value.find(
+			(w) => w.mode_of_payment === p.mode_of_payment || w.wallet_name === p.mode_of_payment
+		);
+		return {
+			rawPayment: p,
+			mode_of_payment: p.mode_of_payment,
+			id: p.mode_of_payment,
+			label: wallet?.wallet_name || p.mode_of_payment,
+			icon: wallet?.icon || getBrandIcon(p.mode_of_payment, wallet?.wallet_type),
+			color: wallet?.color || getBrandColor(p.mode_of_payment),
+		};
+	});
 });
 
-// Identify cash and bank payment lines on the invoice
+const selectedBankMop = ref("");
+
+// Keep selectedBankMop in sync with available bank methods
+watch(
+	availableBankMethods,
+	(methods) => {
+		if (!methods || methods.length === 0) {
+			selectedBankMop.value = "";
+			return;
+		}
+		if (!methods.some((m) => m.mode_of_payment === selectedBankMop.value)) {
+			const activeWithAmount = methods.find((m) => Number(m.rawPayment?.amount) > 0);
+			selectedBankMop.value = activeWithAmount ? activeWithAmount.mode_of_payment : methods[0].mode_of_payment;
+		}
+	},
+	{ immediate: true },
+);
+
+// Identify cash and bank payment lines on the invoice using raw reactive rows
 const cashPayment = computed(() => {
 	const list = props.payments || [];
 	return list.find((p) => props.isCashLikePayment(p)) || list[0] || null;
 });
 
 const bankPayment = computed(() => {
-	const list = props.payments || [];
-	return list.find((p) => !props.isCashLikePayment(p)) || list[1] || null;
+	const list = (props.payments || []).filter((p) => !props.isCashLikePayment(p));
+	if (!list.length) return null;
+	return list.find((p) => p.mode_of_payment === selectedBankMop.value) || list[0];
+});
+
+const currentBankLabel = computed(() => {
+	const b = availableBankMethods.value.find((m) => m.mode_of_payment === bankPayment.value?.mode_of_payment);
+	return b ? `${b.icon || "💳"} ${b.label}` : (bankPayment.value?.mode_of_payment || frappe._("Безналичный счет"));
 });
 
 const ensureBankLineExists = () => {
@@ -360,16 +442,20 @@ const ensureBankLineExists = () => {
 		props.invoiceDoc.payments = [];
 	}
 	const hasBank = props.invoiceDoc.payments.some((p) => !props.isCashLikePayment(p));
-	if (!hasBank) {
-		const newBank = {
-			mode_of_payment: "Credit Card",
-			amount: 0,
-			base_amount: 0,
-			type: "Bank",
-			default: 0,
-			reference_no: selectedBankId.value,
-		};
-		props.invoiceDoc.payments.push(newBank);
+	if (!hasBank && moneyWallets.value.length > 0) {
+		const nonCashWallet = moneyWallets.value.find(
+			(w) => w.wallet_type !== "Till" && w.wallet_type !== "Safe"
+		);
+		if (nonCashWallet) {
+			props.invoiceDoc.payments.push({
+				mode_of_payment: nonCashWallet.mode_of_payment,
+				amount: 0,
+				base_amount: 0,
+				type: "Bank",
+				default: 0,
+				account: nonCashWallet.account,
+			});
+		}
 	}
 };
 
@@ -379,8 +465,8 @@ const currentCashAmount = computed(() => {
 });
 
 const currentBankAmount = computed(() => {
-	const p = bankPayment.value;
-	return Math.max(Number(p?.amount) || 0, 0);
+	const list = (props.payments || []).filter((p) => !props.isCashLikePayment(p));
+	return list.reduce((sum, p) => sum + Math.max(Number(p?.amount) || 0, 0), 0);
 });
 
 const cashDisplayValue = computed(() => {
@@ -414,9 +500,11 @@ const setPaymentMode = (mode) => {
 		if (cashPayment.value) {
 			emit("set-full-amount", cashPayment.value, props.isReturn);
 		}
-		if (bankPayment.value) {
-			emit("update-amount", bankPayment.value, 0);
-		}
+		(props.payments || []).forEach((p) => {
+			if (!props.isCashLikePayment(p)) {
+				emit("update-amount", p, 0);
+			}
+		});
 		nextTick(() => {
 			cashInputRef.value?.focus?.();
 			cashInputRef.value?.select?.();
@@ -426,11 +514,17 @@ const setPaymentMode = (mode) => {
 		if (cashPayment.value) {
 			emit("update-amount", cashPayment.value, 0);
 		}
-		if (bankPayment.value) {
-			emit("set-full-amount", bankPayment.value, props.isReturn);
-			bankPayment.value.reference_no = selectedBankId.value;
-		}
-		if (props.invoiceDoc) {
+		const activeBank = bankPayment.value;
+		(props.payments || []).forEach((p) => {
+			if (!props.isCashLikePayment(p)) {
+				if (p.mode_of_payment === activeBank?.mode_of_payment) {
+					emit("set-full-amount", p, props.isReturn);
+				} else {
+					emit("update-amount", p, 0);
+				}
+			}
+		});
+		if (props.invoiceDoc && activeBank) {
 			props.invoiceDoc.remarks = `Оплата: ${currentBankLabel.value}`;
 		}
 	} else if (mode === "split") {
@@ -440,12 +534,26 @@ const setPaymentMode = (mode) => {
 
 // Choose bank
 const chooseBank = (bank) => {
-	selectedBankId.value = bank.id;
-	if (bankPayment.value) {
-		bankPayment.value.reference_no = bank.id;
+	selectedBankMop.value = bank.mode_of_payment;
+	const targetRow = (props.payments || []).find((p) => p.mode_of_payment === bank.mode_of_payment);
+
+	// Clear all other bank lines on the invoice
+	(props.payments || []).forEach((p) => {
+		if (!props.isCashLikePayment(p) && p.mode_of_payment !== bank.mode_of_payment) {
+			emit("update-amount", p, 0);
+		}
+	});
+
+	if (targetRow) {
+		if (activeMode.value === "bank") {
+			emit("set-full-amount", targetRow, props.isReturn);
+		} else if (activeMode.value === "split") {
+			emit("update-amount", targetRow, currentBankAmount.value);
+		}
 	}
+
 	if (props.invoiceDoc) {
-		props.invoiceDoc.remarks = `Оплата: ${bank.label}`;
+		props.invoiceDoc.remarks = `Оплата: ${bank.label || bank.mode_of_payment}`;
 	}
 };
 
@@ -500,8 +608,14 @@ const addBanknote = (note) => {
 // Bank input in split mode
 const onBankInputDirect = (val) => {
 	const num = Number(String(val).replace(/\s/g, "").replace(",", ".")) || 0;
-	if (bankPayment.value) {
-		emit("update-amount", bankPayment.value, Math.max(num, 0));
+	const activeBank = bankPayment.value;
+	if (activeBank) {
+		(props.payments || []).forEach((p) => {
+			if (!props.isCashLikePayment(p) && p.mode_of_payment !== activeBank.mode_of_payment) {
+				emit("update-amount", p, 0);
+			}
+		});
+		emit("update-amount", activeBank, Math.max(num, 0));
 	}
 };
 
@@ -514,13 +628,35 @@ const fillRemainderCash = () => {
 
 const fillRemainderBank = () => {
 	const needed = Math.max(props.payable - currentCashAmount.value, 0);
-	if (bankPayment.value) {
-		emit("update-amount", bankPayment.value, needed);
+	const activeBank = bankPayment.value;
+	if (activeBank) {
+		(props.payments || []).forEach((p) => {
+			if (!props.isCashLikePayment(p) && p.mode_of_payment !== activeBank.mode_of_payment) {
+				emit("update-amount", p, 0);
+			}
+		});
+		emit("update-amount", activeBank, needed);
+	}
+};
+
+const loadPosWallets = async () => {
+	const company = props.invoiceDoc?.company || frappe.defaults?.get_default?.("Company") || frappe.defaults?.get_user_default?.("Company");
+	try {
+		const res = await frappe.call({
+			method: "erpnext.accounts.page.money_hub.money_hub.get_pos_wallets",
+			args: { company },
+		});
+		if (res && res.message) {
+			moneyWallets.value = res.message;
+		}
+	} catch (e) {
+		console.warn("Could not fetch Money Hub POS wallets:", e);
 	}
 };
 
 // Initialize mode on mount or doc load
-onMounted(() => {
+onMounted(async () => {
+	await loadPosWallets();
 	ensureBankLineExists();
 
 	const hasCash = currentCashAmount.value > 0;
@@ -933,6 +1069,15 @@ defineExpose({
 	background: var(--pos-surface-sunken, #f8fafc);
 }
 
+.bank-empty-note {
+	padding: 16px;
+	text-align: center;
+	color: var(--pos-text-secondary, #64748b);
+	background: var(--pos-surface-sunken, rgba(0, 0, 0, 0.04));
+	border-radius: var(--pos-radius-sm, 8px);
+	font-size: 13px;
+}
+
 /* Split Mode */
 .split-rows {
 	display: flex;
@@ -1018,5 +1163,82 @@ defineExpose({
 	.chip-banknote {
 		flex: 1 1 calc(33.3% - 8px);
 	}
+}
+
+.checkout-hero-payable {
+	margin-top: 14px;
+	padding: 14px 18px;
+	border-radius: var(--pos-radius-md, 12px);
+	background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.08) 0%, rgba(var(--v-theme-success), 0.12) 100%);
+	border: 2px solid rgba(var(--v-theme-success), 0.45);
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.hero-loyalty-chips {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.hero-chip {
+	font-size: 0.85rem;
+	padding: 3px 10px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.85);
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	color: #334155;
+	font-weight: 500;
+}
+
+.hero-chip strong {
+	font-weight: 800;
+}
+
+.hero-chip--points {
+	background: #fef3c7;
+	border-color: #fde68a;
+	color: #b45309;
+}
+
+.hero-chip--points strong {
+	color: #d97706;
+}
+
+.hero-payable-main {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.hero-payable-label {
+	font-size: 1.1rem;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	color: var(--pos-text-primary, #0f172a);
+	text-transform: uppercase;
+}
+
+.hero-payable-val-wrap {
+	display: flex;
+	align-items: baseline;
+	gap: 6px;
+}
+
+.hero-payable-val {
+	font-size: 2.3rem;
+	font-weight: 900;
+	color: rgb(var(--v-theme-success));
+	line-height: 1;
+	letter-spacing: -0.02em;
+}
+
+.hero-payable-cur {
+	font-size: 1.15rem;
+	font-weight: 800;
+	color: rgb(var(--v-theme-success));
 }
 </style>
