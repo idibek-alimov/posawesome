@@ -823,6 +823,22 @@ export default {
 							allocated_percentage: st.allocated_percentage || 100,
 						}))
 					: [];
+				const resolvedSalesPerson =
+					return_doc.custom_sales_person ||
+					return_doc.sales_person ||
+					(invoice_doc.sales_team.length > 0 ? invoice_doc.sales_team[0].sales_person : "");
+				if (resolvedSalesPerson) {
+					invoice_doc.custom_sales_person = resolvedSalesPerson;
+					invoice_doc.sales_person = resolvedSalesPerson;
+					if (invoice_doc.sales_team.length === 0) {
+						invoice_doc.sales_team = [
+							{
+								sales_person: resolvedSalesPerson,
+								allocated_percentage: 100,
+							},
+						];
+					}
+				}
 
 				const data = { invoice_doc, return_doc };
 

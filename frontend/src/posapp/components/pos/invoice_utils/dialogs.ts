@@ -45,10 +45,19 @@ export async function show_payment(context: any) {
 			return;
 		}
 
-		// Capture the transient refundable cap before process_invoice()/backend
+		// Capture the transient refundable cap and sales person before process_invoice()/backend
 		// reload, which return a doc stripped of non-DocType fields. It is
 		// re-attached below so the payment screen can default a credit return.
 		const carriedRefundableAmount = context.invoice_doc?.posa_refundable_amount;
+		const carriedSalesTeam =
+			context.invoice_doc?.sales_team || context.sales_team || null;
+		const carriedSalesPerson =
+			context.invoice_doc?.custom_sales_person ||
+			context.invoice_doc?.sales_person ||
+			context.sales_person ||
+			(Array.isArray(carriedSalesTeam) && carriedSalesTeam.length > 0
+				? carriedSalesTeam[0].sales_person
+				: null);
 
 		let invoice_doc;
 		const paymentDoctype = resolvePosDocumentDoctype({
@@ -160,6 +169,21 @@ export async function show_payment(context: any) {
 		// payment screen can default an unpaid-invoice return to a credit note.
 		if (carriedRefundableAmount != null && invoice_doc) {
 			invoice_doc.posa_refundable_amount = carriedRefundableAmount;
+		}
+		if (carriedSalesPerson && invoice_doc) {
+			if (!invoice_doc.custom_sales_person) {
+				invoice_doc.custom_sales_person = carriedSalesPerson;
+			}
+			if (!invoice_doc.sales_person) {
+				invoice_doc.sales_person = carriedSalesPerson;
+			}
+		}
+		if (
+			carriedSalesTeam &&
+			invoice_doc &&
+			(!Array.isArray(invoice_doc.sales_team) || !invoice_doc.sales_team.length)
+		) {
+			invoice_doc.sales_team = carriedSalesTeam;
 		}
 
 		context.eventBus.emit("show_payment", "true");

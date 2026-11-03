@@ -3770,7 +3770,27 @@ export default {
 								sales_person: st.sales_person,
 								allocated_percentage: st.allocated_percentage || 100,
 							}))
-						: [],
+						: returnDoc.custom_sales_person || returnDoc.sales_person
+							? [
+									{
+										sales_person:
+											returnDoc.custom_sales_person || returnDoc.sales_person,
+										allocated_percentage: 100,
+									},
+								]
+							: [],
+					custom_sales_person:
+						returnDoc.custom_sales_person ||
+						returnDoc.sales_person ||
+						(Array.isArray(returnDoc.sales_team) && returnDoc.sales_team.length > 0
+							? returnDoc.sales_team[0].sales_person
+							: ""),
+					sales_person:
+						returnDoc.sales_person ||
+						returnDoc.custom_sales_person ||
+						(Array.isArray(returnDoc.sales_team) && returnDoc.sales_team.length > 0
+							? returnDoc.sales_team[0].sales_person
+							: ""),
 				};
 				this.eventBus?.emit("load_return_invoice", {
 					invoice_doc: invoiceDoc,

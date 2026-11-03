@@ -2377,8 +2377,10 @@ onMounted(() => {
 			loyalty_amount.value = 0;
 			redeemed_customer_credit.value = 0;
 			resetGiftCardState({ clearPayment: true });
-			if (Array.isArray(doc?.sales_team) && doc.sales_team.length > 0) {
-				sales_person.value = doc.sales_team[0].sales_person || "";
+			if (Array.isArray(doc?.sales_team) && doc.sales_team.length > 0 && doc.sales_team[0]?.sales_person) {
+				sales_person.value = doc.sales_team[0].sales_person;
+			} else if (doc?.custom_sales_person) {
+				sales_person.value = doc.custom_sales_person;
 			} else if (doc?.sales_person) {
 				sales_person.value = doc.sales_person;
 			} else {

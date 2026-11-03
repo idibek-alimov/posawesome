@@ -267,6 +267,23 @@ def get_invoice_for_return(invoice_name, pos_profile=None, doctype="Sales Invoic
         ],
     }
 
+    custom_sales_person = (
+        invoice_doc.get("custom_sales_person")
+        or invoice_doc.get("sales_person")
+        or (invoice["sales_team"][0]["sales_person"] if invoice["sales_team"] else None)
+    )
+    if not invoice["sales_team"] and custom_sales_person:
+        invoice["sales_team"] = [
+            {
+                "sales_person": custom_sales_person,
+                "allocated_percentage": 100.0,
+                "allocated_amount": flt(invoice_doc.grand_total or invoice_doc.total),
+                "incentives": 0.0,
+            }
+        ]
+    invoice["custom_sales_person"] = custom_sales_person
+    invoice["sales_person"] = custom_sales_person
+
     meta = frappe.get_meta(doctype)
     item_field = meta.get_field("items")
     item_doctype = item_field.options if item_field else None

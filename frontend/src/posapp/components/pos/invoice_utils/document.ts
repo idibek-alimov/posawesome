@@ -445,6 +445,41 @@ export function get_invoice_doc(context: any) {
 	doc.posa_notes = sourceDoc.posa_notes ?? null;
 	doc.posa_authorization_code = sourceDoc.posa_authorization_code ?? null;
 	doc.posa_return_valid_upto = sourceDoc.posa_return_valid_upto ?? null;
+
+	// Preserve sales person and sales team details
+	const rawSalesTeam =
+		sourceDoc.sales_team ||
+		context.sales_team ||
+		context.invoice_doc?.sales_team ||
+		[];
+	if (Array.isArray(rawSalesTeam) && rawSalesTeam.length > 0) {
+		doc.sales_team = rawSalesTeam.map((st: any) => ({
+			sales_person: st.sales_person,
+			allocated_percentage: flt(st.allocated_percentage) || 100,
+		}));
+	}
+	const salesPerson =
+		sourceDoc.custom_sales_person ||
+		sourceDoc.sales_person ||
+		context.custom_sales_person ||
+		context.sales_person ||
+		context.invoice_doc?.custom_sales_person ||
+		context.invoice_doc?.sales_person ||
+		(Array.isArray(doc.sales_team) && doc.sales_team.length > 0
+			? doc.sales_team[0].sales_person
+			: null);
+	if (salesPerson) {
+		doc.custom_sales_person = salesPerson;
+		doc.sales_person = salesPerson;
+		if (!doc.sales_team || !doc.sales_team.length) {
+			doc.sales_team = [
+				{
+					sales_person: salesPerson,
+					allocated_percentage: 100,
+				},
+			];
+		}
+	}
 	doc.posting_date = normalizeBackendDate(
 		context,
 		context.posting_date_display ?? context.posting_date,
