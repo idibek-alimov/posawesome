@@ -221,25 +221,49 @@ function addPaymentEntryDetails(lines: string[], doc: Record<string, any>, width
 	}
 }
 
+function shouldHideTaxOnReceipt(doc: Record<string, any>): boolean {
+	if (doc.hide_tax_from_customer === true) return true;
+	if (doc.hide_tax_from_customer === false) return false;
+	if (typeof doc.tax_regime === "string") {
+		return doc.tax_regime !== "General (VAT)";
+	}
+	const tmpl = String(doc.taxes_and_charges || "").toLowerCase();
+	if (tmpl.includes("simplified") || tmpl.includes("упрощ")) return true;
+	const taxes = Array.isArray(doc.taxes) ? doc.taxes : [];
+	if (
+		taxes.length > 0 &&
+		taxes.every((t: any) => {
+			const desc = String(t.description || t.account_head || "").toLowerCase();
+			return desc.includes("simplified") || desc.includes("упрощ") || desc.includes("усн");
+		})
+	) {
+		return true;
+	}
+	return false;
+}
+
 function addTotals(lines: string[], doc: Record<string, any>, width: number) {
 	const currency = doc.currency || doc.base_currency || "";
+	const hideTax = shouldHideTaxOnReceipt(doc);
 	lines.push(line(width));
 
-	if (doc.net_total !== undefined || doc.total !== undefined) {
+	if (!hideTax && (doc.net_total !== undefined || doc.total !== undefined)) {
 		lines.push(leftRight(translate("Net Total"), formatAmount(doc.net_total ?? doc.total, currency), width));
 	}
 	if (toNumber(doc.discount_amount) !== 0) {
 		lines.push(leftRight(translate("Discount"), formatAmount(doc.discount_amount, currency), width));
 	}
-	if (toNumber(doc.total_taxes_and_charges) !== 0) {
+	if (!hideTax && toNumber(doc.total_taxes_and_charges) !== 0) {
 		lines.push(leftRight(translate("Taxes"), formatAmount(doc.total_taxes_and_charges, currency), width));
 	}
 
 	const taxes = Array.isArray(doc.taxes) ? doc.taxes : [];
-	for (const tax of taxes) {
-		const amount = toNumber(taxAmount(tax));
-		if (amount === 0) continue;
-		lines.push(leftRight(`  ${tax.description || tax.account_head || translate("Tax")}`, formatAmount(amount, currency), width));
+	if (!hideTax) {
+		for (const tax of taxes) {
+			const amount = toNumber(taxAmount(tax));
+			if (amount === 0) continue;
+			lines.push(leftRight(`  ${tax.description || tax.account_head || translate("Tax")}`, formatAmount(amount, currency), width));
+		}
 	}
 
 	const grandTotal = doc.rounded_total ?? doc.grand_total ?? doc.base_rounded_total ?? doc.base_grand_total;

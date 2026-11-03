@@ -139,11 +139,35 @@ def ensure_default_customer(pos_profile_doc=None) -> str:
 
 
 def update_opening_shift_data(data, pos_profile):
-    data["pos_profile"] = frappe.get_doc("POS Profile", pos_profile)
-    ensure_default_customer(data["pos_profile"])
-    if data["pos_profile"].get("posa_language"):
-        frappe.local.lang = data["pos_profile"].posa_language
-    data["company"] = frappe.get_doc("Company", data["pos_profile"].company)
+    profile_doc = frappe.get_doc("POS Profile", pos_profile)
+    ensure_default_customer(profile_doc)
+    if profile_doc.get("posa_language"):
+        frappe.local.lang = profile_doc.posa_language
+
+    # Sync and attach Tajikistan Retail Tax Settings metadata
+    try:
+        from erpnext.accounts.doctype.retail_tax_settings.retail_tax_settings import (
+            get_retail_tax_settings,
+        )
+
+        tax_settings = get_retail_tax_settings(profile_doc.company, auto_provision=True)
+        if tax_settings.get("sales_tax_template") and profile_doc.taxes_and_charges != tax_settings["sales_tax_template"]:
+            profile_doc.taxes_and_charges = tax_settings["sales_tax_template"]
+            profile_doc.db_set("taxes_and_charges", tax_settings["sales_tax_template"], update_modified=False)
+        if hasattr(profile_doc, "posa_tax_inclusive") and cint(profile_doc.posa_tax_inclusive) != 1:
+            profile_doc.posa_tax_inclusive = 1
+            profile_doc.db_set("posa_tax_inclusive", 1, update_modified=False)
+
+        profile_dict = profile_doc.as_dict()
+        profile_dict["tax_regime"] = tax_settings.get("tax_regime", "Simplified")
+        profile_dict["tax_rate"] = tax_settings.get("active_tax_rate", 6.0)
+        profile_dict["hide_tax_from_customer"] = bool(tax_settings.get("hide_tax_from_customer", True))
+        data["pos_profile"] = profile_dict
+        data["retail_tax_settings"] = tax_settings
+    except Exception:
+        data["pos_profile"] = profile_doc
+
+    data["company"] = frappe.get_doc("Company", profile_doc.company)
     allow_negative_stock = cint(frappe.db.get_single_value("Stock Settings", "allow_negative_stock") or 0)
     data["stock_settings"] = {}
     data["stock_settings"].update({"allow_negative_stock": bool(allow_negative_stock)})

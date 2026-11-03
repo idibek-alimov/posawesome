@@ -298,11 +298,23 @@ export function get_invoice_doc(context: any) {
 
 	// Prepare taxes array
 	doc.taxes = [];
+	doc.tax_regime = context.pos_profile?.tax_regime || "Simplified";
+	doc.hide_tax_from_customer =
+		context.pos_profile?.hide_tax_from_customer !== undefined
+			? Boolean(context.pos_profile.hide_tax_from_customer)
+			: doc.tax_regime !== "General (VAT)";
+
 	if (context.invoice_doc && context.invoice_doc.taxes) {
 		let totalTax = 0;
+		let inclusiveTax = 0;
 		context.invoice_doc.taxes.forEach((tax) => {
+			const isInc = Boolean(tax.included_in_print_rate);
 			if (tax.tax_amount) {
-				grandTotal += flt(tax.tax_amount);
+				if (!isInc) {
+					grandTotal += flt(tax.tax_amount);
+				} else {
+					inclusiveTax += flt(tax.tax_amount);
+				}
 				totalTax += flt(tax.tax_amount);
 			}
 			doc.taxes.push({
@@ -318,6 +330,10 @@ export function get_invoice_doc(context: any) {
 				base_total: toCompanyCurrency(context, tax.total),
 			});
 		});
+		if (inclusiveTax) {
+			doc.net_total = flt(grandTotal - inclusiveTax);
+			doc.base_net_total = toCompanyCurrency(context, doc.net_total);
+		}
 		doc.total_taxes_and_charges = totalTax;
 	} else if (isOffline()) {
 		const tmpl = getTaxTemplate(context.pos_profile.taxes_and_charges);

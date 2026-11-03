@@ -26,10 +26,34 @@ export function useFiscalPrinter() {
 		return DEFAULT_BRIDGE_URL;
 	};
 
+	const isSimplifiedRegimeInvoice = (invoiceDoc: any): boolean => {
+		if (!invoiceDoc) return true;
+		if (invoiceDoc.hide_tax_from_customer === true) return true;
+		if (invoiceDoc.hide_tax_from_customer === false) return false;
+		if (typeof invoiceDoc.tax_regime === "string") {
+			return invoiceDoc.tax_regime !== "General (VAT)";
+		}
+		const tmpl = String(invoiceDoc.taxes_and_charges || "").toLowerCase();
+		if (tmpl.includes("vat") || tmpl.includes("ндс") || tmpl.includes("аб")) {
+			return false;
+		}
+		const taxes = Array.isArray(invoiceDoc.taxes) ? invoiceDoc.taxes : [];
+		if (
+			taxes.some((t: any) => {
+				const desc = String(t.description || t.account_head || "").toLowerCase();
+				return desc.includes("vat") || desc.includes("ндс") || desc.includes("аб");
+			})
+		) {
+			return false;
+		}
+		return true;
+	};
+
 	/**
 	 * Convert POS invoice doc into TP809 bridge JSON payload
 	 */
 	const buildFiscalPayload = (invoiceDoc: any) => {
+		const isSimplified = isSimplifiedRegimeInvoice(invoiceDoc);
 		const items = (invoiceDoc.items || []).map((item: any) => ({
 			item_code: item.item_code,
 			item_name: item.item_name || item.item_code || "Товар",
@@ -68,9 +92,9 @@ export function useFiscalPrinter() {
 			paid_amount_cash: cashAmount,
 			paid_amount_card: cardAmount,
 			change_amount: Number(invoiceDoc.change_amount) || 0,
-			total_taxes_and_charges: Number(invoiceDoc.total_taxes_and_charges) || 0,
-			tax_type: "GENERAL",
-			vat_code: "STANDARD",
+			total_taxes_and_charges: isSimplified ? 0 : (Number(invoiceDoc.total_taxes_and_charges) || 0),
+			tax_type: isSimplified ? "SIMPLIFIED" : "GENERAL",
+			vat_code: isSimplified ? "NONE" : "STANDARD",
 			custom_message: "Ташаккур барои харид! Спасибо за покупку!",
 		};
 	};
