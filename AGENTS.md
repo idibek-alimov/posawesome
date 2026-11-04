@@ -141,3 +141,53 @@ A task is complete only when:
 3. Existing behavior is not broken.
 4. Build/lint/test commands are run where available.
 5. Risks are documented.
+
+---
+
+## Owner-Approved UI Direction
+
+The owner approved the simplified ERPNext Product Catalog and Product Detail and wants
+the same clear, professional intent carried into other apps. For POS, adapt that intent
+to fast, accurate checkout; do not copy an owner dashboard into the cashier workflow.
+The mandatory architecture, contracts, impact analysis, and verification rules above
+remain in force. An interface simplification must preserve the linked POS behavior.
+
+- Identify whether the task serves a cashier, supervisor, or reporting user. Keep sales
+  entry, scan/search, cart correction, payment, and receipt tasks easy to reach. Do not
+  reveal purchase cost, margins, or management figures to cashiers without authorization.
+- Use the existing Vue 3/Vuetify components, shared stores/composables, typography, and
+  theme system. Keep layouts restrained, labels plain, tables and totals readable, and
+  occasional options progressively disclosed. Avoid decorative badges, imagery, or
+  animations that compete with items, payment status, or actionable errors.
+- Preserve keyboard shortcuts, barcode-scanner focus, touch targets, desktop/tablet
+  layouts, and Russian/Tajik wording. Keep transaction-critical actions usable when a
+  dialog opens/closes or data refreshes; do not silently reset the cart or customer.
+- Make offline, reconnecting, queued, submitting, failed, and completed states distinct.
+  Preserve recovery/retry behavior and the existing submission guards; an attractive
+  success message must not mask an unsynced or rejected invoice.
+- Keep amounts, taxes, discounts, currency, UOM, returns, payments, and printed totals
+  consistent with the same shared calculation and submitted ERPNext document. POS Profile
+  remains the configuration source; catalog defaults such as all warehouses or this
+  month do not override a terminal's company/warehouse or the shift's transaction scope.
+- Scope screen styling and ignore stale search requests. Keep current native source
+  links and advanced detail where appropriate without interrupting checkout.
+
+## Repository and Tooling Notes
+
+This app has its own Git repository within the bench. Use its customized `origin` and
+preserve unrelated work. The upstream update examples in `CLAUDE.md` are not permission
+to replace this fork or pull upstream. A local edit request does not authorize committing,
+pushing, deploying, or submitting real invoices.
+
+Check current package scripts before verification. In `frontend/`, the available scoped
+commands include `yarn type-check`, `yarn lint`, `yarn test:unit`, `yarn test:smoke`, and
+`yarn build`; the build includes the Chrome 109 CSS audit. Preserve that browser baseline.
+Read `frontend/tests/smoke/README.md` before live smoke checks and keep credentials in
+ignored local configuration. Check applicable root build-artifact/Electron verification
+scripts if those outputs change; they are not required for an unrelated documentation edit.
+
+Use test sites or controlled fixtures for checkout, offline, and receipt verification.
+Do not clear real IndexedDB carts/queues or submit transactions as a shortcut for testing.
+Clearly distinguish fixture rendering, mocked API tests, authenticated site checks,
+browser printing, and QZ Tray verification. Preserve the existing final-report requirements
+and state any checks that could not be performed.
