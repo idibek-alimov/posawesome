@@ -1,8 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
 
+const fiscalState = vi.hoisted(() => ({ printZReport: vi.fn(async () => true) }));
+vi.mock("../src/posapp/composables/pos/payments/useFiscalPrinter", () => ({
+    useFiscalPrinter: () => ({ printZReport: fiscalState.printZReport }),
+}));
+
 const offlineState = vi.hoisted(() => ({
 	openingStorage: null as any,
+	queued: 0,
+	offline: false,
 	clearOpeningStorage: vi.fn(() => {
 		offlineState.openingStorage = null;
 	}),
@@ -18,7 +25,8 @@ vi.mock("../src/offline/index", () => ({
 	}),
 	clearOpeningStorage: offlineState.clearOpeningStorage,
 	setTaxTemplate: vi.fn(),
-	isOffline: vi.fn(() => false),
+	isOffline: vi.fn(() => offlineState.offline),
+	getQueuedPayloadCount: vi.fn(() => offlineState.queued),
 	getBootstrapSnapshot: vi.fn(() => null),
 	setBootstrapSnapshot: vi.fn(),
 }));
@@ -38,7 +46,10 @@ describe("usePosShift closing warnings", () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		offlineState.openingStorage = null;
+		offlineState.queued = 0;
+		offlineState.offline = false;
 		offlineState.clearOpeningStorage.mockClear();
+        fiscalState.printZReport.mockClear();
 		vi.stubGlobal("frappe", {
 			session: { user: "test@example.com" },
 			datetime: { nowdate: () => "2026-04-28" },
@@ -117,7 +128,7 @@ describe("usePosShift closing warnings", () => {
 		const shift = usePosShift();
 		shift.pos_opening_shift.value = { name: "POS-OPEN-0003" };
 		shift.pos_profile.value = { name: "Main POS" };
-		shift.submit_closing_pos({ name: "POS-CLOSE-0003" });
+		await shift.submit_closing_pos({ name: "POS-CLOSE-0003" });
 		await Promise.resolve();
 		await Promise.resolve();
 		await new Promise((resolve) => setTimeout(resolve, 0));
@@ -125,5 +136,25 @@ describe("usePosShift closing warnings", () => {
 		expect(uiStore.posOpeningShift).toBeNull();
 		expect(invoiceStore.additionalDiscount).toBe(0);
 		expect(offlineState.clearOpeningStorage).toHaveBeenCalled();
+	});
+	it("blocks closing while local financial records are queued", async () => {
+		offlineState.queued = 1;
+		expect(await usePosShift().submit_closing_pos({})).toBe(false);
+		expect((globalThis as any).frappe.call).not.toHaveBeenCalled();
+	});
+	it("preserves the active shift and cart when closing fails", async () => {
+		const ui = useUIStore();
+		const invoice = useInvoiceStore();
+		ui.posOpeningShift = { name: "OPEN-1" };
+		invoice.setAdditionalDiscount(25);
+		(globalThis as any).frappe.call = vi.fn(() =>
+			Promise.reject(new Error("server unavailable")),
+		);
+		vi.spyOn(console, "error").mockImplementation(() => undefined);
+		expect(await usePosShift().submit_closing_pos({ print_z_report: true, transfer_to_safe: true })).toBe(false);
+        expect(fiscalState.printZReport).not.toHaveBeenCalled();
+		expect(ui.posOpeningShift.name).toBe("OPEN-1");
+		expect(invoice.additionalDiscount).toBe(25);
+		expect(offlineState.clearOpeningStorage).not.toHaveBeenCalled();
 	});
 });

@@ -2,6 +2,7 @@
 # Copyright (c) 2020, Youssef Restom and Contributors
 # See license.txt
 from __future__ import unicode_literals
+from inspect import unwrap
 
 # import frappe
 import unittest
@@ -50,6 +51,14 @@ class DummyClosingShiftDoc:
 
 
 class TestPOSClosingShift(unittest.TestCase):
+    def setUp(self):
+        patcher = patch.object(overview, "get_authorized_opening_shift", side_effect=lambda name: overview.frappe.get_doc("POS Opening Shift", name))
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        translator = patch.object(invoices, "_", side_effect=lambda text: text)
+        translator.start()
+        self.addCleanup(translator.stop)
+
     def _make_doc(self, data):
         doc = Mock()
         doc.get.side_effect = lambda key, default=None: data.get(key, default)
@@ -91,7 +100,7 @@ class TestPOSClosingShift(unittest.TestCase):
         mock_frappe._dict.side_effect = lambda d: d
         mock_frappe.render_template.return_value = "<html/>"
 
-        overview.get_payment_reconciliation_details(closing_shift_doc)
+        unwrap(overview.get_payment_reconciliation_details)(closing_shift_doc)
 
         invoice_doc.check_permission.assert_called_once_with("read")
 
@@ -129,7 +138,7 @@ class TestPOSClosingShift(unittest.TestCase):
         mock_frappe._dict.side_effect = lambda d: d
         mock_frappe.render_template.return_value = "<html/>"
 
-        overview.get_payment_reconciliation_details(closing_shift_doc)
+        unwrap(overview.get_payment_reconciliation_details)(closing_shift_doc)
 
         payment_doc.check_permission.assert_called_once_with("read")
 
@@ -261,7 +270,7 @@ class TestPOSClosingShift(unittest.TestCase):
         mock_get_payments_entries.return_value = []
         mock_frappe.get_all.return_value = []
 
-        overview.get_closing_shift_overview("POS-OPEN-1")
+        unwrap(overview.get_closing_shift_overview)("POS-OPEN-1")
 
         mock_get_pos_invoices.assert_called_once_with(
             "POS-OPEN-1",
@@ -317,7 +326,7 @@ class TestPOSClosingShift(unittest.TestCase):
         mock_get_payments_entries.return_value = []
         mock_frappe.get_all.return_value = []
 
-        result = overview.get_closing_shift_overview("POS-OPEN-1")
+        result = unwrap(overview.get_closing_shift_overview)("POS-OPEN-1")
 
         self.assertEqual(result["loyalty_redemption"]["company_currency_total"], 10)
         self.assertEqual(result["loyalty_redemption"]["points"], 2)
@@ -380,7 +389,7 @@ class TestPOSClosingShift(unittest.TestCase):
         mock_get_payments_entries.return_value = []
         mock_frappe.get_all.return_value = []
 
-        result = overview.get_closing_shift_overview("POS-OPEN-1")
+        result = unwrap(overview.get_closing_shift_overview)("POS-OPEN-1")
 
         self.assertEqual(result["loyalty_redemption"]["company_currency_total"], 10)
         self.assertEqual(result["loyalty_redemption"]["points"], 2)

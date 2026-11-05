@@ -65,6 +65,7 @@ def _install_stubs():
     closing_utils_module.get_base_value = get_base_value
     closing_data_module.get_payments_entries = lambda *args, **kwargs: []
     closing_data_module.get_pos_invoices = lambda *args, **kwargs: []
+    closing_data_module.get_authorized_opening_shift = lambda name: frappe_module.get_doc("POS Opening Shift", name)
 
     sys.modules["frappe"] = frappe_module
     sys.modules["frappe.utils"] = frappe_utils_module

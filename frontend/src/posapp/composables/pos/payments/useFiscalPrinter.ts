@@ -187,17 +187,22 @@ export function useFiscalPrinter() {
 	 */
 	const printZReport = async (cashierName = "Кассир"): Promise<boolean> => {
 		const bridgeUrl = getBridgeUrl();
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 12000);
 		try {
 			const res = await fetch(`${bridgeUrl}/fiscal/close-shift`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ cashier: cashierName }),
+				signal: controller.signal,
 			});
 			const data = await res.json().catch(() => ({}));
 			return Boolean(data.success);
 		} catch (e) {
 			console.warn("Failed to print Z-Report on TP809 bridge:", e);
 			return false;
+		} finally {
+			clearTimeout(timeoutId);
 		}
 	};
 

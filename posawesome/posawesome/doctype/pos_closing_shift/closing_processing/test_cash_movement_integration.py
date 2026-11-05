@@ -1,3 +1,4 @@
+from inspect import unwrap
 import json
 import unittest
 from types import SimpleNamespace
@@ -57,7 +58,14 @@ class TestClosingShiftCashMovementIntegration(unittest.TestCase):
             "balance_details": [{"mode_of_payment": "Cash", "amount": 50}],
         }
 
-        result = creation.make_closing_shift_from_opening(json.dumps(opening_shift))
+        import frappe
+        from . import overview as overview_module
+        mock_frappe._dict.side_effect = frappe._dict
+        mock_frappe.db.get_value.side_effect = lambda dt, name, field: 0 if field == "create_pos_invoice_instead_of_sales_invoice" else "Cash"
+        mock_frappe.get_all.side_effect = lambda dt, **kwargs: [{"amount": 20, "movement_type": "Expense"}] if dt == "POS Cash Movement" else []
+        opening = SimpleNamespace(as_dict=lambda: opening_shift)
+        with patch.object(creation, "get_authorized_opening_shift", return_value=opening), patch.object(overview_module, "frappe", mock_frappe):
+            result = unwrap(creation.make_closing_shift_from_opening)(json.dumps(opening_shift))
 
         self.assertEqual(result["closing_shift"], closing_doc)
         self.assertEqual(result["skipped_printed_invoices"], [])
@@ -68,47 +76,19 @@ class TestClosingShiftCashMovementIntegration(unittest.TestCase):
         self.assertEqual(row.opening_amount, 50)
         self.assertEqual(row.expected_amount, 30)
 
-    @patch("posawesome.posawesome.doctype.pos_closing_shift.closing_processing.overview.get_payments_entries")
-    @patch("posawesome.posawesome.doctype.pos_closing_shift.closing_processing.overview.get_pos_invoices")
-    @patch("posawesome.posawesome.doctype.pos_closing_shift.closing_processing.overview.frappe.get_all")
-    @patch("posawesome.posawesome.doctype.pos_closing_shift.closing_processing.overview.frappe.db.get_value")
-    @patch("posawesome.posawesome.doctype.pos_closing_shift.closing_processing.overview.frappe.get_cached_value")
-    @patch("posawesome.posawesome.doctype.pos_closing_shift.closing_processing.overview.frappe.get_doc")
-    def test_overview_includes_cash_movements_and_adjusts_cash_expected(
-        self,
-        mock_get_doc,
-        mock_get_cached_value,
-        mock_db_get_value,
-        mock_get_all,
-        mock_get_pos_invoices,
-        mock_get_payments_entries,
-    ):
-        mock_get_pos_invoices.return_value = []
-        mock_get_payments_entries.return_value = []
-        mock_get_doc.return_value = SimpleNamespace(
-            doctype="POS Opening Shift",
-            name="POS-OPEN-1",
-            pos_profile="POS-PROFILE-1",
-            company="My Co",
-        )
-        mock_get_cached_value.return_value = "USD"
-        mock_db_get_value.side_effect = lambda dt, name, field: (
-            0 if field == "create_pos_invoice_instead_of_sales_invoice" else "Cash"
-        )
-        mock_get_all.return_value = [
-            {"movement_type": "Expense", "amount": 35},
-            {"movement_type": "Deposit", "amount": 15},
-        ]
-
-        result = overview.get_closing_shift_overview("POS-OPEN-1")
-
+    @patch("posawesome.posawesome.doctype.pos_closing_shift.closing_processing.overview.frappe")
+    def test_overview_includes_cash_movements_and_adjusts_cash_expected(self, mock_frappe):
+        import frappe
+        opening = frappe._dict(name="POS-OPEN-1", pos_profile="POS-PROFILE-1", company="My Co")
+        mock_frappe.get_cached_value.return_value = "USD"
+        mock_frappe.db.get_value.side_effect = lambda dt, name, field: 0 if field == "create_pos_invoice_instead_of_sales_invoice" else "Cash"
+        mock_frappe.get_all.side_effect = lambda dt, **kwargs: [
+            {"movement_type": "Expense", "amount": 35}, {"movement_type": "Deposit", "amount": 15}
+        ] if dt == "POS Cash Movement" else []
+        result = overview.build_closing_overview(opening, [], [])
         self.assertEqual(result["cash_movements"]["count"], 2)
         self.assertEqual(result["cash_movements"]["company_currency_total"], 50)
         self.assertEqual(result["cash_expected"]["company_currency_total"], -50)
         by_type = {row["movement_type"]: row["total"] for row in result["cash_movements"]["by_type"]}
         self.assertEqual(by_type["Expense"], 35)
-        self.assertEqual(by_type["Deposit"], 15)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        self.assertEqual(by_type["Transfer out"], 15)

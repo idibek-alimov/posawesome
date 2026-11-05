@@ -1,4 +1,5 @@
 import { ref } from "vue";
+import { actualAmount } from "./closingAmounts";
 
 declare const frappe: any;
 
@@ -7,9 +8,14 @@ export function useClosingShift(eventBus: any) {
 	const dialog_data = ref<any>({});
 	const overview = ref<any>(null);
 	const overviewLoading = ref(false);
+	const overviewError = ref("");
+	const submitting = ref(false);
+	let requestId = 0;
 	const pos_profile = ref("");
 
 	const closeDialog = () => {
+		if (submitting.value) return;
+		requestId += 1;
 		closingDialog.value = false;
 		overview.value = null;
 		overviewLoading.value = false;
@@ -18,7 +24,10 @@ export function useClosingShift(eventBus: any) {
 	const fetchOverview = (
 		openingShift: string,
 		posProfileCurrency: string,
+		initialOverview?: any,
 	) => {
+		const currentRequest = ++requestId;
+		overviewError.value = "";
 		overviewLoading.value = true;
 		overview.value = null;
 		if (!openingShift) {
@@ -169,6 +178,9 @@ export function useClosingShift(eventBus: any) {
 		});
 
 		const normalize = (payload: any = {}) => ({
+			reconciliation: payload.reconciliation,
+			salespeople: payload.salespeople || [],
+			movements: payload.movements || [],
 			total_invoices: toNumber(payload.total_invoices),
 			company_currency:
 				payload.company_currency || posProfileCurrency || "",
@@ -214,7 +226,9 @@ export function useClosingShift(eventBus: any) {
 			loyalty_redemption: normalizeLoyaltyRedemption(
 				payload.loyalty_redemption,
 			),
-			customer_credit_redeemed: normalizeCredit(payload.customer_credit_redeemed),
+			customer_credit_redeemed: normalizeCredit(
+				payload.customer_credit_redeemed,
+			),
 			cash_expected: {
 				mode_of_payment: payload.cash_expected?.mode_of_payment || "",
 				company_currency_total: toNumber(
@@ -230,59 +244,89 @@ export function useClosingShift(eventBus: any) {
 			cash_movements: normalizeCashMovements(payload.cash_movements),
 		});
 
-		const request = frappe.call(
-			"posawesome.posawesome.doctype.pos_closing_shift.pos_closing_shift.get_closing_shift_overview",
-			{
-				pos_opening_shift: openingShift,
-			},
-		);
-
-		const finalize = () => {
-			overviewLoading.value = false;
-		};
-
-		const onSuccess = (r: any) => {
-			overview.value = normalize(r && r.message ? r.message : {});
-		};
-
-		const onError = (err: unknown) => {
-			console.error("Failed to load shift overview", err);
-			overview.value = normalize();
-		};
-
-		if (request && typeof request.then === "function") {
-			request.then(onSuccess, onError);
-
-			if (typeof request.always === "function") {
-				request.always(finalize);
-			} else if (typeof request.finally === "function") {
-				request.finally(finalize);
-			} else {
-				request.then(finalize, finalize);
+		const applyOverview = (payload: any) => {
+			if (
+				!payload ||
+				!Array.isArray(payload.reconciliation) ||
+				!payload.company_currency
+			) {
+				throw new Error("Incomplete closing summary");
 			}
-		} else {
-			finalize();
+			if (currentRequest !== requestId) return;
+			const previous = new Map(
+				(dialog_data.value.payment_reconciliation || []).map(
+					(row: any) => [row.mode_of_payment, row.closing_amount],
+				),
+			);
+			dialog_data.value.payment_reconciliation =
+				payload.reconciliation.map((row: any) => ({
+					...row,
+					closing_amount: previous.get(row.mode_of_payment) ?? "",
+				}));
+			overview.value = normalize(payload);
+		};
+		const onError = () => {
+			if (currentRequest !== requestId) return;
+			overview.value = null;
+			overviewError.value =
+				"Could not load shift totals. Try again before closing.";
+		};
+		if (initialOverview) {
+			try {
+				applyOverview(initialOverview);
+			} catch {
+				onError();
+			}
+			overviewLoading.value = false;
+			return;
 		}
+		return Promise.resolve()
+			.then(() =>
+				frappe.call(
+					"posawesome.posawesome.doctype.pos_closing_shift.pos_closing_shift.make_closing_shift_from_opening",
+					{ opening_shift: { name: openingShift } },
+				),
+			)
+			.then((r: any) => {
+				const previous = dialog_data.value.payment_reconciliation;
+				if (currentRequest !== requestId) return;
+				if (!r?.message?.closing_shift)
+					throw new Error("Missing closing draft");
+				dialog_data.value = {
+					...r.message.closing_shift,
+					payment_reconciliation: previous,
+					skipped_printed_invoices:
+						r.message.skipped_printed_invoices || [],
+				};
+				applyOverview(r.message.overview);
+			})
+			.catch(onError)
+			.finally(() => {
+				if (currentRequest === requestId) overviewLoading.value = false;
+			});
 	};
 
 	const submitDialog = (extraData: any = {}) => {
-		const payments =
-			dialog_data.value.payment_reconciliation ||
-			dialog_data.value.payments ||
-			[];
-		const invalid = payments.some((p: any) =>
-			isNaN(parseFloat(p.closing_amount)),
-		);
-		if (invalid) {
+		if (
+			submitting.value ||
+			overviewLoading.value ||
+			overviewError.value ||
+			!overview.value
+		)
 			return false;
-		}
-		if (eventBus) {
-			eventBus.emit("submit_closing_pos", {
-				...dialog_data.value,
-				...extraData,
-			});
-		}
-		closingDialog.value = false;
+		const payments = dialog_data.value.payment_reconciliation || [];
+		if (
+			payments.some(
+				(row: any) => actualAmount(row.closing_amount) === null,
+			)
+		)
+			return false;
+		submitting.value = true;
+		overviewError.value = "";
+		eventBus?.emit("submit_closing_pos", {
+			...dialog_data.value,
+			...extraData,
+		});
 		return true;
 	};
 
@@ -291,6 +335,8 @@ export function useClosingShift(eventBus: any) {
 		dialog_data,
 		overview,
 		overviewLoading,
+		overviewError,
+		submitting,
 		pos_profile,
 		closeDialog,
 		fetchOverview,

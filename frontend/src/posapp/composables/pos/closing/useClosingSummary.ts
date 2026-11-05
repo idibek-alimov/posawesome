@@ -444,7 +444,8 @@ export function useClosingSummary(
 				label: __("Expected Cash"),
 				value: cashValue,
 				caption:
-					cashExpectedSummary.value.mode_of_payment && cashMovementSummary.value.company_currency_total
+					cashExpectedSummary.value.mode_of_payment &&
+					cashMovementSummary.value.company_currency_total
 						? `${__("Mode")}: ${cashExpectedSummary.value.mode_of_payment} | ${__("Cash movement deduction applied")}`
 						: cashExpectedSummary.value.mode_of_payment
 							? `${__("Mode")}: ${cashExpectedSummary.value.mode_of_payment}`
@@ -534,6 +535,10 @@ export function useClosingSummary(
 	};
 
 	return {
+		salesSummary,
+		returnsSummary,
+		salespeople: computed(() => unref(overview)?.salespeople || []),
+		movements: computed(() => unref(overview)?.movements || []),
 		overviewCompanyCurrency,
 		companyCurrencySymbol,
 		multiCurrencyTotals,

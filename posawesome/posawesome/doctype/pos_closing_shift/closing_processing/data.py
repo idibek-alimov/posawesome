@@ -62,6 +62,9 @@ def get_payments_entries(pos_opening_shift):
             "mode_of_payment",
             "paid_amount",
             "base_paid_amount",
+            "received_amount",
+            "base_received_amount",
+            "source_exchange_rate",
             "paid_from_account_currency",
             "paid_to_account_currency",
             "target_exchange_rate",
@@ -72,3 +75,13 @@ def get_payments_entries(pos_opening_shift):
             "payment_type",
         ],
     )
+
+
+def get_authorized_opening_shift(name):
+    """Use the stored shift scope; cashier-supplied company/profile values are not authoritative."""
+    opening = frappe.get_doc("POS Opening Shift", name)
+    if opening.user != frappe.session.user and not frappe.has_role(
+        ("System Manager", "Sales Manager", "Administrator")
+    ):
+        frappe.throw(frappe._("You are not allowed to access this shift."), frappe.PermissionError)
+    return opening

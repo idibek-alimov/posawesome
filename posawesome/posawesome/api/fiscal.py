@@ -3,6 +3,8 @@
 # For license information, please see license.txt
 
 import json
+import math
+
 import frappe
 from frappe import _
 from frappe.utils import flt, nowdate, now_datetime
@@ -212,23 +214,27 @@ def transfer_shift_cash_to_safe(pos_closing_shift_name, amount=None):
 		return {"success": False, "message": _("Смена закрытия не найдена")}
 
 	closing_shift = frappe.get_doc("POS Closing Shift", pos_closing_shift_name)
-	company = closing_shift.company or frappe.defaults.get_user_default("Company")
+	from posawesome.posawesome.doctype.pos_closing_shift.closing_processing.data import (
+		get_authorized_opening_shift,
+	)
 
-	# Find cash closing amount if not explicitly passed
-	transfer_amt = flt(amount)
+	get_authorized_opening_shift(closing_shift.pos_opening_shift)
+	if closing_shift.docstatus != 1:
+		frappe.throw(_("Only a submitted closing shift can transfer cash to the safe."))
+	company = closing_shift.company
+	cash_mode = frappe.db.get_value("POS Profile", closing_shift.pos_profile, "posa_cash_mode_of_payment") or "Cash"
+	cash_account = frappe.db.get_value(
+		"Mode of Payment Account", {"parent": cash_mode, "company": company}, "default_account"
+	)
+	counted = next(
+		(flt(row.closing_amount) for row in closing_shift.get("payment_reconciliation", [])
+		 if row.mode_of_payment == cash_mode), 0,
+	)
+	transfer_amt = counted if amount in (None, "") else flt(amount)
+	if not math.isfinite(transfer_amt) or transfer_amt > counted:
+		frappe.throw(_("Transfer amount cannot exceed the counted cash."))
 	if transfer_amt <= 0:
-		for d in closing_shift.get("payment_reconciliation", []):
-			mode = (d.mode_of_payment or "").lower()
-			if "cash" in mode or "налич" in mode:
-				# Use closing_amount if entered, else expected_amount
-				transfer_amt = flt(d.closing_amount or d.expected_amount)
-				break
-
-	if transfer_amt <= 0:
-		return {
-			"success": False,
-			"message": _("Сумма наличных для инкассации равна 0"),
-		}
+		return {"success": False, "message": _("No counted cash to transfer to the safe.")}
 
 	# Identify Safe wallet in Money Hub
 	safe_wallet = frappe.db.get_value(
@@ -253,33 +259,18 @@ def transfer_shift_cash_to_safe(pos_closing_shift_name, amount=None):
 			"message": _("Кошелек «Сейф» не найден в Money Hub. Создайте его на странице /app/money-hub."),
 		}
 
-	# Find POS Cash wallet
+	# Select the wallet for this register's configured account, never another till.
 	pos_cash_wallet = frappe.db.get_value(
-		"Money Wallet",
-		{"company": company, "wallet_type": "Till", "enabled": 1},
-		["name", "wallet_name", "account"],
-		as_dict=True,
-	)
+		"Money Wallet", {"company": company, "account": cash_account, "enabled": 1},
+		["name", "wallet_name", "account"], as_dict=True,
+	) if cash_account else None
 	if not pos_cash_wallet:
-		pos_cash_wallet = frappe.db.get_value(
-			"Money Wallet",
-			{"company": company, "wallet_name": ["like", "%касса%"], "enabled": 1},
-			["name", "wallet_name", "account"],
-			as_dict=True,
-		)
-
-	if not pos_cash_wallet:
-		# Fallback to the first available cash account
-		cash_account = frappe.db.get_value(
-			"Account",
-			{"company": company, "account_type": "Cash", "is_group": 0},
-			"name",
-		)
-		if not cash_account:
-			return {"success": False, "message": _("Счет кассы не найден")}
-		from_wallet_name = cash_account
-	else:
-		from_wallet_name = pos_cash_wallet["name"]
+		return {"success": False, "message": _("No enabled wallet matches this register's cash account.")}
+	company_currency = frappe.get_cached_value("Company", company, "default_currency")
+	for account in (pos_cash_wallet["account"], safe_wallet["account"]):
+		if frappe.db.get_value("Account", account, "account_currency") != company_currency:
+			return {"success": False, "message": _("Use Money Hub to transfer between accounts with different currencies.")}
+	from_wallet_name = pos_cash_wallet["name"]
 
 	try:
 		from erpnext.accounts.page.money_hub.money_hub import transfer_money
@@ -296,8 +287,8 @@ def transfer_shift_cash_to_safe(pos_closing_shift_name, amount=None):
 			"success": True,
 			"transferred_amount": transfer_amt,
 			"target_wallet": safe_wallet["wallet_name"],
-			"message": _("Инкассация {0} TJS в «{1}» выполнена успешно").format(
-				transfer_amt, safe_wallet["wallet_name"]
+			"message": _("Transferred {0} {1} to {2}.").format(
+				transfer_amt, company_currency, safe_wallet["wallet_name"]
 			),
 		}
 	except Exception as e:

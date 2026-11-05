@@ -1360,3 +1360,58 @@ You are not allowed to print draft invoices,"Шумо иҷозат надоре�
 You are offline. Add Payment will work again when the connection is restored.,Шумо офлайн ҳастед.Иловаи пардохт ҳангоми барқарор шудани пайвастшавӣ дубора кор мекунад.
 You have no notifications right now,Шумо ҳоло ягон огоҳинома надоред
 Your Cart,Аробаи шумо
+Close shift,Бастани баст
+Opened,Кушода шуд
+Money to reconcile,Муқоисаи маблағҳо
+Count cash and check each payment method's closing amount after withdrawals.,Пули нақдро ҳисоб кунед ва бақияи ҳар усули пардохтро бо назардошти маблағҳои баровардашуда санҷед.
+All amounts in {0},Ҳамаи маблағҳо бо {0}
+At opening,Дар оғози баст
+Net received,Воридот
+Taken out,Бароварда шуд
+Expected,Бояд бошад
+Actual,Дар асл
+Actual amount: {0},Маблағи воқеӣ: {0}
+Shortage,Камомад
+Surplus,Зиёдатӣ
+Net received includes refunds and change. Expected = opening + net received − taken out.,Воридот бо назардошти баргардонӣ ва бақия аст. Бояд бошад = маблағи оғоз + воридот − маблағи баровардашуда.
+Shift sales,Фурӯши баст
+Number of sales,Шумораи фурӯш
+Sales by salesperson,Фурӯш аз рӯи фурӯшанда
+Salesperson,Фурӯшанда
+Unassigned,Таъин нашудааст
+View details,Тафсилот
+Money taken out,Маблағи баровардашуда дар баст
+Transfer to safe,Интиқол ба сандуқ
+Only withdrawals from this register's accounts reduce its expected amounts.,Маблағҳои баровардашуда танҳо бақияи ҳисобҳои ҳамин хазинаро кам мекунанд.
+Print fiscal Z report,Чопи ҳисоботи фискалии Z
+Transfer counted cash to safe,Интиқоли пули нақди ҳисобшуда ба сандуқ
+Transfer {0} to safe; leave {1} in the drawer.,Ба сандуқ: {0}. Дар хазина мемонад: {1}.
+"Sales and money received can differ because of credit sales, customer credit, loyalty points and separate payments.","Фурӯш ва воридот метавонанд аз сабаби фурӯши қарзӣ, маблағи муштарӣ, холҳои бонусӣ ва пардохтҳои алоҳида фарқ кунанд."
+Reconnect before closing the shift.,Пеш аз бастани баст ба шабака пайваст шавед.
+"Sync pending invoices, payments and cash movements, then refresh the totals before closing.","Ҳуҷҷатҳои фурӯш, пардохтҳо ва ҳаракати маблағҳоро ҳамоҳанг кунед, сипас пеш аз бастан ҷамъбастро нав кунед."
+"Sync pending invoices, payments and cash movements before closing the shift.","Пеш аз бастани баст ҳуҷҷатҳои фурӯш, пардохтҳо ва ҳаракати маблағҳоро ҳамоҳанг кунед."
+Refresh totals to include the records that have just synced.,Ҷамъбастро бо назардошти ҳуҷҷатҳои ҳамоҳангшуда нав кунед.
+Refresh totals,Нав кардани ҷамъбаст
+Loading shift totals…,Боркунии ҷамъбасти баст…
+Could not load shift totals. Try again before closing.,Ҷамъбасти баст бор нашуд. Пеш аз бастан дубора кӯшиш кунед.
+Could not close the shift. Check the error and refresh the totals before retrying.,Баст баста нашуд. Хаторо санҷед ва пеш аз кӯшиши дубора ҷамъбастро нав кунед.
+Could not check pending local records. Reload POS before closing.,Ҳуҷҷатҳои маҳаллии ҳамоҳангнашуда санҷида нашуданд. Пеш аз бастан POS-ро аз нав бор кунед.
+These draft invoices are excluded from the closing totals:,Ин ҳуҷҷатҳои фурӯши пешнавис ба ҷамъбасти баст дохил нестанд:
+Fiscal Z report printed.,Ҳисоботи фискалии Z чоп шуд.
+"Shift closed, but the fiscal Z report was not printed.","Баст баста шуд, аммо ҳисоботи фискалии Z чоп нашуд."
+"Shift closed, but cash was not transferred to the safe.","Баст баста шуд, аммо пули нақд ба сандуқ интиқол наёфт."
+Shift totals changed. Reload the closing summary before closing.,Ҷамъбасти баст тағйир ёфт. Пеш аз бастан ҷамъбастро аз нав бор кунед.
+Enter an actual amount for every payment method.,Барои ҳар усули пардохт маблағи воқеиро ворид кунед.
+Closing shift does not match the opening shift.,Маълумоти бастан ба басти кушода мувофиқат намекунад.
+Only a submitted closing shift can transfer cash to the safe.,Интиқол ба сандуқ танҳо баъди тасдиқи бастани баст имконпазир аст.
+Transfer amount cannot exceed the counted cash.,Маблағи интиқол набояд аз пули нақди ҳисобшуда зиёд бошад.
+No counted cash to transfer to the safe.,Барои интиқол ба сандуқ пули нақди ҳисобшуда нест.
+No enabled wallet matches this register's cash account.,Барои ҳисоби пули нақди ин хазина ҳамёни фаъол ёфт нашуд.
+Transferred {0} {1} to {2}.,{0} {1} ба {2} интиқол ёфт.
+Payment method,Усули пардохт
+Try again,Кӯшиши дубора
+Use Money Hub to transfer between accounts with different currencies.,Барои интиқол байни ҳисобҳо бо асъорҳои гуногун аз Money Hub истифода баред.
+POS Shift Closed,Баст баста шуд
+You are not allowed to access this shift.,Шумо ба ин баст дастрасӣ надоред.
+Transfer out,Интиқол аз хазина
+Payment made,Пардохти анҷомшуда

@@ -1381,3 +1381,58 @@ Remove Product?,Удалить товар?
 Do you want to remove this product from the cart?,Вы хотите удалить этот товар из корзины?
 "Yes, Remove","Да, удалить"
 Set Quantity,Указать количество
+Close shift,Закрыть смену
+Opened,Открыта
+Money to reconcile,Сверка денег
+Count cash and check each payment method's closing amount after withdrawals.,Пересчитайте наличные и проверьте остатки по способам оплаты с учётом изъятий.
+All amounts in {0},Все суммы в {0}
+At opening,На начало
+Net received,Получено
+Taken out,Изъято
+Expected,Должно быть
+Actual,Фактически
+Actual amount: {0},Фактическая сумма: {0}
+Shortage,Недостача
+Surplus,Излишек
+Net received includes refunds and change. Expected = opening + net received − taken out.,Получено — с учётом возвратов и сдачи. Должно быть = на начало + получено − изъято.
+Shift sales,Продажи за смену
+Number of sales,Количество продаж
+Sales by salesperson,Продажи по продавцам
+Salesperson,Продавец
+Unassigned,Не назначен
+View details,Подробности
+Money taken out,Изъятия за смену
+Transfer to safe,Перевод в сейф
+Only withdrawals from this register's accounts reduce its expected amounts.,Изъятия уменьшают остаток только на соответствующих счетах этой кассы.
+Print fiscal Z report,Напечатать фискальный Z-отчёт
+Transfer counted cash to safe,Перевести пересчитанные наличные в сейф
+Transfer {0} to safe; leave {1} in the drawer.,В сейф: {0}. В кассе останется: {1}.
+"Sales and money received can differ because of credit sales, customer credit, loyalty points and separate payments.","Продажи и поступления могут отличаться из-за продаж в долг, средств клиента, бонусов и отдельных платежей."
+Reconnect before closing the shift.,Подключитесь к сети перед закрытием смены.
+"Sync pending invoices, payments and cash movements, then refresh the totals before closing.","Синхронизируйте чеки, платежи и движения денег, затем обновите итоги перед закрытием."
+"Sync pending invoices, payments and cash movements before closing the shift.","Синхронизируйте чеки, платежи и движения денег перед закрытием смены."
+Refresh totals to include the records that have just synced.,Обновите итоги с учётом синхронизированных документов.
+Refresh totals,Обновить итоги
+Loading shift totals…,Загрузка итогов смены…
+Could not load shift totals. Try again before closing.,Не удалось загрузить итоги смены. Повторите перед закрытием.
+Could not close the shift. Check the error and refresh the totals before retrying.,Не удалось закрыть смену. Проверьте ошибку и обновите итоги перед повторной попыткой.
+Could not check pending local records. Reload POS before closing.,Не удалось проверить несинхронизированные документы. Перезагрузите POS перед закрытием.
+These draft invoices are excluded from the closing totals:,Эти черновики чеков не включены в итоги закрытия:
+Fiscal Z report printed.,Фискальный Z-отчёт напечатан.
+"Shift closed, but the fiscal Z report was not printed.","Смена закрыта, но фискальный Z-отчёт не напечатан."
+"Shift closed, but cash was not transferred to the safe.","Смена закрыта, но наличные не переведены в сейф."
+Shift totals changed. Reload the closing summary before closing.,Итоги смены изменились. Обновите сводку перед закрытием.
+Enter an actual amount for every payment method.,Введите фактическую сумму для каждого способа оплаты.
+Closing shift does not match the opening shift.,Данные закрытия не соответствуют открытой смене.
+Only a submitted closing shift can transfer cash to the safe.,Перевод в сейф возможен только после подтверждения закрытия смены.
+Transfer amount cannot exceed the counted cash.,Сумма перевода не может превышать пересчитанные наличные.
+No counted cash to transfer to the safe.,Нет пересчитанных наличных для перевода в сейф.
+No enabled wallet matches this register's cash account.,Для счёта наличных этой кассы не найден активный кошелёк.
+Transferred {0} {1} to {2}.,Переведено {0} {1} в {2}.
+Payment method,Способ оплаты
+Try again,Повторить
+Use Money Hub to transfer between accounts with different currencies.,Для перевода между счетами в разных валютах используйте Money Hub.
+POS Shift Closed,Смена закрыта
+You are not allowed to access this shift.,У вас нет доступа к этой смене.
+Transfer out,Перевод из кассы
+Payment made,Выплата

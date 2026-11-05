@@ -1,194 +1,196 @@
 <template>
-	<div class="reconciliation-section">
-		<div class="table-header mb-4">
-			<h4 class="text-h6 text-grey-darken-2 mb-1">
-				{{ __("Payment Reconciliation") }}
-			</h4>
-			<p class="text-body-2 text-grey">
-				{{ __("Verify closing amounts for each payment method") }}
-			</p>
+	<section aria-labelledby="closing-money-title">
+		<h3 id="closing-money-title" class="text-subtitle-1 font-weight-medium mb-1">
+			{{ __("Money to reconcile") }}
+		</h3>
+		<p class="text-body-2 text-medium-emphasis mb-3">
+			{{ __("Count cash and check each payment method's closing amount after withdrawals.") }}
+		</p>
+		<div class="money-table-wrapper">
+			<table class="money-table">
+				<caption class="text-caption text-medium-emphasis">
+					{{
+						__("All amounts in {0}", [currency])
+					}}
+				</caption>
+				<thead>
+					<tr>
+						<th scope="col">{{ __("Payment method") }}</th>
+						<th scope="col">{{ __("At opening") }}</th>
+						<th v-if="!hideExpected" scope="col">{{ __("Net received") }}</th>
+						<th v-if="!hideExpected" scope="col">{{ __("Taken out") }}</th>
+						<th v-if="!hideExpected" scope="col">{{ __("Expected") }}</th>
+						<th scope="col">{{ __("Actual") }}</th>
+						<th v-if="!hideExpected" scope="col">{{ __("Difference") }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="item in payments" :key="item.mode_of_payment">
+						<th scope="row" class="method-cell">
+							<span>{{ item.mode_of_payment }}</span>
+							<span
+								v-if="item.account"
+								class="account-name text-caption text-medium-emphasis"
+								>{{ item.account }}</span
+							>
+						</th>
+						<td :data-label="__('At opening')">{{ formatCurrency(item.opening_amount) }}</td>
+						<td v-if="!hideExpected" :data-label="__('Net received')">
+							{{ formatCurrency(item.net_received) }}
+						</td>
+						<td v-if="!hideExpected" :data-label="__('Taken out')">
+							{{ formatCurrency(item.taken_out) }}
+						</td>
+						<td v-if="!hideExpected" :data-label="__('Expected')" class="font-weight-bold">
+							{{ formatCurrency(item.expected_amount) }}
+						</td>
+						<td :data-label="__('Actual')" class="actual-cell">
+							<v-text-field
+								v-model="item.closing_amount"
+								:disabled="busy"
+								type="number"
+								step="any"
+								density="compact"
+								variant="outlined"
+								hide-details
+								:aria-label="__('Actual amount: {0}', [item.mode_of_payment])"
+								:error="
+									item.closing_amount !== '' &&
+									item.closing_amount != null &&
+									actualAmount(item.closing_amount) === null
+								"
+							/>
+						</td>
+						<td v-if="!hideExpected" :data-label="__('Difference')">
+							<span v-if="difference(item) === null" class="text-medium-emphasis">—</span>
+							<span
+								v-else
+								:class="
+									difference(item) < 0
+										? 'text-error'
+										: difference(item) > 0
+											? 'text-info'
+											: ''
+								"
+							>
+								{{ formatCurrency(difference(item)) }}
+								<span v-if="difference(item)" class="difference-label text-caption">{{
+									difference(item) < 0 ? __("Shortage") : __("Surplus")
+								}}</span>
+							</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
-
-		<v-data-table
-			:headers="headers"
-			:items="payments"
-			item-key="mode_of_payment"
-			class="elevation-0 rounded-lg white-table"
-			:items-per-page="itemsPerPage"
-			hide-default-footer
-			density="compact"
-		>
-			<template v-slot:item.closing_amount="props">
-				<v-text-field
-					v-model="props.item.closing_amount"
-					:rules="[closingAmountRule]"
-					:label="$frappe._('Edit')"
-					single-line
-					counter
-					type="number"
-					density="compact"
-					variant="outlined"
-					color="primary"
-					class="pos-themed-input"
-					hide-details
-					:prefix="companyCurrencySymbol"
-				></v-text-field>
-			</template>
-			<template v-slot:item.difference="{ item }">
-				<div class="d-flex flex-column align-end">
-					<span class="font-weight-medium">
-						{{ companyCurrencySymbol }}
-						{{ formatCurrency(calculateDifference(item)) }}
-					</span>
-					<v-chip
-						size="x-small"
-						:color="getDiscrepancyLabel(item).color"
-						variant="flat"
-						class="mt-1 font-weight-bold"
-					>
-						{{ getDiscrepancyLabel(item).text }}
-					</v-chip>
-				</div>
-			</template>
-			<template v-slot:item.opening_amount="{ item }">
-				{{ companyCurrencySymbol }}
-				{{ formatCurrency(item.opening_amount) }}</template
-			>
-			<template v-slot:item.expected_amount="{ item }">
-				{{ companyCurrencySymbol }}
-				{{ formatCurrency(item.expected_amount) }}</template
-			>
-			<template v-slot:item.variance_percent="{ item }">
-				<span :class="['variance-chip', varianceClass(item)]">
-					{{ formatVariancePercent(item) }}
-				</span>
-			</template>
-		</v-data-table>
-	</div>
+		<p v-if="!hideExpected" class="text-caption text-medium-emphasis mt-2">
+			{{
+				__("Net received includes refunds and change. Expected = opening + net received − taken out.")
+			}}
+		</p>
+	</section>
 </template>
-
 <script setup>
-import { inject } from "vue";
-
-const props = defineProps({
-	payments: Array,
-	headers: Array,
-	itemsPerPage: {
-		type: Number,
-		default: 20,
-	},
-	companyCurrencySymbol: String,
-	// Formatters
+import { actualAmount, closingDifference } from "../../../composables/pos/closing/closingAmounts";
+defineProps({
+	payments: { type: Array, default: () => [] },
+	currency: String,
+	hideExpected: Boolean,
+	busy: Boolean,
 	formatCurrency: Function,
-	formatFloat: Function,
 });
-
-const $frappe = inject("frappe", window.frappe);
-const __ = window.__ || ((t) => t);
-
-const closingAmountRule = (v) => {
-	if (v === "" || v === null || v === undefined) {
-		return true;
-	}
-
-	const value = typeof v === "number" ? v : Number(String(v).trim());
-
-	if (!Number.isFinite(value)) {
-		return "Please enter a valid number";
-	}
-
-	const stringValue = String(v);
-	const [integerPart, fractionalPart] = stringValue.split(".");
-
-	if (integerPart.replace(/^-/, "").length > 20) {
-		return "Number is too large";
-	}
-
-	if (fractionalPart && fractionalPart.length > 2) {
-		return "Maximum of 2 decimal places";
-	}
-
-	return true;
-};
-
-const calculateDifference = (item) => {
-	const closing = Number(item?.closing_amount) || 0;
-	const expected = Number(item?.expected_amount) || 0;
-	return expected - closing;
-};
-
-const formatVariancePercent = (item) => {
-	const expected = Number(item?.expected_amount) || 0;
-	if (!expected) {
-		const closing = Number(item?.closing_amount) || 0;
-		return closing ? __("N/A") : "0%";
-	}
-	const variance = (calculateDifference(item) / expected) * 100;
-	const prefix = variance > 0 ? "+" : variance < 0 ? "" : "";
-	return `${prefix}${props.formatFloat(variance, 2)}%`;
-};
-
-const varianceClass = (item) => {
-	const expected = Number(item?.expected_amount) || 0;
-	if (!expected) {
-		return "variance-neutral";
-	}
-	const variance = (calculateDifference(item) / expected) * 100;
-	if (!variance) {
-		return "variance-neutral";
-	}
-	return variance > 0 ? "variance-negative" : "variance-positive";
-};
-
-const getDiscrepancyLabel = (item) => {
-	const closing = Number(item?.closing_amount);
-	const expected = Number(item?.expected_amount) || 0;
-	if (item?.closing_amount === "" || item?.closing_amount === undefined || isNaN(closing)) {
-		return { text: __("Не введено"), color: "grey" };
-	}
-	const diff = closing - expected;
-	if (Math.abs(diff) < 0.001) {
-		return { text: __("В кассе сошлось (0)"), color: "success" };
-	} else if (diff > 0) {
-		return { text: `+${props.formatCurrency(diff)} ${__("Излишек")}`, color: "info" };
-	} else {
-		return { text: `${props.formatCurrency(diff)} ${__("Недостача")}`, color: "error" };
-	}
-};
+const __ = window.__ || ((text) => text);
+const difference = (row) =>
+	closingDifference(row, Number(window.frappe?.boot?.sysdefaults?.currency_precision || 3));
 </script>
-
 <style scoped>
-.white-table {
-	background: rgb(var(--v-theme-surface)) !important;
+.money-table-wrapper {
+	overflow-x: auto;
 	border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+	border-radius: 6px;
 }
-
-.pos-themed-input :deep(.v-field__outline__start),
-.pos-themed-input :deep(.v-field__outline__end) {
-	border-color: rgba(var(--v-border-color), var(--v-border-opacity)) !important;
+.money-table {
+	border-collapse: collapse;
+	width: 100%;
+	font-size: 0.875rem;
+	font-variant-numeric: tabular-nums;
 }
-
-.variance-chip {
-	display: inline-block;
-	padding: 4px 12px;
-	border-radius: 12px;
-	font-size: 0.75rem;
-	font-weight: 600;
-	letter-spacing: 0.5px;
+.money-table caption {
+	text-align: end;
+	padding: 8px 12px 0;
 }
-
-.variance-positive {
-	background-color: rgba(var(--v-theme-success), 0.1);
-	color: rgb(var(--v-theme-success));
+.money-table th,
+.money-table td {
+	padding: 10px 12px;
+	text-align: end;
+	border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
-
-.variance-negative {
-	background-color: rgba(var(--v-theme-error), 0.1);
-	color: rgb(var(--v-theme-error));
+.money-table thead th {
+	font-weight: 500;
+	color: rgb(var(--v-theme-on-surface));
+	white-space: nowrap;
 }
-
-.variance-neutral {
-	background-color: rgba(var(--v-theme-on-surface), 0.05);
-	opacity: 0.7;
+.money-table .method-cell,
+.money-table thead th:first-child {
+	text-align: start;
+}
+.method-cell {
+	font-weight: 500;
+	max-width: 220px;
+}
+.account-name,
+.difference-label {
+	display: block;
+}
+.actual-cell {
+	min-width: 120px;
+	width: 140px;
+}
+.actual-cell :deep(input) {
+	text-align: end;
+	font-variant-numeric: tabular-nums;
+}
+.money-table tbody tr:last-child > * {
+	border-bottom: 0;
+}
+@media (max-width: 700px) {
+	.money-table thead {
+		display: none;
+	}
+	.money-table tbody {
+		display: block;
+	}
+	.money-table tr {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		padding: 12px;
+		gap: 12px;
+		border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+	}
+	.money-table tr:last-child {
+		border: 0;
+	}
+	.money-table th,
+	.money-table td {
+		display: block;
+		padding: 0;
+		border: 0;
+		text-align: start;
+	}
+	.money-table .method-cell {
+		grid-column: 1 / -1;
+		max-width: none;
+	}
+	.money-table td::before {
+		content: attr(data-label);
+		display: block;
+		font-size: 0.75rem;
+		opacity: 0.7;
+		margin-bottom: 4px;
+	}
+	.actual-cell {
+		width: auto;
+		min-width: 0;
+	}
 }
 </style>

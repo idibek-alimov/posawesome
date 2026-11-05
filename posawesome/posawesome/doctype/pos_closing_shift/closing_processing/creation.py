@@ -1,3 +1,5 @@
+import math
+
 import frappe
 from frappe import _
 from frappe.utils import flt, json
@@ -5,10 +7,13 @@ from posawesome.posawesome.doctype.pos_closing_shift.closing_processing.utils im
 from posawesome.posawesome.doctype.pos_closing_shift.closing_processing.data import (
     get_pos_invoices,
     get_payments_entries,
+    get_authorized_opening_shift,
 )
 from posawesome.posawesome.doctype.pos_closing_shift.closing_processing.invoices import (
     submit_printed_invoices,
 )
+
+from .overview import build_closing_overview
 
 
 def build_pos_payment_reference(payment_entry):
@@ -80,7 +85,8 @@ def normalize_pos_payment_references(closing_shift_doc):
 
 @frappe.whitelist()
 def make_closing_shift_from_opening(opening_shift):
-    opening_shift = json.loads(opening_shift)
+    opening_shift = json.loads(opening_shift) if isinstance(opening_shift, str) else opening_shift
+    opening_shift = get_authorized_opening_shift(opening_shift.get("name")).as_dict()
     use_pos_invoice = frappe.db.get_value(
         "POS Profile",
         opening_shift.get("pos_profile"),
@@ -100,32 +106,10 @@ def make_closing_shift_from_opening(opening_shift):
     closing_shift.total_quantity = 0
 
     company_currency = frappe.get_cached_value("Company", closing_shift.company, "default_currency")
-    cash_mode_of_payment = (
-        frappe.get_value(
-            "POS Profile",
-            opening_shift.get("pos_profile"),
-            "posa_cash_mode_of_payment",
-        )
-        or "Cash"
-    )
-
     invoices = get_pos_invoices(opening_shift.get("name"), doctype, submit_printed=0)
 
     pos_transactions = []
     taxes = []
-    payments = []
-    pos_payments_table = []
-    for detail in opening_shift.get("balance_details"):
-        payments.append(
-            frappe._dict(
-                {
-                    "mode_of_payment": detail.get("mode_of_payment"),
-                    "opening_amount": detail.get("amount") or 0,
-                    "expected_amount": detail.get("amount") or 0,
-                }
-            )
-        )
-
     invoice_field = "pos_invoice" if doctype == "POS Invoice" else "sales_invoice"
 
     for d in invoices:
@@ -167,93 +151,17 @@ def make_closing_shift_from_opening(opening_shift):
                     )
                 )
 
-        for p in d.payments:
-            existing_pay = [pay for pay in payments if pay.mode_of_payment == p.mode_of_payment]
-            if existing_pay:
-                conversion_rate = d.get("conversion_rate")
-                if existing_pay[0].mode_of_payment == cash_mode_of_payment:
-                    amount = get_base_value(p, "amount", "base_amount", conversion_rate) - get_base_value(
-                        d, "change_amount", "base_change_amount", conversion_rate
-                    )
-                else:
-                    amount = get_base_value(p, "amount", "base_amount", conversion_rate)
-                existing_pay[0].expected_amount += flt(amount)
-            else:
-                payments.append(
-                    frappe._dict(
-                        {
-                            "mode_of_payment": p.mode_of_payment,
-                            "opening_amount": 0,
-                            "expected_amount": get_base_value(
-                                p, "amount", "base_amount", d.get("conversion_rate")
-                            ),
-                        }
-                    )
-                )
-
     pos_payments = get_payments_entries(opening_shift.get("name"))
-
-    for py in pos_payments:
-        pos_payments_table.append(build_pos_payment_reference(py))
-        existing_pay = [pay for pay in payments if pay.mode_of_payment == py.mode_of_payment]
-        multiplier = -1 if py.payment_type == "Pay" else 1
-        signed_amount = multiplier * abs(get_base_value(py, "paid_amount", "base_paid_amount"))
-        if existing_pay:
-            existing_pay[0].expected_amount += signed_amount
-        else:
-            payments.append(
-                frappe._dict(
-                    {
-                        "mode_of_payment": py.mode_of_payment,
-                        "opening_amount": 0,
-                        "expected_amount": signed_amount,
-                    }
-                )
-            )
-
-    cash_movements = frappe.get_all(
-        "POS Cash Movement",
-        filters={"pos_opening_shift": opening_shift.get("name"), "docstatus": 1},
-        fields=["amount"],
-    )
-    cash_movement_total = sum(flt(row.get("amount")) for row in cash_movements)
-
-    # Deduct Quick Expenses paid from POS till cash during this shift
-    quick_cash_expenses = frappe.get_all(
-        "Quick Expense",
-        filters={"pos_opening_shift": opening_shift.get("name"), "docstatus": 1},
-        fields=["amount", "paid_from", "mode_of_payment"],
-    )
-    pos_cash_account = frappe.db.get_value(
-        "Mode of Payment Account",
-        {"parent": cash_mode_of_payment, "company": closing_shift.company},
-        "default_account",
-    )
-    quick_cash_total = sum(
-        flt(row.get("amount"))
-        for row in quick_cash_expenses
-        if (
-            (pos_cash_account and row.get("paid_from") == pos_cash_account)
-            or row.get("mode_of_payment") == cash_mode_of_payment
-            or not row.get("paid_from")
-        )
-    )
-
-    total_cash_deduction = cash_movement_total + quick_cash_total
-    if total_cash_deduction:
-        existing_cash = [pay for pay in payments if pay.mode_of_payment == cash_mode_of_payment]
-        if existing_cash:
-            existing_cash[0].expected_amount -= total_cash_deduction
-        else:
-            payments.append(
-                frappe._dict(
-                    {
-                        "mode_of_payment": cash_mode_of_payment,
-                        "opening_amount": 0,
-                        "expected_amount": -total_cash_deduction,
-                    }
-                )
-            )
+    pos_payments_table = [build_pos_payment_reference(py) for py in pos_payments]
+    snapshot = build_closing_overview(frappe._dict(opening_shift), invoices, pos_payments)
+    payments = [
+        frappe._dict({
+            "mode_of_payment": row["mode_of_payment"],
+            "opening_amount": row["opening_amount"],
+            "expected_amount": row["expected_amount"],
+        })
+        for row in snapshot["reconciliation"]
+    ]
 
     closing_shift.set("pos_transactions", pos_transactions)
     closing_shift.set("payment_reconciliation", payments)
@@ -263,13 +171,60 @@ def make_closing_shift_from_opening(opening_shift):
     return {
         "closing_shift": closing_shift,
         "skipped_printed_invoices": skipped_printed_invoices,
+        "overview": snapshot,
     }
 
 
 @frappe.whitelist()
 def submit_closing_shift(closing_shift):
     closing_shift = json.loads(closing_shift)
+    if closing_shift.get("doctype") != "POS Closing Shift":
+        frappe.throw(_("Closing shift does not match the opening shift."))
     closing_shift_doc = frappe.get_doc(closing_shift)
+    opening = get_authorized_opening_shift(closing_shift_doc.pos_opening_shift)
+    if (
+        closing_shift_doc.company != opening.company
+        or closing_shift_doc.pos_profile != opening.pos_profile
+        or closing_shift_doc.user != opening.user
+    ):
+        frappe.throw(_("Closing shift does not match the opening shift."))
+    use_pos_invoice = frappe.db.get_value(
+        "POS Profile", opening.pos_profile, "create_pos_invoice_instead_of_sales_invoice"
+    )
+    doctype = "POS Invoice" if use_pos_invoice else "Sales Invoice"
+    invoices = get_pos_invoices(opening.name, doctype, submit_printed=0)
+    entries = get_payments_entries(opening.name)
+    invoice_names = {
+        row.get("sales_invoice") or row.get("pos_invoice")
+        for row in closing_shift_doc.get("pos_transactions", [])
+    }
+    payment_names = {row.get("payment_entry") for row in closing_shift_doc.get("pos_payments", [])}
+    if invoice_names != {row["name"] for row in invoices} or payment_names != {row["name"] for row in entries}:
+        frappe.throw(_("Shift totals changed. Reload the closing summary before closing."))
+    current = build_closing_overview(opening, invoices, entries)["reconciliation"]
+    expected = {row["mode_of_payment"]: row for row in current}
+    submitted = closing_shift_doc.get("payment_reconciliation", [])
+    if len(submitted) != len(expected) or {row.mode_of_payment for row in submitted} != set(expected):
+        frappe.throw(_("Shift totals changed. Reload the closing summary before closing."))
+    precision = int(frappe.get_cached_value("System Settings", None, "currency_precision") or 3)
+    for row in submitted:
+        actual = row.get("closing_amount")
+        try:
+            valid = actual not in (None, "") and math.isfinite(float(actual))
+        except (ValueError, TypeError):
+            valid = False
+        if not valid:
+            frappe.throw(_("Enter an actual amount for every payment method."))
+        fresh = expected[row.mode_of_payment]
+        if flt(row.expected_amount, precision) != flt(fresh["expected_amount"], precision):
+            frappe.throw(_("Shift totals changed. Reload the closing summary before closing."))
+        row.expected_amount = fresh["expected_amount"]
+        row.opening_amount = fresh["opening_amount"]
+    closing_shift_doc.grand_total = sum(get_base_value(row, "grand_total", "base_grand_total") for row in invoices)
+    closing_shift_doc.net_total = sum(get_base_value(row, "net_total", "base_net_total") for row in invoices)
+    closing_shift_doc.total_quantity = sum(flt(row.get("total_qty")) for row in invoices)
+    closing_shift_doc.period_start_date = opening.period_start_date
+    closing_shift_doc.period_end_date = frappe.utils.get_datetime()
     closing_shift_doc.flags.ignore_permissions = True
     normalize_pos_payment_references(closing_shift_doc)
     closing_shift_doc.save()

@@ -4,6 +4,8 @@ import { useUIStore } from "../../../stores/uiStore.js";
 import { useInvoiceStore } from "../../../stores/invoiceStore";
 import {
 	startupInitPromise,
+	initPromise,
+	getQueuedPayloadCount,
 	checkDbHealth,
 	getOpeningStorage,
 	setOpeningStorage,
@@ -33,6 +35,7 @@ type SkippedPrintedInvoice = {
 type ClosingShiftPreparationResponse = {
 	closing_shift?: any;
 	skipped_printed_invoices?: SkippedPrintedInvoice[];
+	overview?: any;
 };
 
 const translateMessage = (value: string) =>
@@ -198,7 +201,28 @@ export function usePosShift(openDialog?: () => void) {
 			});
 	}
 
-	function get_closing_data() {
+	let closingSubmission = false;
+	async function closingQueuesReady() {
+		await initPromise;
+		if (
+			isOffline() ||
+			["invoice", "payment", "cash_movement"].some((entity: any) =>
+				getQueuedPayloadCount(entity),
+			)
+		) {
+			toastStore.show({
+				title: translateMessage(
+					"Sync pending invoices, payments and cash movements before closing the shift.",
+				),
+				color: "warning",
+			});
+			return false;
+		}
+		return true;
+	}
+
+	async function get_closing_data() {
+		if (!(await closingQueuesReady())) return;
 		const cachedOpeningShift = (getOpeningStorage() as any)
 			?.pos_opening_shift;
 		const resolvedShift =
@@ -240,66 +264,117 @@ export function usePosShift(openDialog?: () => void) {
 						}
 					}
 
-					eventBus?.emit("open_ClosingDialog", closingShift);
+					eventBus?.emit("open_ClosingDialog", {
+						...closingShift,
+						__overview: response.overview,
+						skipped_printed_invoices: skippedPrintedInvoices,
+					});
 				}
 			});
 	}
 
-	function submit_closing_pos(data: any) {
-		console.log("Submitting closing shift", data);
-
-		if (data?.print_z_report) {
-			const fiscal = useFiscalPrinter();
-			const cashierName = frappe.session?.user_fullname || frappe.session?.user || "Кассир";
-			fiscal.printZReport(cashierName).then((printed) => {
-				if (printed) {
-					toastStore.show({
-						title: "🧾 Фискальный Z-отчет напечатан на TP809",
-						color: "success",
-					});
-				}
-			});
-		}
-
-		frappe
-			.call(
+	async function submit_closing_pos(data: any) {
+		if (closingSubmission) return false;
+		closingSubmission = true;
+		try {
+			if (!(await closingQueuesReady())) {
+				eventBus?.emit("closing_shift_failed");
+				return false;
+			}
+			const {
+				print_z_report,
+				transfer_to_safe,
+				skipped_printed_invoices: _skipped,
+				__overview: _overview,
+				...closingData
+			} = data;
+			const r: any = await frappe.call(
 				"posawesome.posawesome.doctype.pos_closing_shift.pos_closing_shift.submit_closing_shift",
-				{
-					closing_shift: JSON.stringify(data),
-				},
-			)
-			.then((r: any) => {
-				console.log("Submit result", r);
-				if (r.message) {
-					const closingShiftName = r.message?.name || (typeof r.message === "string" ? r.message : "");
-					if (data?.transfer_to_safe && closingShiftName) {
-						frappe.call("posawesome.posawesome.api.fiscal.transfer_shift_cash_to_safe", {
-							pos_closing_shift_name: closingShiftName,
-						}).then((transferRes: any) => {
-							if (transferRes?.message?.message) {
-								toastStore.show({
-									title: transferRes.message.message,
-									color: transferRes.message.success ? "success" : "warning",
-								});
-							}
-						});
-					}
+				{ closing_shift: JSON.stringify(closingData) },
+			);
+			const closingShiftName =
+				r.message?.name ||
+				(typeof r.message === "string" ? r.message : "");
+			if (!closingShiftName)
+				throw new Error("Missing closing shift response");
 
-					pos_profile.value = null;
-					pos_opening_shift.value = null;
-					uiStore.posOpeningShift = null;
-					clearOpeningStorage();
-					useInvoiceStore().clear();
+			// Fiscal close and cash transfer follow a successful ERP closing only.
+			if (print_z_report) {
+				try {
+					const fiscal = useFiscalPrinter();
+					const cashierName =
+						frappe.session?.user_fullname ||
+						frappe.session?.user ||
+						"";
+					const printed = await fiscal.printZReport(cashierName);
 					toastStore.show({
-						title: "POS Shift Closed",
-						color: "success",
+						title: translateMessage(
+							printed
+								? "Fiscal Z report printed."
+								: "Shift closed, but the fiscal Z report was not printed.",
+						),
+						color: printed ? "success" : "warning",
 					});
-					check_opening_entry();
+				} catch {
+					toastStore.show({
+						title: translateMessage(
+							"Shift closed, but the fiscal Z report was not printed.",
+						),
+						color: "warning",
+					});
 				}
-			})
-			.catch((err: unknown) => {
-				console.error("Failed to submit closing shift", err);
+			}
+			if (transfer_to_safe) {
+				try {
+					const transferRes: any = await frappe.call(
+						"posawesome.posawesome.api.fiscal.transfer_shift_cash_to_safe",
+						{ pos_closing_shift_name: closingShiftName },
+					);
+					const result = transferRes?.message;
+					toastStore.show({
+						title:
+							result?.message ||
+							translateMessage(
+								"Shift closed, but cash was not transferred to the safe.",
+							),
+						color: result?.success ? "success" : "warning",
+					});
+				} catch {
+					toastStore.show({
+						title: translateMessage(
+							"Shift closed, but cash was not transferred to the safe.",
+						),
+						color: "warning",
+					});
+				}
+			}
+			pos_profile.value = null;
+			pos_opening_shift.value = null;
+			uiStore.posOpeningShift = null;
+			clearOpeningStorage();
+			useInvoiceStore().clear();
+			eventBus?.emit("closing_shift_submitted", {
+				name: closingShiftName,
 			});
+			toastStore.show({
+				title: translateMessage("POS Shift Closed"),
+				color: "success",
+			});
+			check_opening_entry();
+			return true;
+		} catch (err) {
+			console.error("Failed to submit closing shift", err);
+			eventBus?.emit("closing_shift_failed");
+			toastStore.show({
+				title: translateMessage(
+					"Could not close the shift. Check the error and refresh the totals before retrying.",
+				),
+				color: "error",
+			});
+			return false;
+		} finally {
+			closingSubmission = false;
+		}
 	}
 
 	return {
