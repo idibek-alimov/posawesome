@@ -1,4 +1,5 @@
 import unittest
+from inspect import unwrap
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -19,8 +20,9 @@ class TestCashMovementValidation(unittest.TestCase):
             "POS Cash Movement",
             {"client_request_id": "dup-1"},
             "name",
+            for_update=True,
         )
-        mock_frappe.get_doc.assert_called_once_with("POS Cash Movement", existing_doc.name)
+        mock_frappe.get_doc.assert_called_once_with("POS Cash Movement", existing_doc.name, for_update=True)
 
     @patch("posawesome.posawesome.api.cash_movement.validation.frappe")
     def test_validate_account_company_rejects_missing_account(self, mock_frappe):
@@ -78,7 +80,10 @@ class TestCashMovementService(unittest.TestCase):
     ):
         opening_shift = SimpleNamespace(name="POS-OPEN-1", pos_profile="POS-PROFILE-1")
         profile_doc = SimpleNamespace(name="POS-PROFILE-1", company="My Co", get=lambda _k: None)
-        existing = SimpleNamespace(as_dict=lambda: {"name": "POS-CM-.26.-00002"})
+        existing = SimpleNamespace(user="cashier@example.com", company="My Co", pos_profile="POS-PROFILE-1",
+                                   pos_opening_shift="POS-OPEN-1", movement_type="Expense", amount=100,
+                                   as_dict=lambda: {"name": "POS-CM-.26.-00002"})
+        existing.get = lambda key: getattr(existing, key, None)
 
         mock_parse_payload.return_value = {"pos_opening_shift": "POS-OPEN-1", "client_request_id": "req-1"}
         mock_get_opening_shift.return_value = opening_shift
@@ -87,13 +92,17 @@ class TestCashMovementService(unittest.TestCase):
         mock_ensure_no_duplicate_client_request.return_value = existing
         mock_frappe.session.user = "cashier@example.com"
 
-        result = service._create_cash_movement({"x": 1}, "Expense")
+        with patch("erpnext.accounts.expense_services.commands.lock_actor"), patch.object(service, "_authorized_replay", return_value=existing.as_dict()):
+            result = service._create_cash_movement({"x": 1}, "Expense")
 
         self.assertEqual(result, {"name": "POS-CM-.26.-00002"})
         mock_create_journal_entry.assert_not_called()
         mock_resolve_source_cash_account.assert_not_called()
         mock_resolve_target_account.assert_not_called()
         mock_validate_account_company.assert_not_called()
+
+        mock_get_opening_shift.assert_not_called()
+        mock_get_pos_profile.assert_not_called()
 
     @patch("posawesome.posawesome.api.cash_movement.service._create_cash_movement")
     @patch("posawesome.posawesome.api.cash_movement.service.ensure_owner_or_manager")
@@ -120,7 +129,7 @@ class TestCashMovementService(unittest.TestCase):
         mock_frappe.get_doc.return_value = source_doc
         mock_create_cash_movement.return_value = {"name": "POS-CM-.26.-00009"}
 
-        result = service.duplicate_cash_movement("POS-CM-.26.-00001", posting_date="2026-02-17")
+        result = unwrap(service.duplicate_cash_movement)("POS-CM-.26.-00001", posting_date="2026-02-17")
 
         self.assertEqual(result, {"name": "POS-CM-.26.-00009"})
         mock_ensure_owner_or_manager.assert_called_once_with(source_doc)
@@ -140,7 +149,7 @@ class TestCashMovementService(unittest.TestCase):
 
 
 class TestCashMovementQueries(unittest.TestCase):
-    @patch("posawesome.posawesome.api.cash_movement.queries.frappe.get_all")
+    @patch("posawesome.posawesome.api.cash_movement.queries.frappe.get_list")
     def test_get_shift_movements_maps_status_to_docstatus(self, mock_get_all):
         mock_get_all.return_value = []
 
@@ -150,7 +159,7 @@ class TestCashMovementQueries(unittest.TestCase):
         self.assertEqual(kwargs["filters"]["docstatus"], 2)
         self.assertEqual(kwargs["filters"]["pos_opening_shift"], "POS-OPEN-1")
 
-    @patch("posawesome.posawesome.api.cash_movement.queries.frappe.get_all")
+    @patch("posawesome.posawesome.api.cash_movement.queries.frappe.get_list")
     def test_get_shift_movements_without_status_returns_all_docstatuses(self, mock_get_all):
         mock_get_all.return_value = []
 
@@ -160,7 +169,7 @@ class TestCashMovementQueries(unittest.TestCase):
         self.assertNotIn("docstatus", kwargs["filters"])
         self.assertIn("against_name", kwargs["fields"])
 
-    @patch("posawesome.posawesome.api.cash_movement.queries.frappe.get_all")
+    @patch("posawesome.posawesome.api.cash_movement.queries.frappe.get_list")
     def test_get_shift_movements_applies_text_search_or_filters(self, mock_get_all):
         mock_get_all.return_value = []
 

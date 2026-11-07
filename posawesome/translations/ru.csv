@@ -1436,3 +1436,372 @@ POS Shift Closed,Смена закрыта
 You are not allowed to access this shift.,У вас нет доступа к этой смене.
 Transfer out,Перевод из кассы
 Payment made,Выплата
+Reason for cancellation,Причина отмены
+Cancellation Reason,Причина отмены
+Причина отмены,Причина отмены
+Expense recorded,Расход проведён
+Expense cancelled,Расход отменён
+Cancel expense,Отменить расход
+Continue,Продолжить
+Open a shift before recording POS expenses.,Откройте смену перед записью расходов в POS.
+Откройте смену перед записью расходов.,Откройте смену перед записью расходов.
+Only an authorized manager can correct or cancel expenses.,Исправлять и отменять расходы может только уполномоченный менеджер.
+Enter a reason before cancelling this expense.,Укажите причину отмены расхода.
+A cancellation reason and current expense version are required.,Укажите причину отмены и обновите данные расхода.
+This source is not authorized for expense payments in this context.,Этот источник не разрешён для оплаты расходов в выбранной кассе или офисе.
+Configure the expense category before recording an expense.,Настройте категорию перед записью расхода.
+Configure this category's expense account for the selected company.,Настройте счёт расходов этой категории для выбранной компании.
+Enter a finite positive amount using the company currency precision.,Введите положительную сумму с точностью валюты компании.
+Foreign-currency expenses require the native accounting workflow.,Для расходов в иностранной валюте используйте стандартные бухгалтерские документы.
+"Use Purchase Invoice, Expense Claim or Employee Advance for party-based payments. A recipient name is descriptive.","Для расчётов с поставщиком, возмещения сотруднику или аванса используйте стандартные документы. Имя получателя в расходе служит примечанием."
+Select the POS Opening Shift for this expense.,"Выберите смену, к которой относится расход."
+Only the shift owner can record a normal POS expense.,Обычный расход в POS может записать только кассир этой смены.
+An active open shift and enabled register are required.,Нужны открытая смена и активная касса.
+Enter the reason for this POS correction.,Укажите причину исправления расхода смены.
+The previous expense request needs confirmation. Restore its values and retry before recording another expense.,Результат предыдущего расхода ещё не подтверждён. Восстановите его данные и повторите отправку перед записью нового расхода.
+The expense result was not confirmed. Retry to check its status.,"Результат не подтверждён. Повторите отправку, чтобы проверить статус расхода."
+The expense changed. Refresh it before cancelling.,Расход изменился. Обновите данные перед отменой.
+Allow Office Expenses,Разрешить офисные расходы
+Registers Allowed to Pay Expenses,"Кассы, которым разрешена оплата расходов"
+Expense Payments,Оплата расходов
+Company Accounts,Счета компаний
+Entry Context,Способ записи
+Correction Reason,Причина исправления
+The expense upgrade requires a site migration. Ask the administrator to complete setup before recording expenses.,Для обновления расходов нужна миграция сайта. Попросите администратора завершить настройку перед записью расходов.
+Expense setup is incomplete. Ask a manager to configure approved sources and category accounts.,Расходы ещё не настроены. Попросите менеджера указать разрешённые источники оплаты и счета категорий.
+The previous request was completed. Refresh and review the recorded expense before continuing.,Предыдущий запрос выполнен. Обновите данные и проверьте записанный расход перед продолжением.
+The original expense was cancelled. Refresh and ask a manager to review it before recording another expense.,Исходный расход отменён. Обновите данные и попросите менеджера проверить его перед записью нового расхода.
+Confirm pending expense requests before closing the shift.,Подтвердите результат ожидающих запросов расходов перед закрытием смены.
+Record expenses in Expenses,Записать расход в разделе «Расходы»
+View previous movements or record a cash deposit.,Просмотрите прошлые движения или запишите передачу наличных.
+Cash movement saved for confirmation,Движение денег сохранено и ожидает подтверждения
+The movement was saved. Refresh the history to see its status.,Движение сохранено. Обновите историю для проверки статуса.
+Open source document,Открыть документ
+Paid expenses,Оплаченные расходы
+Unassigned shift,Смена не назначена
+All statuses,Все статусы
+Load more,Показать ещё
+Банк и кошельки,Банк и кошельки
+По выбранным фильтрам,По выбранным фильтрам
+Accounting links are set by the cash movement workflow.,Бухгалтерские ссылки устанавливаются при проведении движения денег.
+Unsupported expense source.,Этот источник истории расходов не поддерживается.
+Select a valid expense period.,Выберите допустимый период расходов.
+Select a valid expense status.,Выберите допустимый статус расхода.
+The movement type does not match the original request.,Тип движения не соответствует исходному запросу.
+Could not load expense history. Refresh to retry.,Не удалось загрузить историю расходов. Повторите загрузку.
+Pending cash movement requests,Ожидающие запросы движения денег
+Unknown request,Неизвестный запрос
+Queued,В очереди
+Submitting,Проводится
+Failed,Ошибка
+Needs manager review,Требует проверки менеджера
+The original movement type is missing. Manager review is required.,В исходном запросе отсутствует тип движения. Нужна проверка менеджера.
+Unsupported legacy cash movement method. The original request was retained.,Способ отправки старого движения денег не поддерживается. Исходный запрос сохранён.
+The original cash movement has no request ID. Manager review is required.,В исходном движении денег нет ID запроса. Нужна проверка менеджера.
+The original cash movement {0} was cancelled. Manager review is required.,Исходное движение денег {0} отменено. Нужна проверка менеджера.
+The cash movement result was not confirmed. Retry the original request.,Результат движения денег не подтверждён. Повторите исходный запрос.
+A submitted expense reduces this source's expected shift amount once.,Проведённый расход один раз уменьшает ожидаемую сумму по этому источнику в смене.
+All categories,Все категории
+All recipients,Все получатели
+All sources,Все источники
+Back to POS,Вернуться к продаже
+Bank and wallets,Банк и кошельки
+Cancellation reason,Причина отмены
+Cancellation reverses the linked accounting entry. It does not return physical money. Enter a reason for the audit history.,"Отмена сторнирует связанную бухгалтерскую запись, но не возвращает деньги физически. Укажите причину для истории изменений."
+Cash movements,Движение наличных
+Check result,Проверить результат
+Check the original request before recording the payment again. Checking does not pay money.,Проверьте исходный запрос перед повторной записью платежа. Проверка не списывает деньги.
+Choose a valid start and end date.,Укажите корректные даты начала и окончания.
+Choose dates and apply to see expenses.,"Выберите даты и нажмите «Применить», чтобы увидеть расходы."
+Choose your active register in POS before recording expenses.,Выберите свою активную кассу в POS перед записью расходов.
+Could not cancel the expense. Your reason is retained.,Не удалось отменить расход. Причина сохранена в форме.
+Could not check the result. The original request is retained.,Не удалось проверить результат. Исходный запрос сохранён.
+Could not load expense details.,Не удалось загрузить сведения о расходе.
+Could not load expenses.,Не удалось загрузить расходы.
+Could not submit the expense. Your input is retained.,Не удалось провести расход. Введённые данные сохранены в форме.
+Custom dates within this shift,Выбранные даты этой смены
+Details,Подробности
+Expense Claims,Авансовые отчёты
+Expense cancelled. Ask a manager to review the reversal before making another payment.,Расход отменён. Попросите менеджера проверить сторно перед новым платежом.
+Expense details,Сведения о расходе
+Expense note (required by this register),Примечание (обязательно для этой кассы)
+Expense session changed. Refresh before continuing.,Контекст смены изменился. Обновите данные перед продолжением.
+Expense submitted. This source's expected shift amount is reduced once.,Расход проведён. Ожидаемая сумма по этому источнику в смене уменьшена один раз.
+Expenses,Расходы
+Filter history,Фильтры истории
+"For personal spending, ask for an Expense Claim. For an unpaid supplier bill, use Purchase Invoice. Record here only money paid from this register.","Личные траты оформляйте через авансовый отчёт, неоплаченный счёт поставщика — через закупочную накладную. Здесь записывайте только деньги, выданные из этой кассы."
+From date,С даты
+Loading expenses...,Загрузка расходов…
+Movement submitted. Synchronize the original queue; do not record it again. Retained review items need a manager.,"Операция проведена. Синхронизируйте исходную очередь, не вводите её повторно. Записи на проверке требуют менеджера."
+No completed result confirmed. The original request is retained; do not enter a duplicate.,Завершение не подтверждено. Исходный запрос сохранён; не вводите повторную операцию.
+No expenses match these filters.,Расходов по выбранным фильтрам нет.
+No recorded result yet. The original request is retained. Retry it when the connection and setup are ready.,Записанный результат пока не найден. Исходный запрос сохранён. Повторите его после восстановления связи и настроек.
+Note,Примечание
+Note (optional),Примечание (необязательно)
+"Note, recipient and receipt","Примечание, получатель и чек"
+Offline. New expenses need a connection. Keep your input and reconnect to submit or check a result.,Нет связи. Для новых расходов нужно подключение. Сохраните ввод и восстановите связь для отправки или проверки результата.
+Only this shift's expenses,Только расходы этой смены
+Open your shift in POS before recording expenses.,Откройте свою смену в POS перед записью расходов.
+Paid from,Откуда оплачено
+Paid personally or not yet paid?,Оплачено лично или ещё не оплачено?
+Period,Период
+Private attachment,Закрытое вложение
+Receipt photo or PDF (optional),Фото чека или PDF (необязательно)
+Receipt upload failed. Your expense has not been submitted.,Не удалось загрузить чек. Расход не проведён.
+Recipient,Получатель
+Recipient (optional),Получатель (необязательно)
+Reconnect and refresh to see confirmed expense totals.,"Восстановите связь и обновите данные, чтобы увидеть подтверждённые итоги расходов."
+Record expense,Записать расход
+Reset filters,Сбросить фильтры
+Result needs confirmation,Результат требует подтверждения
+Retry original request,Повторить исходный запрос
+Return to POS and refresh closing totals,Вернуться в POS и обновить итоги закрытия
+Review pending movements,Проверить ожидающие операции
+Shift,Смена
+Shift expense history,История расходов смены
+Shown,Показано
+Submitting expense…,Проведение расхода…
+The original movement was cancelled. Keep the request for manager review.,Исходная операция отменена. Сохраните запрос для проверки менеджером.
+The request is not complete. Keep the original request and ask a manager to review it.,Запрос не завершён. Сохраните исходный запрос и попросите менеджера проверить его.
+The saved request cannot be read. Keep this browser's data and ask a manager to review it.,Не удалось прочитать сохранённый запрос. Не очищайте данные браузера и попросите менеджера проверить их.
+There are pending cash movements. Review their status before entering the same expense again.,Есть ожидающие операции с наличными. Проверьте их статус перед повторным вводом расхода.
+To date,По дату
+Today within this shift,Сегодня в этой смене
+Totals include all matching submitted expenses.,Итоги включают все проведённые расходы по выбранным фильтрам.
+View receipt,Открыть чек
+Whole shift,Вся смена
+Yesterday within this shift,Вчера в этой смене
+You can view expenses here. Ask a manager for expense recording access.,Здесь можно просматривать расходы. Доступ к записи расходов уточните у менеджера.
+expenses,расходов
+Search expenses,Поиск расходов
+A count correction cannot move this method beyond its original difference.,Исправление пересчёта не может превышать исходное расхождение по способу оплаты.
+A counted-cash safe transfer does not resolve a closing difference.,Перевод пересчитанных наличных в сейф не устраняет расхождение смены.
+A difference does not prevent closing. It remains Pending review until a manager resolves it.,"Расхождение не мешает закрыть смену. Оно ожидает проверки, пока управляющий его не урегулирует."
+A missing expense must explain exactly its own posted amount.,Пропущенный расход должен объяснять ровно свою проведённую сумму.
+A physical cash count cannot be negative.,Фактическая сумма наличных не может быть отрицательной.
+A reversal reopens its original review; do not allocate it as a new explanation.,Сторно возвращает исходное расхождение на проверку. Не используйте его как новое объяснение.
+A review reason is required.,Укажите причину действия при проверке.
+A single native accounting replacement is required.,Нужен один проведённый учётный документ замены.
+Accounting dimensions must be a JSON object.,Аналитики учёта должны быть заданы объектом JSON.
+Amount must be finite,Укажите конечное число для суммы.
+An active submitted opening shift is required.,Нужна действующая открытая смена с проведённым открытием.
+An adjustment date and approval reason are required.,Укажите дату корректировки и причину её одобрения.
+An authorized manager is required to change a shift review.,Для изменения проверки смены нужен уполномоченный управляющий.
+"Bank and card differences require native settlement or reconciliation, not a cash-loss adjustment.",Расхождения по банку и картам требуют сверки или расчётных документов. Списание потери наличных к ним не применяется.
+"Changes to sales totals need the native accountant workflow, not a payment-attribution correction.","Для изменения суммы продаж используйте стандартный учётный процесс, а не исправление способа оплаты."
+Choose a distinct Safe account for counted cash.,Выберите отдельный счёт сейфа для пересчитанных наличных.
+Configure company shift review accounts before posting an adjustment.,Перед корректировкой настройте счета проверки смен для компании.
+Configure one explicit Safe destination and an enabled wallet for the original till account.,Укажите один сейф назначения и активный кошелёк для исходного счёта кассы.
+Configure the company shortage or surplus account before posting this adjustment.,Перед корректировкой настройте счёт недостач или излишков компании.
+Confirm a native payment correction through its original and replacement documents.,Подтвердите исправление оплаты по исходному документу и его замене.
+Count note,Примечание к пересчёту
+Counted cash transfer completed. Any shift difference remains under review.,Пересчитанные наличные переведены. Расхождение смены остаётся на проверке.
+Counted cash transferred after closing {0}. This does not resolve a shift difference.,Перевод пересчитанных наличных после закрытия {0}. Расхождение смены не урегулируется этим переводом.
+Enter actual counts using the company currency precision.,Укажите фактические суммы с точностью валюты компании.
+Enter actual counts using the company currency precision: {0},Укажите фактические суммы с точностью валюты компании: {0}
+Explain the difference before closing. The shift can close with Pending review.,Перед закрытием объясните расхождение. Смена может закрыться со статусом «Ожидает проверки».
+Explicit manager attribution to the original shift is required for an unassigned source.,Управляющий должен явно отнести нераспределённый документ к исходной смене.
+In review,На проверке
+Invalid amount,Некорректная сумма
+Investigate the transfer outcome before cancelling this closing.,Перед отменой закрытия выясните результат перевода.
+Native Journal Entry create and submit permissions are required.,Нужны стандартные права создания и проведения бухгалтерской проводки.
+Native Payment Entry create and submit permissions are required for a safe transfer.,Для перевода в сейф нужны стандартные права создания и проведения платежа.
+Only a submitted correction document can resolve money.,Урегулировать сумму можно только проведённым документом исправления.
+Only the owner or Accounts Manager can approve a loss or surplus.,Только владелец или руководитель бухгалтерии может одобрить потерю или излишек.
+Opposite differences share this account. Investigate payment attribution before any cash adjustment.,На одном счёте есть противоположные расхождения. Перед корректировкой наличных проверьте распределение оплат.
+Original closing counts and evidence cannot be changed after submission. Use shift review.,После проведения исходные суммы и сведения закрытия не меняются. Используйте проверку смены.
+Original shift review evidence cannot be overwritten.,Нельзя перезаписать исходные сведения проверки смены.
+Partially resolved,Частично урегулировано
+Payment account mapping or currency changed. Use the native accountant workflow.,Изменились привязка счёта оплаты или валюта. Используйте стандартный учётный процесс.
+Payment corrections involving change or overpayments require native accountant investigation.,Исправления оплаты со сдачей или переплатой требуют проверки бухгалтером в исходных документах.
+Pending review,Ожидает проверки
+Reason for the difference,Причина расхождения
+Resolution exceeds or has the wrong sign for the original difference,Сумма урегулирования превышает исходное расхождение или имеет неверный знак.
+Resolution exceeds or has the wrong sign for the remaining difference,Сумма урегулирования превышает оставшееся расхождение или имеет неверный знак.
+Resolved,Урегулировано
+Reverse or withdraw completed review resolutions before cancelling this closing.,Перед отменой закрытия сторнируйте или отзовите выполненные урегулирования.
+Select a supported native correction document.,Выберите поддерживаемый исходный документ исправления.
+Select an account difference in this review.,Выберите расхождение по счёту в этой проверке.
+Select an active count correction in this review.,Выберите действующее исправление пересчёта в этой проверке.
+Select an enabled cost center in the review company.,Выберите активный центр затрат компании проверки.
+Select an original payment method in this account difference.,Выберите исходный способ оплаты для расхождения по этому счёту.
+Select enabled transfer wallets in the closing company.,Выберите активные кошельки для перевода в компании закрытия.
+Select the submitted native amendment of an original shift invoice.,Выберите проведённую стандартную замену исходного счёта смены.
+Select valid native accounting dimensions.,Выберите допустимые стандартные аналитики учёта.
+Shift review audit history cannot be deleted.,Нельзя удалить историю проверки смены.
+Shift review evidence failed its integrity check.,Нарушена целостность исходных сведений проверки смены.
+Shift review records are maintained by the authorized review service.,Записи проверки смены изменяются только через уполномоченный процесс проверки.
+Shift review {0}: {1},Проверка смены {0}: {1}
+The accounting source must belong to the review company.,Учётный документ должен относиться к компании проверки.
+The amendment changes a method without an original unresolved difference.,Замена меняет способ оплаты без исходного неурегулированного расхождения.
+The amendment contains no payment-attribution correction.,В замене нет исправления распределения оплат.
+The amendment must replace an invoice in this original shift snapshot.,Замена должна относиться к счёту из исходных сведений этой смены.
+The closing has no mapped cash count.,В закрытии нет пересчёта наличных с привязанным счётом.
+The closing payment account does not belong to the stored shift company.,Счёт оплаты закрытия не относится к сохранённой компании смены.
+The count was corrected after closing. Use the native transfer workflow with the revised evidence.,Пересчёт исправлен после закрытия. Используйте стандартный перевод с уточнёнными сведениями.
+The counted-cash source must be a Cash account.,Источником пересчитанных наличных должен быть кассовый счёт.
+The invoice type does not match this register.,Тип счёта не соответствует этой кассе.
+The native GL change does not match the payment-attribution change.,Изменение Главной книги не соответствует изменению распределения оплат.
+The original invoice must be cancelled through its native workflow.,Исходный счёт нужно отменить стандартным способом.
+The original safe transfer is confirmed.,Исходный перевод в сейф подтверждён.
+The original safe transfer was reversed or changed. Investigate its native document; do not repeat it.,Исходный перевод в сейф сторнирован или изменён. Проверьте исходный документ; не повторяйте перевод.
+The review changed. Refresh it before applying a correction.,Проверка изменилась. Обновите её перед исправлением.
+The shift review upgrade requires a site migration before closing or resolving shifts.,Перед закрытием или урегулированием смен администратор должен выполнить миграцию обновления проверки смен.
+The source accounting effect changed. Investigate before reallocating it.,Изменилось учётное действие документа. Проверьте его перед повторным распределением.
+The source does not belong to a submitted opening shift in its company.,Документ не относится к проведённому открытию смены в своей компании.
+The source must belong to the review company.,Документ должен относиться к компании проверки.
+The source predates this shift. Use the native accountant workflow.,Документ создан за период до этой смены. Используйте стандартный учётный процесс.
+This accounting source has a submitted reversal.,У этого учётного документа есть проведённое сторно.
+This closing already has a different transfer request. Investigate its outcome before moving more cash.,Для этого закрытия уже есть другой запрос перевода. Выясните результат перед новым перемещением наличных.
+This historical closing has no transfer provenance. Investigate existing transfers in the native workflow.,У этого старого закрытия нет сведений о запросах перевода. Проверьте существующие переводы в исходных документах.
+This posted account effect is already attributed to another difference.,Это проведённое изменение счёта уже отнесено к другому расхождению.
+This replacement accounting effect is already allocated.,Учётное изменение по этой замене уже распределено.
+This request ID belongs to another review operation.,Номер запроса принадлежит другой операции проверки.
+This review request belongs to another user.,Этот запрос проверки принадлежит другому пользователю.
+This shift is closed. Use the authorized correction workflow.,Смена закрыта. Используйте разрешённый процесс исправления.
+This source belongs to another shift.,Документ относится к другой смене.
+This source has no net posted effect on the reviewed account.,Документ не имеет итогового проведённого изменения по проверяемому счёту.
+This source needs native accounting review; a single paid effect is required.,Документ требует стандартной проверки бухгалтером: нужно одно однозначное действие оплаты.
+This source was already included in the original closing expectations.,Документ уже был учтён в исходной ожидаемой сумме закрытия.
+Unmapped or foreign-currency sources need the native accountant workflow.,Для источников без привязки счёта или в иностранной валюте используйте стандартный учётный процесс.
+Unsupported review action.,Действие проверки не поддерживается.
+Use the closing currency precision,Используйте точность валюты закрытия.
+Use the native transfer workflow for foreign-currency counted cash.,Для пересчитанных наличных в иностранной валюте используйте стандартный перевод.
+Use the native workflow for foreign-currency settlement.,Для расчётов в иностранной валюте используйте стандартный учётный процесс.
+Validated closing evidence is required to create a shift review.,Для проверки смены нужны проверенные сведения закрытия.
+Voided,Аннулировано
+Withdraw later count corrections first.,Сначала отзовите более поздние исправления пересчёта.
+You do not have access to this register.,Нет доступа к этой кассе.
+You do not have access to this shift review.,Нет доступа к этой проверке смены.
+Use a posting date between the shift opening date and today.,Укажите дату проводки от даты открытия смены до сегодняшнего дня.
+Configure an enabled company-currency shortage expense account and an approved surplus account.,Настройте активный счёт расходов для недостач и одобренный счёт излишков в валюте компании.
+Adjustment settings must belong to the review company.,Настройки корректировки должны относиться к компании проверки.
+Accounting source restricted or unavailable,Бухгалтерский документ недоступен или доступ ограничен
+Action failed. Inputs are retained. Refresh before retrying a changed review.,Действие не выполнено. Введённые данные сохранены. Обновите проверку перед повтором.
+All reviews,Все проверки
+Amount to explain,Сумма для объяснения
+An authorized manager is required to open Shift Review.,Для проверки смен нужен уполномоченный руководитель.
+An earlier review request needs confirmation. Check or retry its saved result first.,Предыдущий запрос требует подтверждения. Сначала проверьте результат или повторите сохранённый запрос.
+Approve cash adjustment,Утвердить корректировку наличных
+Attach native outcome,Связать результат из ERPNext
+Attribute this source to this exact shift,Отнести документ к этой смене
+Back to reviews,К списку проверок
+Bank reconciliation request,Запрос сверки с банком
+"Bank, refund, transfer and recovery cases use permitted native documents. A request alone does not resolve money. Closed invoices retain their native correction restrictions.","Банковские операции, возвраты, переводы и возмещения оформляются через разрешённые документы ERPNext. Сам запрос не закрывает расхождение. Ограничения на исправление счетов закрытой смены сохраняются."
+Cash adjustment,Корректировка наличных
+Cashier explanation,Объяснение кассира
+Changed since closing. Investigate the native record; the original snapshot is retained.,Изменён после закрытия. Проверьте исходный документ; данные закрытия сохранены.
+Closed shift,Закрытая смена
+Company,Компания
+Complete,Завершено
+Confirm native handoff,Подтвердить результат ERPNext
+Confirm payment correction,Проверить исправление оплаты
+Correct count,Исправить пересчёт
+Corrected actual count,Исправленная фактическая сумма
+Correction route,Способ исправления
+Could not confirm the result. The saved request is retained.,Не удалось подтвердить результат. Сохранённый запрос оставлен для повтора.
+Could not load Shift Review. Check access and setup.,Не удалось загрузить проверку смен. Проверьте доступ и настройки.
+Count correction,Исправление пересчёта
+Counterpart account,Корреспондирующий счёт
+Current state,Текущее состояние
+Date / reviewer,Дата / проверяющий
+Enter a positive amount no greater than the remaining difference.,Введите положительную сумму не больше остатка расхождения.
+Evidence,Подтверждающие документы
+Expenses / transfers,Расходы / переводы
+Explained / adjusted,Объяснено / скорректировано
+Handled,Обработано
+Invalidated,Утратило силу
+Investigate,Начать проверку
+Link existing transaction,Связать существующую операцию
+Link source,Связать документ
+Loading…,Загрузка…
+Missing account mapping,Не задан счёт
+Missing expense,Пропущенный расход
+Money Hub,Деньги
+Native handoff,Обработка в ERPNext
+No confirmed outcome yet. The original request is retained for a safe retry.,Результат пока не подтверждён. Исходный запрос сохранён для безопасного повтора.
+No explanation recorded,Объяснение не записано
+No matching reviews. Change the filters to view history.,Проверки не найдены. Измените фильтры для просмотра истории.
+No review actions yet,Действий по проверке пока нет
+No source records,Исходных документов нет
+Open closing record,Открыть закрытие смены
+Open full review form (advanced),Открыть полную форму проверки
+Open opening record,Открыть начало смены
+Original difference,Исходное расхождение
+Payment correction,Исправление оплаты
+Payment correction request,Запрос исправления оплаты
+Payment method counts,Пересчёт по способам оплаты
+Reason / note,Причина / примечание
+Record missing expense,Записать пропущенный расход
+Recorded,Записано
+Recovery request,Запрос возмещения
+Refund request,Запрос возврата
+Register,Касса
+Remaining,Осталось
+Request native correction,Запросить исправление в ERPNext
+Requested,Запрошено
+Required for sources without a stored shift. Does not change the native document.,Нужно для документов без привязки к смене. Исходный документ не изменяется.
+Resolution history,История урегулирования
+Reversed,Сторнировано
+Review actions,Действия по проверке
+Review and confirm,Проверить и подтвердить
+Review dates for history,Даты проверок в истории
+Reviewer,Проверяющий
+Safe transfer,Перевод в сейф
+Saved review evidence cannot be read. Ask a manager to investigate before posting again.,Не удалось прочитать сохранённый запрос. Попросите руководителя проверить его перед новой проводкой.
+Select a valid review status.,Выберите допустимый статус проверки.
+Shift / date,Смена / дата
+Shift Review,Проверка смен
+"Shift differences, not account balances. Unresolved reviews include all dates. Shortages and surpluses are kept separate.","Расхождения смен, а не остатки на счетах. Незакрытые расхождения показаны за все даты. Недостачи и излишки учитываются отдельно."
+Shift review read permission is required.,Нужно право чтения проверок смен.
+"Shift, register or cashier","Смена, касса или кассир"
+Shifts needing review,Смены для проверки
+Showing {0} of {1} matching records,Показано {0} из {1} найденных записей
+Source document,Исходный документ
+Source restricted or unavailable,Документ недоступен или доступ ограничен
+Source type,Тип документа
+Take review / add note,Взять на проверку / добавить заметку
+The server result was not confirmed. Retry to check its status.,Результат сервера не подтверждён. Повторите запрос для проверки статуса.
+The start date must not be after the end date.,Дата начала не может быть позже даты окончания.
+These are the original shift counts and valid explanations. They are not the current account balance.,Исходные суммы пересчёта смены и действующие объяснения. Это не текущий остаток на счёте.
+This posts a Journal Entry for money already missing or found. It does not make a physical payment.,Будет создана проводка для уже обнаруженной недостачи или излишка. Физической выплаты денег не происходит.
+Transactions,Операции
+Transfer request,Запрос перевода
+Unconfirmed review request,Неподтверждённый запрос проверки
+Unresolved amount,Неурегулированная сумма
+Unresolved · all dates,Неурегулированные · все даты
+Verify payment amendment,Проверить исправленный счёт
+Withdraw count correction,Отменить исправление пересчёта
+Withdraw request,Отозвать запрос
+Withdrawn,Отозвано
+Unresolved shortage,Неурегулированная недостача
+Unresolved surplus,Неурегулированный излишек
+Offline. Reconnect to load shift reviews.,Нет сети. Подключитесь для загрузки проверок смен.
+Cancelled closing,Отменённое закрытие смены
+Debit,Дебет
+Credit,Кредит
+Remaining after explanation,Остаток после объяснения
+Adjustment accounts changed. Refresh and confirm the proposed accounts again.,Счета корректировки изменились. Обновите проверку и подтвердите счета заново.
+Your previous shifts,Ваши предыдущие смены
+Enter the money actually available for this opening. Previous differences stay with their original closing and are not added to the opening float.,"Укажите деньги, фактически доступные для открытия. Прежние расхождения остаются в исходной закрытой смене и не добавляются к начальному остатку."
+Reconnect to check previous shift reviews.,"Подключитесь к сети, чтобы проверить предыдущие смены."
+Unresolved previous shifts,Предыдущие смены с нерешёнными расхождениями
+No unresolved differences in your permitted shift history.,В доступной истории ваших смен нет нерешённых расхождений.
+Shift review status is unavailable. Ask a manager to check setup and access.,Статус проверки смен недоступен. Попросите менеджера проверить настройки и доступ.
+Could not load previous shift reviews.,Не удалось загрузить проверку предыдущих смен.
+Check / retry counted cash transfer,Проверить / повторить перевод пересчитанной наличности
+Transfer the original counted cash to the configured Safe? The server checks the original request and will not repeat a completed transfer.,Перевести исходную пересчитанную наличность в настроенный сейф? Сервер проверит исходный запрос и не повторит выполненный перевод.
+The transfer result was not confirmed. Refresh its status before retrying.,Результат перевода не подтверждён. Обновите статус перед повтором.
+The fiscal report result was not confirmed. Check the printer journal or reprint the existing report using the printer's recovery workflow. The ERP shift is already closed.,Результат печати фискального отчёта не подтверждён. Проверьте журнал принтера или повторно распечатайте существующий отчёт средствами принтера. Смена в ERP уже закрыта.
+"Opening amounts are company-currency shift funds, not full bank or shared wallet balances.","Начальные суммы — средства смены в валюте компании, а не полный баланс банка или общего кошелька."
+Another shift has opened on this register. Check the current physical cash and use the native transfer workflow; do not transfer an old count.,На этой кассе открыта другая смена. Проверьте текущую наличность и используйте стандартный перевод; не переводите старую пересчитанную сумму.
+"If the cost is already recorded on a claim or supplier bill, pay that native document. Do not record the expense again here.","Если затраты уже отражены в заявке на возмещение или счёте поставщика, оплатите исходный документ. Не записывайте расход здесь повторно."
+"Account balances cover the whole permitted account, including shared registers. Shift activity, physical counts and unresolved differences are separate. Totals use company currency; foreign account balances keep their original currency below.","Балансы охватывают весь доступный счёт, включая общие кассы. Операции смены, фактический пересчёт и нерешённые расхождения учитываются отдельно. Итоги — в валюте компании; ниже также показан остаток валютного счёта в исходной валюте."
+Accounting ledger read permission is required.,Требуется доступ на чтение бухгалтерской книги.
+The selected wallet is outside your permitted company and accounts.,Выбранный кошелёк вне доступных вам компании и счетов.
+Could not load account balances.,Не удалось загрузить остатки счетов.
+Could not load account movements.,Не удалось загрузить движения по счетам.
+Not recorded,Не записан
+Closing details,Сведения о закрытии
+Print result needs confirmation,Результат печати требует проверки
+Open shift,Открыть смену

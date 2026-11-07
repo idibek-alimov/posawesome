@@ -32,7 +32,10 @@
   "column_break_16",
   "taxes",
   "section_break_14",
-  "amended_from"
+  "amended_from",
+  "discrepancy_reason",
+  "shift_review",
+  "review_status"
  ],
  "fields": [
   {
@@ -196,6 +199,28 @@
   {
    "fieldname": "section_break_if3m1",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "discrepancy_reason",
+   "fieldtype": "Small Text",
+   "label": "Discrepancy reason"
+  },
+  {
+   "fieldname": "shift_review",
+   "fieldtype": "Link",
+   "label": "Shift review",
+   "read_only": 1,
+   "no_copy": 1,
+   "allow_on_submit": 1,
+   "options": "POS Shift Review"
+  },
+  {
+   "fieldname": "review_status",
+   "fieldtype": "Data",
+   "label": "Review status",
+   "read_only": 1,
+   "no_copy": 1,
+   "allow_on_submit": 1
   }
  ],
  "is_submittable": 1,

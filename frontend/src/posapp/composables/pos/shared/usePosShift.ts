@@ -21,6 +21,7 @@ import {
 	finishStartupPhase,
 	startStartupPhase,
 } from "../../../../utils/startupTrace";
+import { hasPendingExpenseRequest } from "../closing/pendingExpenses";
 import { useFiscalPrinter } from "../payments/useFiscalPrinter";
 
 declare const __BUILD_VERSION__: string;
@@ -205,6 +206,20 @@ export function usePosShift(openDialog?: () => void) {
 	async function closingQueuesReady() {
 		await initPromise;
 		if (
+			hasPendingExpenseRequest(
+				uiStore.posOpeningShift?.name || pos_opening_shift.value?.name,
+				pos_profile.value?.company,
+			)
+		) {
+			toastStore.show({
+				title: translateMessage(
+					"Confirm pending expense requests before closing the shift.",
+				),
+				color: "warning",
+			});
+			return false;
+		}
+		if (
 			isOffline() ||
 			["invoice", "payment", "cash_movement"].some((entity: any) =>
 				getQueuedPayloadCount(entity),
@@ -297,6 +312,11 @@ export function usePosShift(openDialog?: () => void) {
 				(typeof r.message === "string" ? r.message : "");
 			if (!closingShiftName)
 				throw new Error("Missing closing shift response");
+			uiStore.lastClosedShift = {
+				user: frappe.session.user,
+				name: closingShiftName,
+				print_state: print_z_report ? "Unknown" : "Not requested",
+			};
 
 			// Fiscal close and cash transfer follow a successful ERP closing only.
 			if (print_z_report) {
@@ -307,6 +327,8 @@ export function usePosShift(openDialog?: () => void) {
 						frappe.session?.user ||
 						"";
 					const printed = await fiscal.printZReport(cashierName);
+					if (printed)
+						uiStore.lastClosedShift.print_state = "Complete";
 					toastStore.show({
 						title: translateMessage(
 							printed

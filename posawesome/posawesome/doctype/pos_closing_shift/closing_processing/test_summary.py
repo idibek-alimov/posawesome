@@ -7,6 +7,7 @@ from unittest.mock import Mock, patch
 import frappe
 
 from . import overview, creation, data, summary
+from posawesome.posawesome.shift_review import closing as review_closing
 from posawesome.posawesome.api import fiscal
 from posawesome.posawesome.doctype.pos_opening_shift_detail.pos_opening_shift_detail import (
     POSOpeningShiftDetail,
@@ -34,13 +35,13 @@ class TestClosingSummary(unittest.TestCase):
         self.fake = Mock()
         self.fake._dict = frappe._dict
         self.fake.get_cached_value.return_value = "TJS"
-        self.fake.db.get_value.side_effect = lambda dt, name, field: (
+        self.fake.db.get_value.side_effect = lambda dt, name, field, **kwargs: (
             0 if field == "create_pos_invoice_instead_of_sales_invoice" else
             "Cash" if field == "posa_cash_mode_of_payment" else
             {"Cash": "Till Cash", "Card": "Bank"}.get(name.get("parent")) if isinstance(name, dict) else None)
         self.fake.get_meta.return_value = frappe._dict(fields=[])
         self.fake.get_all.side_effect = self.query
-        for target, name, value in [(overview, "frappe", self.fake),
+        for target, name, value in [(creation, "currency_precision", lambda company: 3), (overview, "frappe", self.fake),
                                     (overview, "get_pos_invoices", lambda *a, **kw: self.invoices),
                                     (overview, "get_payments_entries", lambda *a, **kw: self.entries)]:
             patcher = patch.object(target, name, value)
@@ -81,15 +82,23 @@ class TestClosingSummary(unittest.TestCase):
                        company=self.opening.company, user=self.opening.user)
         closing.name = "CLOSE-1"
         closing.get.side_effect = lambda key, default=None: {
-            "payment_reconciliation": payments, "pos_transactions": [], "pos_payments": [],
+            "payment_reconciliation": payments, "pos_transactions": [], "pos_payments": [], "discrepancy_reason": "Counted twice",
         }.get(key, default)
         self.fake.get_doc.return_value = closing
         self.fake.get_cached_value.side_effect = lambda doctype, *args: 3 if doctype == "System Settings" else "TJS"
-        with patch.object(creation, "frappe", self.fake), patch.object(
+        self.opening.docstatus = 1
+        self.opening.status = "Open"
+        with patch.object(creation, "frappe", self.fake), patch.object(review_closing, "frappe", self.fake), patch.object(
+            review_closing.policy, "require_schema"
+        ), patch.object(review_closing.expense_policy, "check_company"), patch.object(
+            review_closing.expense_policy, "check_user_scope"
+        ), patch.object(review_closing.expense_policy, "currency_precision", return_value=3), patch.object(
             creation, "get_authorized_opening_shift", return_value=self.opening
         ), patch.object(creation, "get_pos_invoices", return_value=[]), patch.object(
             creation, "get_payments_entries", return_value=[]
-        ), patch.object(creation, "flt", side_effect=lambda value, precision=None: frappe.utils.flt(
+        ), patch.object(review_closing, "flt", side_effect=lambda value, precision=None: frappe.utils.flt(
+            value, precision, rounding_method="Banker's Rounding"
+        )), patch.object(creation, "flt", side_effect=lambda value, precision=None: frappe.utils.flt(
             value, precision, rounding_method="Banker's Rounding"
         )):
             self.assertEqual(unwrap(creation.submit_closing_shift)(
@@ -183,7 +192,7 @@ class TestClosingSummary(unittest.TestCase):
         with patch.object(data, "frappe") as fake:
             fake.get_doc.return_value = self.opening
             fake.session.user = "other-cashier"
-            fake.has_role.return_value = False
+            fake.get_roles.return_value = ["Retail Cashier"]
             fake.PermissionError = PermissionError
             fake._ = lambda text: text
             fake.throw.side_effect = PermissionError
@@ -192,18 +201,26 @@ class TestClosingSummary(unittest.TestCase):
 
 class TestClosingSubmission(unittest.TestCase):
     def setUp(self):
-        self.opening = frappe._dict(name="OPEN-1", pos_profile="Till", company="Company", user="cashier")
+        self.opening = frappe._dict(name="OPEN-1", pos_profile="Till", company="Company", user="cashier", status="Open", docstatus=1)
         self.row = frappe._dict(mode_of_payment="Cash", opening_amount=0, expected_amount=100, closing_amount=90)
         self.doc = Mock(pos_opening_shift="OPEN-1", pos_profile="Till", company="Company", user="cashier")
         self.doc.name = "CLOSE-1"
-        self.doc.get.side_effect = lambda key, default=None: {"payment_reconciliation": [self.row], "pos_transactions": [], "pos_payments": []}.get(key, default)
+        self.doc.get.side_effect = lambda key, default=None: {"payment_reconciliation": [self.row], "pos_transactions": [], "pos_payments": [], "discrepancy_reason": "Counted twice"}.get(key, default)
         self.fake = Mock()
         self.fake.get_doc.return_value = self.doc
         self.fake.get_cached_value.return_value = 3
         self.fake.db.get_value.return_value = 0
         self.fake.throw.side_effect = ValueError
+        for target, name, value in [(review_closing, "frappe", self.fake),
+                (review_closing.policy, "require_schema", lambda: None),
+                (review_closing.expense_policy, "check_company", lambda *a, **kw: None),
+                (review_closing.expense_policy, "check_user_scope", lambda *a, **kw: None),
+                (review_closing.expense_policy, "currency_precision", lambda company: 3),
+                (review_closing, "flt", lambda value, precision=None: frappe.utils.flt(value, precision, rounding_method="Banker's Rounding")),
+                (overview, "build_closing_overview", lambda *a, **kw: self.snapshot)]:
+            patcher = patch.object(target, name, value); patcher.start(); self.addCleanup(patcher.stop)
         self.snapshot = {"reconciliation": [{"mode_of_payment": "Cash", "opening_amount": 50, "expected_amount": 100}]}
-        for name, value in [("frappe", self.fake), ("get_authorized_opening_shift", lambda name: self.opening),
+        for name, value in [("frappe", self.fake), ("currency_precision", lambda company: 3), ("get_authorized_opening_shift", lambda name: self.opening),
                             ("get_pos_invoices", lambda *a, **kw: []), ("get_payments_entries", lambda *a, **kw: []),
                             ("build_closing_overview", lambda *a, **kw: self.snapshot), ("normalize_pos_payment_references", lambda doc: None),
                             ("_", lambda text: text),
@@ -243,55 +260,58 @@ class TestClosingSubmission(unittest.TestCase):
 
 class TestClosingSafeTransfer(unittest.TestCase):
     def setUp(self):
+        from posawesome.posawesome.shift_review import transfers
+        self.transfers = transfers
         self.row = frappe._dict(mode_of_payment="Наличные", closing_amount=80, expected_amount=100)
         self.doc = frappe._dict(pos_opening_shift="OPEN-1", docstatus=1, company="Company", pos_profile="Till", payment_reconciliation=[self.row])
+        self.review = frappe._dict(name="REVIEW", company="Company", pos_profile="Till", pos_opening_shift="OPEN-1", currency="TJS", currency_precision=2, status="Resolved", accounts=[])
         self.fake = Mock()
         self.fake.get_doc.return_value = self.doc
-        self.fake.db.exists.return_value = True
-        self.fake.get_cached_value.return_value = "TJS"
+        self.fake.db.get_value.side_effect = lambda dt, *a, **kw: "REVIEW" if dt == "POS Shift Review" else None
+        self.fake.db.exists.return_value = False
+        self.fake.get_cached_value.side_effect = lambda dt, *a, **kw: "TJS" if dt == "Account" else None
+        self.fake.get_all.side_effect = self.wallets
         self.fake.throw.side_effect = ValueError
-        self.fake.db.get_value.side_effect = self.lookup
-        for module, name, value in [(fiscal, "frappe", self.fake), (fiscal, "_", lambda text: text),
-                                    (data, "get_authorized_opening_shift", lambda name: self.doc)]:
+        for module, name, value in [(transfers, "frappe", self.fake), (transfers, "_", lambda text: text),
+                (transfers, "load", lambda *a, **kw: self.review), (transfers, "lock_actor", lambda: None),
+                (transfers.policy, "require_schema", lambda: None), (transfers.snapshot, "read", lambda review: {
+                    "period_end": "2026-11-06 12:00:00", "cash_mode": "Наличные", "methods": [{"mode_of_payment": "Наличные", "actual": str(self.row.closing_amount), "account": "Till Cash"}]}),
+                (transfers, "_insert_action", Mock()), (transfers, "recompute", Mock()), (transfers, "save", Mock())]:
             patcher = patch.object(module, name, value); patcher.start(); self.addCleanup(patcher.stop)
-        self.transfer = patch("erpnext.accounts.page.money_hub.money_hub.transfer_money")
+        self.transfer = patch("erpnext.accounts.expense_services.shift_adjustments.post_shift_transfer", return_value=frappe._dict(name="PE-SAFE"))
         self.mock_transfer = self.transfer.start(); self.addCleanup(self.transfer.stop)
 
-    def lookup(self, doctype, name, field, **kwargs):
-        if doctype == "POS Profile": return "Наличные"
-        if doctype == "Mode of Payment Account": return "Till Cash"
-        if doctype == "Account": return "TJS"
-        if doctype == "Money Wallet":
-            if name.get("wallet_type") == "Safe": return {"name": "SAFE-1", "wallet_name": "Safe", "account": "Safe Cash"}
-            if name.get("account") == "Till Cash": return {"name": "TILL-1", "wallet_name": "Till", "account": "Till Cash"}
-        return None
+    def wallets(self, dt, filters, **kwargs):
+        if filters.get("wallet_type") == "Safe":
+            return [frappe._dict(name="SAFE-1", wallet_name="Safe", account="Safe Cash")]
+        if filters.get("account") == "Till Cash":
+            return [frappe._dict(name="TILL-1", wallet_name="Till", account="Till Cash")]
+        return []
 
     def test_zero_cash_never_falls_back_to_expected_amount(self):
         self.row.closing_amount = 0
-        result = unwrap(fiscal.transfer_shift_cash_to_safe)("CLOSE-1")
-        self.assertFalse(result["success"])
+        self.assertFalse(unwrap(fiscal.transfer_shift_cash_to_safe)("CLOSE-1")["success"])
         self.mock_transfer.assert_not_called()
 
     def test_uses_configured_cash_mode_and_exact_counted_amount(self):
         result = unwrap(fiscal.transfer_shift_cash_to_safe)("CLOSE-1")
         self.assertTrue(result["success"])
-        self.assertEqual(self.mock_transfer.call_args.kwargs["from_wallet"], "TILL-1")
-        self.assertEqual(self.mock_transfer.call_args.kwargs["amount"], 80)
+        self.assertEqual(self.mock_transfer.call_args.args[1], "TILL-1")
+        self.assertEqual(self.mock_transfer.call_args.args[3], 80)
+        self.fake.db.commit.assert_not_called()
 
     def test_cannot_transfer_more_than_counted_cash(self):
         with self.assertRaises(ValueError): unwrap(fiscal.transfer_shift_cash_to_safe)("CLOSE-1", amount=100)
         self.mock_transfer.assert_not_called()
 
     def test_does_not_fall_back_to_an_unrelated_till(self):
-        original = self.lookup
-        self.fake.db.get_value.side_effect = lambda doctype, name, field, **kw: None if doctype == "Money Wallet" and name.get("account") else original(doctype, name, field, **kw)
-        self.assertFalse(unwrap(fiscal.transfer_shift_cash_to_safe)("CLOSE-1")["success"])
+        self.fake.get_all.side_effect = lambda dt, filters, **kw: [] if filters.get("account") else self.wallets(dt, filters, **kw)
+        with self.assertRaises(ValueError): unwrap(fiscal.transfer_shift_cash_to_safe)("CLOSE-1")
         self.mock_transfer.assert_not_called()
 
-    def test_foreign_currency_transfer_requires_money_hub(self):
-        original = self.lookup
-        self.fake.db.get_value.side_effect = lambda doctype, name, field, **kw: "USD" if doctype == "Account" else original(doctype, name, field, **kw)
-        self.assertFalse(unwrap(fiscal.transfer_shift_cash_to_safe)("CLOSE-1")["success"])
+    def test_foreign_currency_transfer_requires_native_workflow(self):
+        self.fake.get_cached_value.side_effect = lambda dt, *a, **kw: "USD" if dt == "Account" else None
+        with self.assertRaises(ValueError): unwrap(fiscal.transfer_shift_cash_to_safe)("CLOSE-1")
         self.mock_transfer.assert_not_called()
 
 

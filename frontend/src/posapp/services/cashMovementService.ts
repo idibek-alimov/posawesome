@@ -37,12 +37,15 @@ const cashMovementService = {
 		return api.call(`${baseMethod}.get_submitted_expenses`, args);
 	},
 
-	cancel(name: string) {
-		return api.call(`${baseMethod}.cancel_cash_movement`, { name });
+	cancel(name: string, reason?: string) {
+		return api.call(`${baseMethod}.cancel_cash_movement`, { name, reason });
 	},
 
 	duplicate(name: string, posting_date?: string) {
-		return api.call(`${baseMethod}.duplicate_cash_movement`, { name, posting_date });
+		return api.call(`${baseMethod}.duplicate_cash_movement`, {
+			name,
+			posting_date,
+		});
 	},
 
 	remove(name: string) {

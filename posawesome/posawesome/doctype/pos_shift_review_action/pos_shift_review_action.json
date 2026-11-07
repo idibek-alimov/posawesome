@@ -1,0 +1,151 @@
+{
+ "doctype": "DocType",
+ "name": "POS Shift Review Action",
+ "module": "POSAwesome",
+ "engine": "InnoDB",
+ "field_order": [
+  "review",
+  "client_request_id",
+  "request_fingerprint",
+  "actor",
+  "action",
+  "state",
+  "row_key",
+  "currency",
+  "signed_amount",
+  "reason",
+  "evidence_json",
+  "source_doctype",
+  "source_name",
+  "financial_doctype",
+  "financial_name",
+  "invalidation_reason"
+ ],
+ "fields": [
+  {
+   "fieldname": "review",
+   "fieldtype": "Link",
+   "label": "Review",
+   "reqd": 1,
+   "read_only": 1,
+   "options": "POS Shift Review",
+   "search_index": 1
+  },
+  {
+   "fieldname": "client_request_id",
+   "fieldtype": "Data",
+   "label": "Client request id",
+   "reqd": 1,
+   "unique": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "request_fingerprint",
+   "fieldtype": "Data",
+   "label": "Request fingerprint",
+   "reqd": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "actor",
+   "fieldtype": "Link",
+   "label": "Actor",
+   "reqd": 1,
+   "read_only": 1,
+   "options": "User"
+  },
+  {
+   "fieldname": "action",
+   "fieldtype": "Data",
+   "label": "Action",
+   "read_only": 1
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Data",
+   "label": "State",
+   "read_only": 1
+  },
+  {
+   "fieldname": "row_key",
+   "fieldtype": "Data",
+   "label": "Row key",
+   "read_only": 1
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "signed_amount",
+   "fieldtype": "Currency",
+   "label": "Signed amount",
+   "read_only": 1,
+   "options": "currency"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Reason",
+   "read_only": 1
+  },
+  {
+   "fieldname": "evidence_json",
+   "fieldtype": "Code",
+   "label": "Evidence json",
+   "read_only": 1,
+   "options": "JSON"
+  },
+  {
+   "fieldname": "source_doctype",
+   "fieldtype": "Data",
+   "label": "Source doctype",
+   "read_only": 1
+  },
+  {
+   "fieldname": "source_name",
+   "fieldtype": "Data",
+   "label": "Source name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "financial_doctype",
+   "fieldtype": "Data",
+   "label": "Financial doctype",
+   "read_only": 1
+  },
+  {
+   "fieldname": "financial_name",
+   "fieldtype": "Data",
+   "label": "Financial name",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "invalidation_reason",
+   "fieldtype": "Small Text",
+   "label": "Invalidation reason",
+   "read_only": 1
+  }
+ ],
+ "permissions": [
+  {
+   "role": "Retail Owner",
+   "read": 1
+  },
+  {
+   "role": "Retail Manager",
+   "read": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "read": 1
+  }
+ ],
+ "track_changes": 1,
+ "autoname": "hash",
+ "naming_rule": "Random"
+}

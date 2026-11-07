@@ -12,14 +12,21 @@ export function useCashMovement() {
 
 	const { validate } = useCashMovementValidation();
 
-	async function loadContext(posProfileName: string, posOpeningShiftName: string) {
+	async function loadContext(
+		posProfileName: string,
+		posOpeningShiftName: string,
+	) {
 		loading.value = true;
 		error.value = "";
 		try {
-			context.value = await cashMovementService.getContext(posProfileName, posOpeningShiftName);
+			context.value = await cashMovementService.getContext(
+				posProfileName,
+				posOpeningShiftName,
+			);
 			return context.value;
 		} catch (err: any) {
-			error.value = err?.message || __("Failed to load cash movement context.");
+			error.value =
+				err?.message || __("Failed to load cash movement context.");
 			throw err;
 		} finally {
 			loading.value = false;
@@ -100,10 +107,10 @@ export function useCashMovement() {
 		}
 	}
 
-	async function cancelMovement(name: string) {
+	async function cancelMovement(name: string, reason?: string) {
 		actionLoading.value = true;
 		try {
-			return await cashMovementService.cancel(name);
+			return await cashMovementService.cancel(name, reason);
 		} finally {
 			actionLoading.value = false;
 		}

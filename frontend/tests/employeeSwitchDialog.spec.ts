@@ -130,6 +130,38 @@ describe("EmployeeSwitchDialog", () => {
 		};
 	});
 
+	it("allows first register setup while retaining the terminal lock and then requires PIN", async () => {
+		const store = useEmployeeStore();
+		const uiStore = useUIStore();
+		const wrapper = mount(EmployeeSwitchDialog, {
+			global: {
+				components: {
+					VDialog: VDialogStub,
+					VCard: BoxStub,
+					VCardTitle: BoxStub,
+					VCardText: BoxStub,
+					VCardActions: BoxStub,
+					VBtn: VBtnStub,
+					VIcon: BoxStub,
+					VAlert: BoxStub,
+					VTextField: VTextFieldStub,
+					VProgressCircular: BoxStub,
+				},
+			},
+		});
+		expect(store.isLocked).toBe(true);
+		expect(
+			wrapper.find('[data-test="terminal-lock-dialog"]').exists(),
+		).toBe(false);
+		uiStore.setPosProfile({ name: "Main POS" } as any);
+		await wrapper.vm.$nextTick();
+		expect(
+			wrapper.find('[data-test="terminal-lock-dialog"]').exists(),
+		).toBe(true);
+		expect(store.isLocked).toBe(true);
+		expect((window as any).frappe.call).not.toHaveBeenCalled();
+	});
+
 	it("marks cashier PIN input as a numeric one-time credential", async () => {
 		const store = useEmployeeStore();
 		const uiStore = useUIStore();
@@ -363,11 +395,21 @@ describe("EmployeeSwitchDialog", () => {
 			},
 		});
 
-		expect(wrapper.find('[data-test="terminal-cashier-loading"]').exists()).toBe(false);
-		expect(wrapper.get('[data-test="terminal-unlock-cashier-cashier@example.com"]').text()).toContain(
-			"Main Cashier",
-		);
-		expect(wrapper.get('[data-test="terminal-unlock-pin"]').attributes("autofocus")).not.toBeUndefined();
+		expect(
+			wrapper.find('[data-test="terminal-cashier-loading"]').exists(),
+		).toBe(false);
+		expect(
+			wrapper
+				.get(
+					'[data-test="terminal-unlock-cashier-cashier@example.com"]',
+				)
+				.text(),
+		).toContain("Main Cashier");
+		expect(
+			wrapper
+				.get('[data-test="terminal-unlock-pin"]')
+				.attributes("autofocus"),
+		).not.toBeUndefined();
 	});
 
 	it("shows a recoverable cashier load error without exposing stale options", async () => {

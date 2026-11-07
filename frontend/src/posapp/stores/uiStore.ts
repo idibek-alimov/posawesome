@@ -155,6 +155,7 @@ export const useUIStore = defineStore("ui", () => {
   const stockSettings = ref<Record<string, any>>({});
   const companyDoc = ref<any>(null);
   const posOpeningShift = ref<any>(null);
+  const lastClosedShift = ref<{ user: string; name: string; print_state: string } | null>(null);
 
   const currency = computed(() => posProfile.value?.currency || "");
   const company = computed(() => posProfile.value?.company || "");
@@ -318,6 +319,7 @@ export const useUIStore = defineStore("ui", () => {
     stockSettings,
     companyDoc,
     posOpeningShift,
+    lastClosedShift,
     lastInvoiceId,
     offers,
     applicableOffers,

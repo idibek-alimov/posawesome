@@ -1,0 +1,66 @@
+{
+ "doctype": "DocType",
+ "name": "POS Shift Review Settings",
+ "module": "POSAwesome",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "shortage_account",
+  "surplus_account",
+  "cost_center",
+  "dimensions_json"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "reqd": 1,
+   "unique": 1,
+   "options": "Company"
+  },
+  {
+   "fieldname": "shortage_account",
+   "fieldtype": "Link",
+   "label": "Shortage account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "surplus_account",
+   "fieldtype": "Link",
+   "label": "Surplus account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost center",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "dimensions_json",
+   "fieldtype": "Code",
+   "label": "Dimensions json",
+   "options": "JSON"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "Retail Owner",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "print": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "print": 1
+  }
+ ],
+ "track_changes": 1,
+ "autoname": "hash",
+ "naming_rule": "Random"
+}

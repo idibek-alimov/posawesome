@@ -1,5 +1,11 @@
 <template>
-	<v-dialog v-model="closingDialog" max-width="1100" persistent scrollable aria-labelledby="closing-dialog-title">
+	<v-dialog
+		v-model="closingDialog"
+		max-width="1100"
+		persistent
+		scrollable
+		aria-labelledby="closing-dialog-title"
+	>
 		<v-card class="closing-dialog-card">
 			<ClosingHeader
 				:profile="dialog_data.pos_profile"
@@ -42,10 +48,28 @@
 					<PaymentReconciliation
 						:payments="dialog_data.payment_reconciliation"
 						:currency="overviewCompanyCurrency"
+						:precision="overview.currency_precision ?? 3"
 						:hide-expected="hideExpected"
 						:busy="submitting"
 						:format-currency="formatCurrency"
 					/>
+					<section v-if="requiresReason" class="summary-section">
+						<v-textarea
+							v-model="dialog_data.discrepancy_reason"
+							:label="__(hideExpected ? 'Count note' : 'Reason for the difference')"
+							:disabled="submitting"
+							rows="2"
+							auto-grow
+							hide-details
+						/>
+						<p class="text-caption text-medium-emphasis mt-2">
+							{{
+								__(
+									"A difference does not prevent closing. It remains Pending review until a manager resolves it.",
+								)
+							}}
+						</p>
+					</section>
 					<section class="summary-section" aria-labelledby="closing-sales-title">
 						<h3 id="closing-sales-title" class="text-subtitle-1 font-weight-medium">
 							{{ __("Shift sales") }}
@@ -202,7 +226,8 @@ import { computed, inject, onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { useUIStore } from "../../../stores/uiStore.js";
 import { useClosingShift } from "../../../composables/pos/closing/useClosingShift";
 import { useClosingSummary } from "../../../composables/pos/closing/useClosingSummary";
-import { actualAmount } from "../../../composables/pos/closing/closingAmounts";
+import { hasPendingExpenseRequest } from "../../../composables/pos/closing/pendingExpenses";
+import { actualAmount, hasClosingDifference } from "../../../composables/pos/closing/closingAmounts";
 import { useFormat } from "../../../format";
 import { initPromise, isOffline, getQueuedPayloadCount } from "../../../../offline/index";
 import ClosingHeader from "../closing/ClosingHeader.vue";
@@ -281,17 +306,25 @@ const queueReady = ref(false);
 const needsRefresh = ref(false);
 const updatePending = () => {
 	if (!closingDialog.value) return;
-	const pending = ["invoice", "payment", "cash_movement"].some((entity) => getQueuedPayloadCount(entity));
+	const pendingExpense = hasPendingExpenseRequest(
+		dialog_data.value.pos_opening_shift,
+		pos_profile.value?.company,
+	);
+	const pending =
+		pendingExpense ||
+		["invoice", "payment", "cash_movement"].some((entity) => getQueuedPayloadCount(entity));
 	if (pending || isOffline()) needsRefresh.value = true;
 	pendingMessage.value = isOffline()
 		? __("Reconnect before closing the shift.")
-		: pending
-			? __(
-					"Sync pending invoices, payments and cash movements, then refresh the totals before closing.",
-				)
-			: needsRefresh.value
-				? __("Refresh totals to include the records that have just synced.")
-				: "";
+		: pendingExpense
+			? __("Confirm pending expense requests before closing the shift.")
+			: pending
+				? __(
+						"Sync pending invoices, payments and cash movements, then refresh the totals before closing.",
+					)
+				: needsRefresh.value
+					? __("Refresh totals to include the records that have just synced.")
+					: "";
 };
 const refreshOverview = async () => {
 	await fetchOverview(dialog_data.value.pos_opening_shift, pos_profile.value?.currency);
@@ -334,6 +367,14 @@ const settlementNote = computed(() => {
 			)
 		: "";
 });
+const requiresReason = computed(
+	() =>
+		hideExpected.value ||
+		hasClosingDifference(
+			dialog_data.value.payment_reconciliation || [],
+			overview.value?.currency_precision ?? 3,
+		),
+);
 const canSubmit = computed(
 	() =>
 		queueReady.value &&
@@ -342,8 +383,9 @@ const canSubmit = computed(
 		!overviewError.value &&
 		!submitting.value &&
 		!pendingMessage.value &&
+		(!requiresReason.value || !!dialog_data.value.discrepancy_reason?.trim()) &&
 		(dialog_data.value.payment_reconciliation || []).every(
-			(row) => actualAmount(row.closing_amount) !== null,
+			(row) => actualAmount(row.closing_amount, overview.value?.currency_precision ?? 3) !== null,
 		),
 );
 const handleSubmit = () => {

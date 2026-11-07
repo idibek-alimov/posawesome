@@ -153,17 +153,6 @@ function normalizeInvoicePayload(payload: AnyRecord) {
 	return nextPayload;
 }
 
-function normalizeCashMovementPayload(payload: AnyRecord) {
-	const nextPayload = cloneSerializable(payload);
-	const movementPayload = nextPayload?.args?.payload || nextPayload?.payload;
-	if (movementPayload && !movementPayload.client_request_id) {
-		movementPayload.client_request_id = `cm-${Date.now()}-${Math.random()
-			.toString(36)
-			.slice(2, 10)}`;
-	}
-	return nextPayload;
-}
-
 function normalizePayload(
 	entityType: OfflineEntityType,
 	payload: AnyRecord,
@@ -176,10 +165,8 @@ function normalizePayload(
 		return normalizeInvoicePayload(payload);
 	}
 
-	if (entityType === "cash_movement") {
-		return normalizeCashMovementPayload(payload);
-	}
-
+	// Legacy cash movement IDs and serialized payloads are immutable. Missing IDs
+	// require manager review; inventing one could repost a previously paid expense.
 	return cloneSerializable(payload);
 }
 

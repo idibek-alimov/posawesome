@@ -25,6 +25,33 @@
 			{{ __("Cash Movement is disabled in current POS Profile.") }}
 		</v-alert>
 
+		<details v-if="pendingRequests.length" class="mb-3">
+			<summary>{{ __("Pending cash movement requests") }}</summary>
+			<div v-for="request in pendingRequests" :key="request.queue_id" class="py-2">
+				<strong>{{ request.client_request_id }}</strong> · {{ queueStatus(request.status) }}
+				<div v-if="request.last_error" class="text-caption">{{ request.last_error }}</div>
+				<v-btn
+					variant="text"
+					:disabled="isOffline() || !request.hasRequestId || !!checkingRequest"
+					:loading="checkingRequest === request.queue_id"
+					@click="checkRequest(request)"
+					>{{ __("Check result") }}</v-btn
+				>
+				<p v-if="!request.hasRequestId" class="text-caption">
+					{{ __("The original cash movement has no request ID. Manager review is required.") }}
+				</p>
+				<p v-if="requestResults[request.queue_id]" class="text-caption" role="status">
+					{{ requestResults[request.queue_id]?.message }}
+					<a
+						v-if="requestResults[request.queue_id]?.name"
+						:href="`/app/pos-cash-movement/${encodeURIComponent(requestResults[request.queue_id]?.name || '')}`"
+						target="_blank"
+						rel="noopener"
+						>{{ requestResults[request.queue_id]?.name }}</a
+					>
+				</p>
+			</div>
+		</details>
 		<v-row dense>
 			<v-col cols="12" md="5">
 				<CashMovementForm
@@ -59,12 +86,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted, onBeforeUnmount } from "vue";
+import { useRouter } from "vue-router";
 import { useUIStore } from "../../../stores/uiStore";
 import { useToastStore } from "../../../stores/toastStore";
+import { useCashMovementValidation } from "../../../composables/pos/cash/useCashMovementValidation";
 import { useCashMovement } from "../../../composables/pos/cash/useCashMovement";
 import {
 	getPendingOfflineCashMovementCount,
+	getOfflineCashMovements,
 	isOffline,
 	saveOfflineCashMovement,
 	syncOfflineCashMovements,
@@ -74,6 +104,7 @@ import CashMovementHistory from "./CashMovementHistory.vue";
 
 const __ = window.__ || ((text: string, _args?: any[]) => text);
 
+const router = useRouter();
 const uiStore = useUIStore();
 const toastStore = useToastStore();
 
@@ -86,7 +117,6 @@ const {
 	error,
 	loadContext,
 	loadHistory,
-	submitMovement,
 	cancelMovement,
 	deleteMovement,
 } = useCashMovement();
@@ -94,6 +124,10 @@ const {
 const contextLoaded = ref(false);
 const syncingOffline = ref(false);
 const pendingOfflineCount = ref(0);
+const pendingRequests = ref<any[]>([]);
+const checkingRequest = ref<number | null>(null);
+const requestResults = ref<Record<number, { message: string; name?: string }>>({});
+let pendingTimer: ReturnType<typeof setInterval> | undefined;
 const historyStatus = ref("");
 const historyMovementType = ref("");
 const historySearchText = ref("");
@@ -128,7 +162,75 @@ async function refreshHistory() {
 
 function refreshPendingOfflineCount() {
 	pendingOfflineCount.value = getPendingOfflineCashMovementCount();
+	pendingRequests.value = getOfflineCashMovements().flatMap((request: any) => {
+		try {
+			const stored = request.args?.payload || request.payload;
+			const payload = typeof stored === "string" ? JSON.parse(stored) : stored;
+			return !openingShiftName.value ||
+				!payload?.pos_opening_shift ||
+				payload.pos_opening_shift === openingShiftName.value
+				? [
+						{
+							...request,
+							hasRequestId: !!payload?.client_request_id,
+							client_request_id: payload?.client_request_id || __("Unknown request"),
+						},
+					]
+				: [];
+		} catch {
+			return [{ ...request, hasRequestId: false, client_request_id: __("Unknown request") }];
+		}
+	});
 }
+
+async function checkRequest(request: any) {
+	if (checkingRequest.value || !request.hasRequestId || isOffline()) return;
+	checkingRequest.value = request.queue_id;
+	try {
+		const response = await (window as any).frappe.call({
+			method: "posawesome.posawesome.api.cash_movement.service.get_cash_movement_request_outcome",
+			args: { client_request_id: request.client_request_id },
+		});
+		const result = response.message;
+		const message =
+			result?.status === "submitted" && result.journal_entry
+				? __(
+						"Movement submitted. Synchronize the original queue; do not record it again. Retained review items need a manager.",
+					)
+				: result?.status === "cancelled"
+					? __("The original movement was cancelled. Keep the request for manager review.")
+					: __(
+							"No completed result confirmed. The original request is retained; do not enter a duplicate.",
+						);
+		requestResults.value[request.queue_id] = { message, name: result?.name };
+	} catch (error: any) {
+		requestResults.value[request.queue_id] = {
+			message: error?.message || __("Could not check the result. The original request is retained."),
+		};
+	} finally {
+		checkingRequest.value = null;
+	}
+}
+
+function queueStatus(status: string) {
+	return __(
+		(
+			{
+				pending: "Queued",
+				syncing: "Submitting",
+				failed: "Failed",
+				dead_letter: "Needs manager review",
+			} as Record<string, string>
+		)[status] || status,
+	);
+}
+
+onMounted(() => {
+	pendingTimer = setInterval(refreshPendingOfflineCount, 1000);
+});
+onBeforeUnmount(() => {
+	clearInterval(pendingTimer);
+});
 
 async function handleFilterChange(payload: { status: string; movementType: string; searchText: string }) {
 	historyStatus.value = payload?.status || "";
@@ -138,7 +240,13 @@ async function handleFilterChange(payload: { status: string; movementType: strin
 }
 
 async function handleSubmit(payload: any) {
+	if (submitting.value) return;
+	submitting.value = true;
 	try {
+		const validation = useCashMovementValidation().validate({ ...payload, context: context.value });
+		if (!validation.valid) throw new Error(validation.errors.join("\n"));
+		if (!posProfileName.value || !openingShiftName.value)
+			throw new Error(__("Open a shift before recording POS expenses."));
 		if (
 			(payload.movementType === "Expense" && !context.value?.allow_pos_expense) ||
 			(payload.movementType === "Deposit" && !context.value?.allow_cash_deposit)
@@ -160,49 +268,43 @@ async function handleSubmit(payload: any) {
 			client_request_id: `cm-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
 		};
 
-		if (isOffline()) {
-			const method =
-				payload.movementType === "Deposit"
-					? "posawesome.posawesome.api.cash_movement.service.create_cash_deposit"
-					: "posawesome.posawesome.api.cash_movement.service.create_pos_expense";
-			await saveOfflineCashMovement({
-				method,
-				args: {
-					payload: requestPayload,
-				},
-			});
-			toastStore.show({
-				title: __("Cash movement saved offline"),
-				color: "warning",
-			});
-			formResetToken.value += 1;
-			refreshPendingOfflineCount();
-			return;
-		}
-
-		await submitMovement({
-			movementType: payload.movementType,
-			amount: payload.amount,
-			againstName: payload.againstName,
-			postingDate: payload.postingDate,
-			sourceAccount: payload.sourceAccount,
-			remarks: payload.remarks,
-			expenseAccount: payload.expenseAccount,
-			targetAccount: payload.targetAccount,
-			posProfileName: posProfileName.value,
-			posOpeningShiftName: openingShiftName.value,
-			clientRequestId: requestPayload.client_request_id,
-		});
-		toastStore.show({ title: __("Cash movement submitted"), color: "success" });
+		const method =
+			payload.movementType === "Deposit"
+				? "posawesome.posawesome.api.cash_movement.service.create_cash_deposit"
+				: "posawesome.posawesome.api.cash_movement.service.create_pos_expense";
+		await saveOfflineCashMovement({ method, args: { payload: requestPayload } });
 		formResetToken.value += 1;
-		await refreshHistory();
+		refreshPendingOfflineCount();
+		if (!isOffline()) {
+			await syncOfflineCashMovements();
+			refreshPendingOfflineCount();
+		}
+		toastStore.show({
+			title: pendingOfflineCount.value
+				? __("Cash movement saved for confirmation")
+				: __("Cash movement submitted"),
+			color: pendingOfflineCount.value ? "warning" : "success",
+		});
+		if (!isOffline()) {
+			try {
+				await refreshHistory();
+			} catch {
+				error.value = __("The movement was saved. Refresh the history to see its status.");
+			}
+		}
 	} catch (err: any) {
 		toastStore.show({ title: err?.message || __("Failed to submit cash movement"), color: "error" });
+	} finally {
+		submitting.value = false;
 	}
 }
 
 function handleDuplicate(row: any) {
 	if (!row?.name) return;
+	if (row.movement_type === "Expense" && context.value?.shared_expense_ready) {
+		router.push("/expenses");
+		return;
+	}
 	prefillData.value = {
 		movement_type: row.movement_type,
 		amount: row.amount,
@@ -224,7 +326,12 @@ async function handleCancel(row: any) {
 		if (!confirmed) {
 			return;
 		}
-		await cancelMovement(row.name);
+		const reason =
+			row.movement_type === "Expense"
+				? window.prompt(__("Reason for cancellation"))?.trim()
+				: undefined;
+		if (row.movement_type === "Expense" && !reason) return;
+		await cancelMovement(row.name, reason);
 		toastStore.show({ title: __("Cash movement cancelled"), color: "warning" });
 		await refreshHistory();
 	} catch (err: any) {

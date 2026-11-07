@@ -1,0 +1,104 @@
+{
+ "doctype": "DocType",
+ "name": "POS Shift Review Account",
+ "module": "POSAwesome",
+ "engine": "InnoDB",
+ "field_order": [
+  "row_key",
+  "account",
+  "currency",
+  "account_currency",
+  "account_type",
+  "methods_json",
+  "expected_amount",
+  "actual_amount",
+  "original_difference",
+  "allocated_amount",
+  "remaining_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "row_key",
+   "fieldtype": "Data",
+   "label": "Row key",
+   "read_only": 1
+  },
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "label": "Account",
+   "read_only": 1,
+   "in_list_view": 1,
+   "options": "Account"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "read_only": 1,
+   "options": "Currency"
+  },
+  {
+   "fieldname": "account_currency",
+   "fieldtype": "Link",
+   "label": "Account currency",
+   "read_only": 1,
+   "options": "Currency"
+  },
+  {
+   "fieldname": "account_type",
+   "fieldtype": "Data",
+   "label": "Account type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "methods_json",
+   "fieldtype": "Code",
+   "label": "Methods json",
+   "read_only": 1,
+   "options": "JSON"
+  },
+  {
+   "fieldname": "expected_amount",
+   "fieldtype": "Currency",
+   "label": "Expected",
+   "read_only": 1,
+   "options": "currency"
+  },
+  {
+   "fieldname": "actual_amount",
+   "fieldtype": "Currency",
+   "label": "Actual",
+   "read_only": 1,
+   "options": "currency"
+  },
+  {
+   "fieldname": "original_difference",
+   "fieldtype": "Currency",
+   "label": "Original difference",
+   "read_only": 1,
+   "in_list_view": 1,
+   "options": "currency"
+  },
+  {
+   "fieldname": "allocated_amount",
+   "fieldtype": "Currency",
+   "label": "Allocated amount",
+   "read_only": 1,
+   "in_list_view": 1,
+   "options": "currency"
+  },
+  {
+   "fieldname": "remaining_amount",
+   "fieldtype": "Currency",
+   "label": "Remaining amount",
+   "read_only": 1,
+   "in_list_view": 1,
+   "options": "currency"
+  }
+ ],
+ "permissions": [],
+ "track_changes": 1,
+ "istable": 1,
+ "editable_grid": 0
+}

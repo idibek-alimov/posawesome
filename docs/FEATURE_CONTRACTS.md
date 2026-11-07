@@ -235,3 +235,31 @@ Rules:
 - Print and receipt logic must respect POS Profile print settings where applicable.
 - Offline cache must load and store POS Profile-dependent data safely.
 - Custom POS Profile fields must be considered when present.
+
+---
+
+## 9. Shift expense and manager review contract
+
+Phase 1 owner-approved policies and the future implementation boundary are documented in:
+
+- [POS shift review contract](shift-review-contract.md): closing/review scope, signed
+  differences, native reuse, source provenance, resolution/cancellation and worked cases.
+- [Shared ERPNext expense contract](../../erpnext/docs/expense-workflow-contract.md):
+  canonical expense ownership, source/category rules, approved role matrix and posting routes.
+
+Phase 2 expense policy/posting guards are implemented locally; see the
+[completion/setup report](expense-services-phase-2.md). Phase 3 history and legacy/offline
+compatibility are also implemented locally; see the
+[history/retry report](expense-history-phase-3.md). Phase 4 POS expense UI and independent
+result recovery are implemented locally; see the [POS UI report](pos-expense-ui-phase-4.md).
+Phase 5 ERPNext Desk redesign is implemented locally; see the
+[Desk report](../../erpnext/docs/expense-desk-phase-5.md). Phase 6 discrepancy records,
+guarded resolution services and closing integration are implemented locally; see the
+[backend/setup report](shift-review-phase-6.md). The Phase 7 manager Desk page is implemented locally; see the [manager UI report](shift-review-phase-7.md). The Phase 8 connected journey is implemented locally; see the [integration report](shift-review-phase-8.md). Schema and
+explicit source/category setup are required before rollout. Preserve the existing shared
+closing calculation and the real child-Document regression.
+
+Phase 9 local native verification/release handoff is complete; see the
+[evidence report](shift-review-phase-9.md) and [release runbook](shift-review-release.md).
+Both apps must be updated together. Intended-site grants/permissions, backup/upgrade,
+installed-app handoffs and physical bank/printer checks remain operator release gates.

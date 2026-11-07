@@ -1,8 +1,21 @@
-export function actualAmount(value: unknown): number | null {
+export function actualAmount(
+	value: unknown,
+	precision?: number,
+): number | null {
 	if (value === null || value === undefined || String(value).trim() === "")
 		return null;
 	const amount = Number(value);
-	return Number.isFinite(amount) ? amount : null;
+	if (!Number.isFinite(amount)) return null;
+	if (precision !== undefined) {
+		const scaled = amount * 10 ** precision;
+		if (
+			!Number.isSafeInteger(Math.round(scaled)) ||
+			Math.abs(scaled - Math.round(scaled)) >
+				Math.max(1, Math.abs(scaled)) * Number.EPSILON * 2
+		)
+			return null;
+	}
+	return amount;
 }
 
 export function closingDifference(row: any, precision = 3): number | null {
@@ -15,4 +28,11 @@ export function closingDifference(row: any, precision = 3): number | null {
 		) /
 		10 ** precision
 	);
+}
+
+export function hasClosingDifference(rows: any[], precision = 3): boolean {
+	return rows.some((row) => {
+		const difference = closingDifference(row, precision);
+		return difference !== null && difference !== 0;
+	});
 }

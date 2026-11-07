@@ -183,4 +183,4 @@ def consolidate_closing_shift_invoices(closing_shift_doc):
                 invoices_by_currency.setdefault(invoice.currency, []).append(invoice)
 
             for invoices in invoices_by_currency.values():
-                consolidate_pos_invoices(pos_invoices=invoices)
+                consolidate_pos_invoices(pos_invoices=invoices, commit=False)

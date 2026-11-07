@@ -1,0 +1,173 @@
+{
+ "doctype": "DocType",
+ "name": "POS Shift Review",
+ "module": "POSAwesome",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "pos_profile",
+  "pos_opening_shift",
+  "closing_shift",
+  "cashier",
+  "currency",
+  "currency_precision",
+  "status",
+  "version",
+  "cashier_reason",
+  "reviewer",
+  "snapshot_json",
+  "snapshot_hash",
+  "accounts"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "reqd": 1,
+   "read_only": 1,
+   "options": "Company"
+  },
+  {
+   "fieldname": "pos_profile",
+   "fieldtype": "Link",
+   "label": "Pos profile",
+   "reqd": 1,
+   "read_only": 1,
+   "options": "POS Profile"
+  },
+  {
+   "fieldname": "pos_opening_shift",
+   "fieldtype": "Link",
+   "label": "Pos opening shift",
+   "reqd": 1,
+   "read_only": 1,
+   "options": "POS Opening Shift"
+  },
+  {
+   "fieldname": "closing_shift",
+   "fieldtype": "Link",
+   "label": "Closing shift",
+   "reqd": 1,
+   "unique": 1,
+   "read_only": 1,
+   "options": "POS Closing Shift"
+  },
+  {
+   "fieldname": "cashier",
+   "fieldtype": "Link",
+   "label": "Cashier",
+   "reqd": 1,
+   "read_only": 1,
+   "options": "User"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "read_only": 1,
+   "options": "Currency"
+  },
+  {
+   "fieldname": "currency_precision",
+   "fieldtype": "Int",
+   "label": "Currency precision",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "version",
+   "fieldtype": "Int",
+   "label": "Version",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cashier_reason",
+   "fieldtype": "Small Text",
+   "label": "Cashier reason",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reviewer",
+   "fieldtype": "Link",
+   "label": "Reviewer",
+   "read_only": 1,
+   "options": "User"
+  },
+  {
+   "fieldname": "snapshot_json",
+   "fieldtype": "Code",
+   "label": "Snapshot json",
+   "read_only": 1,
+   "options": "JSON",
+   "permlevel": 1,
+   "print_hide": 1
+  },
+  {
+   "fieldname": "snapshot_hash",
+   "fieldtype": "Data",
+   "label": "Snapshot hash",
+   "read_only": 1,
+   "permlevel": 1,
+   "print_hide": 1
+  },
+  {
+   "fieldname": "accounts",
+   "fieldtype": "Table",
+   "label": "Accounts",
+   "read_only": 1,
+   "options": "POS Shift Review Account"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "Retail Owner",
+   "read": 1,
+   "print": 1
+  },
+  {
+   "role": "Retail Manager",
+   "read": 1,
+   "print": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "read": 1,
+   "print": 1
+  },
+  {
+   "role": "Retail Cashier",
+   "read": 1,
+   "print": 1
+  },
+  {
+   "role": "Sales User",
+   "read": 1,
+   "print": 1
+  },
+  {
+   "role": "Retail Owner",
+   "permlevel": 1,
+   "read": 1
+  },
+  {
+   "role": "Retail Manager",
+   "permlevel": 1,
+   "read": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "permlevel": 1,
+   "read": 1
+  }
+ ],
+ "track_changes": 1,
+ "autoname": "hash",
+ "naming_rule": "Random"
+}

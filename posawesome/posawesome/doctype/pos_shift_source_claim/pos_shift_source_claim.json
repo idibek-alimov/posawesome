@@ -1,0 +1,115 @@
+{
+ "doctype": "DocType",
+ "name": "POS Shift Source Claim",
+ "module": "POSAwesome",
+ "engine": "InnoDB",
+ "field_order": [
+  "claim_key",
+  "review",
+  "row_key",
+  "financial_doctype",
+  "financial_name",
+  "account",
+  "currency",
+  "capacity",
+  "allocated_amount",
+  "active",
+  "evidence_json"
+ ],
+ "fields": [
+  {
+   "fieldname": "claim_key",
+   "fieldtype": "Data",
+   "label": "Claim key",
+   "reqd": 1,
+   "unique": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "review",
+   "fieldtype": "Link",
+   "label": "Review",
+   "read_only": 1,
+   "reqd": 1,
+   "options": "POS Shift Review",
+   "search_index": 1
+  },
+  {
+   "fieldname": "row_key",
+   "fieldtype": "Data",
+   "label": "Row key",
+   "read_only": 1
+  },
+  {
+   "fieldname": "financial_doctype",
+   "fieldtype": "Data",
+   "label": "Financial doctype",
+   "read_only": 1
+  },
+  {
+   "fieldname": "financial_name",
+   "fieldtype": "Data",
+   "label": "Financial name",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "label": "Account",
+   "read_only": 1,
+   "options": "Account"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "capacity",
+   "fieldtype": "Currency",
+   "label": "Capacity",
+   "read_only": 1,
+   "options": "currency"
+  },
+  {
+   "fieldname": "allocated_amount",
+   "fieldtype": "Currency",
+   "label": "Allocated amount",
+   "read_only": 1,
+   "options": "currency"
+  },
+  {
+   "fieldname": "active",
+   "fieldtype": "Check",
+   "label": "Active",
+   "read_only": 1
+  },
+  {
+   "fieldname": "evidence_json",
+   "fieldtype": "Code",
+   "label": "Evidence json",
+   "read_only": 1,
+   "options": "JSON"
+  }
+ ],
+ "permissions": [
+  {
+   "role": "Retail Owner",
+   "read": 1
+  },
+  {
+   "role": "Retail Manager",
+   "read": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "read": 1
+  }
+ ],
+ "track_changes": 1,
+ "autoname": "hash",
+ "naming_rule": "Random"
+}

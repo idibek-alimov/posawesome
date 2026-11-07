@@ -64,15 +64,36 @@ class POSClosingShift(Document):
         for d in self.payment_reconciliation:
             d.difference = +flt(d.closing_amount, precision) - flt(d.expected_amount, precision)
 
+    def before_submit(self):
+        from posawesome.posawesome.shift_review.closing import validate
+        validate(self)
+
+    def before_cancel(self):
+        from posawesome.posawesome.shift_review.closing import before_cancel
+        before_cancel(self)
+
+    def before_update_after_submit(self):
+        from posawesome.posawesome.shift_review.closing import before_update_after_submit
+        before_update_after_submit(self)
+
+    def on_trash(self):
+        if self.docstatus != 0:
+            frappe.throw(_("Posted closing history cannot be deleted."))
+
     def on_submit(self):
         opening_entry = frappe.get_doc("POS Opening Shift", self.pos_opening_shift)
         opening_entry.pos_closing_shift = self.name
         opening_entry.set_status()
         self.delete_draft_invoices()
-        opening_entry.save()
+        # before_submit already authorizes and locks this exact stored opening.
+        # Updating its closing link is part of closing, not a grant of general
+        # opening-document write access to the cashier.
+        opening_entry.save(ignore_permissions=True)
         # link invoices with this closing shift so ERPNext can block edits
         _set_closing_entry_invoices(self)
         consolidate_closing_shift_invoices(self)
+        from posawesome.posawesome.shift_review.closing import create_review
+        create_review(self)
 
     def on_cancel(self):
         if frappe.db.exists("POS Opening Shift", self.pos_opening_shift):
@@ -80,7 +101,8 @@ class POSClosingShift(Document):
             if opening_entry.pos_closing_shift == self.name:
                 opening_entry.pos_closing_shift = ""
                 opening_entry.set_status()
-                opening_entry.save()
+                # before_cancel checks the manager's review scope and reversals.
+                opening_entry.save(ignore_permissions=True)
         # remove links from invoices so they can be cancelled
         _clear_closing_entry_invoices(self)
 

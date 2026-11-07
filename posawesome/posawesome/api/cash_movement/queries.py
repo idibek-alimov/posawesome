@@ -37,7 +37,7 @@ def get_shift_movements(
             {"user": ["like", like_query]},
         ]
 
-    return frappe.get_all(
+    return frappe.get_list(
         "POS Cash Movement",
         filters=filters,
         or_filters=or_filters,

@@ -49,7 +49,7 @@
 								v-model="item.closing_amount"
 								:disabled="busy"
 								type="number"
-								step="any"
+								:step="10 ** -precision"
 								density="compact"
 								variant="outlined"
 								hide-details
@@ -57,7 +57,7 @@
 								:error="
 									item.closing_amount !== '' &&
 									item.closing_amount != null &&
-									actualAmount(item.closing_amount) === null
+									actualAmount(item.closing_amount, precision) === null
 								"
 							/>
 						</td>
@@ -92,16 +92,16 @@
 </template>
 <script setup>
 import { actualAmount, closingDifference } from "../../../composables/pos/closing/closingAmounts";
-defineProps({
+const props = defineProps({
 	payments: { type: Array, default: () => [] },
 	currency: String,
+	precision: { type: Number, default: 3 },
 	hideExpected: Boolean,
 	busy: Boolean,
 	formatCurrency: Function,
 });
 const __ = window.__ || ((text) => text);
-const difference = (row) =>
-	closingDifference(row, Number(window.frappe?.boot?.sysdefaults?.currency_precision || 3));
+const difference = (row) => closingDifference(row, props.precision);
 </script>
 <style scoped>
 .money-table-wrapper {

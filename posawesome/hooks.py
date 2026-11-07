@@ -74,7 +74,7 @@ doctype_js = {
 # ------------
 
 # before_install = "posawesome.install.before_install"
-# after_install = "posawesome.install.after_install"
+after_install = "posawesome.patches.repair_expense_source_settings.execute"
 # before_uninstall = "posawesome.uninstall.before_uninstall"
 after_uninstall = "posawesome.uninstall.after_uninstall"
 # NOTE: these migrations are registered one-shot in patches.txt and must NOT
@@ -447,3 +447,59 @@ fixtures = [
 # Permissions for Custom DocTypes
 # --------------------------------
 permissions = []
+
+# ERPNext remains usable without POS Awesome; POS requests fail closed without this adapter.
+expense_pos_context_validator = "posawesome.posawesome.api.expense_context.validate_context"
+doc_events["Quick Expense"] = {
+    "validate": "posawesome.posawesome.api.expense_context.validate_profile_expense_limits",
+}
+doc_events["POS Opening Shift"] = {
+    "before_insert": "posawesome.posawesome.shift_review.transfers.lock_register_opening",
+    "before_submit": "posawesome.posawesome.shift_review.transfers.lock_register_opening",
+}
+doc_events["POS Cash Movement"] = {
+    "validate": "posawesome.posawesome.api.expense_context.validate_legacy_expense",
+    "before_cancel": "posawesome.posawesome.api.expense_context.before_cancel_legacy_expense",
+    "on_trash": "posawesome.posawesome.api.expense_context.protect_legacy_expense_history",
+}
+has_permission = {
+    "POS Cash Movement": "posawesome.posawesome.api.expense_context.legacy_has_permission",
+}
+permission_query_conditions = {
+    "POS Cash Movement": "posawesome.posawesome.api.expense_context.legacy_permission_query_conditions",
+}
+
+# Optional legacy history extension: ERPNext never imports POS Awesome.
+expense_history_adapters = "posawesome.posawesome.api.expense_history.adapters"
+expense_history_detail = "posawesome.posawesome.api.expense_history.detail"
+expense_history_links = "posawesome.posawesome.shift_review.journey.expense_links"
+
+# Review evidence and native source lifecycle share the accounting transaction.
+for _doctype in ("Sales Invoice", "POS Invoice", "Payment Entry", "Quick Expense", "POS Cash Movement"):
+    _events = doc_events.setdefault(_doctype, {})
+    _previous = _events.get("before_submit", [])
+    _events["before_submit"] = ([_previous] if isinstance(_previous, str) else list(_previous)) + [
+        "posawesome.posawesome.shift_review.closing.guard_shift_source"
+    ]
+    _previous = _events.get("before_cancel", [])
+    _events["before_cancel"] = ([_previous] if isinstance(_previous, str) else list(_previous)) + [
+        "posawesome.posawesome.shift_review.closing.lock_shift_source_cancellation"
+    ]
+for _doctype in ("Journal Entry", "Payment Entry", "Quick Expense", "POS Cash Movement", "Sales Invoice", "POS Invoice"):
+    _events = doc_events.setdefault(_doctype, {})
+    _previous = _events.get("on_cancel", [])
+    _events["on_cancel"] = ([_previous] if isinstance(_previous, str) else list(_previous)) + [
+        "posawesome.posawesome.shift_review.lifecycle.changed"
+    ]
+doc_events.setdefault("Journal Entry", {})["before_submit"] = "posawesome.posawesome.shift_review.lifecycle.lock_reversal_source"
+doc_events["Journal Entry"]["on_submit"] = "posawesome.posawesome.shift_review.lifecycle.changed"
+has_permission.update({
+    "POS Shift Review": "posawesome.posawesome.shift_review.policy.has_permission",
+    "POS Shift Review Action": "posawesome.posawesome.shift_review.policy.action_has_permission",
+    "POS Shift Source Claim": "posawesome.posawesome.shift_review.policy.action_has_permission",
+})
+permission_query_conditions.update({
+    "POS Shift Review": "posawesome.posawesome.shift_review.policy.query_conditions",
+    "POS Shift Review Action": "posawesome.posawesome.shift_review.policy.action_query_conditions",
+    "POS Shift Source Claim": "posawesome.posawesome.shift_review.policy.claim_query_conditions",
+})

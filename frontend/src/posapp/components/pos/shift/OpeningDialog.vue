@@ -54,6 +54,7 @@
 
 							<!-- Payment Methods Section - Compact -->
 							<v-col cols="12">
+								<ShiftReviewNotice v-if="pos_profile" :pos-profile="pos_profile" />
 								<div class="section-header-compact">
 									<h6 class="section-title-compact">
 										<v-icon class="section-icon">mdi-credit-card-multiple</v-icon>
@@ -86,6 +87,13 @@
 										/>
 									</template>
 								</v-data-table>
+								<p class="text-body-2 mt-2">
+									{{
+										__(
+											"Opening amounts are company-currency shift funds, not full bank or shared wallet balances.",
+										)
+									}}
+								</p>
 							</v-col>
 						</v-row>
 					</v-container>
@@ -124,7 +132,7 @@
 						elevation="2"
 					>
 						<v-icon start>mdi-check-circle-outline</v-icon>
-						<span>{{ __("Submit") }}</span>
+						<span>{{ __("Open shift") }}</span>
 					</v-btn>
 				</v-card-actions>
 			</v-card>
@@ -145,6 +153,7 @@ import {
 } from "../../../../offline/index";
 import { createBootstrapSnapshotFromRegisterData } from "../../../../offline/bootstrapSnapshot";
 import authService from "../../../services/authService";
+import ShiftReviewNotice from "./ShiftReviewNotice.vue";
 
 defineOptions({
 	name: "OpeningDialog",
@@ -208,13 +217,17 @@ watch(company, (val) => {
 	});
 });
 
-watch(pos_profile, (val) => {
+watch([pos_profile, payments_method_data], ([val], [previousProfile]) => {
+	const counts =
+		val === previousProfile
+			? new Map(payments_methods.value.map((row) => [row.mode_of_payment, row.amount]))
+			: new Map();
 	payments_methods.value = [];
 	payments_method_data.value.forEach((element) => {
 		if (element.parent === val) {
 			payments_methods.value.push({
 				mode_of_payment: element.mode_of_payment,
-				amount: 0,
+				amount: counts.get(element.mode_of_payment) ?? 0,
 				currency: element.currency,
 			});
 		}
@@ -228,7 +241,7 @@ async function get_opening_dialog_data() {
 
 	// Load cached data first for offline usage
 	const cached = getOpeningDialogStorage();
-	if (cached?.user === currentUser) {
+	if (cached?.user === currentUser && cached.count_currency_basis === "company") {
 		try {
 			companies.value = cached.companies.map((c) => c.name);
 			pos_profiles_data.value = cached.pos_profiles_data || [];
@@ -650,6 +663,31 @@ onMounted(() => {
 	border-top: 1px solid var(--pos-border);
 	padding: 16px 24px;
 	gap: 12px;
+	flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+	.dialog-actions-container {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		padding: 12px;
+		gap: 8px;
+	}
+	.dialog-actions-container .v-spacer {
+		display: none;
+	}
+	.dialog-actions-container .pos-action-btn {
+		min-width: 0;
+		padding: 10px;
+		height: auto;
+		min-height: 44px;
+	}
+	.dialog-actions-container .submit-action-btn {
+		grid-column: 1 / -1;
+	}
+	.dialog-actions-container :deep(.v-btn__content) {
+		white-space: normal;
+	}
 }
 
 .pos-action-btn {

@@ -1,0 +1,14 @@
+{
+	"doctype": "Page",
+	"name": "shift-review",
+	"page_name": "shift-review",
+	"title": "Shift Review",
+	"module": "POSAwesome",
+	"standard": "Yes",
+	"system_page": 0,
+	"roles": [
+		{ "role": "Retail Owner" },
+		{ "role": "Retail Manager" },
+		{ "role": "Accounts Manager" }
+	]
+}

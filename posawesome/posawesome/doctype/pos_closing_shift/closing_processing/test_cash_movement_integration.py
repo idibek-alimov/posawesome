@@ -64,7 +64,7 @@ class TestClosingShiftCashMovementIntegration(unittest.TestCase):
         mock_frappe.db.get_value.side_effect = lambda dt, name, field: 0 if field == "create_pos_invoice_instead_of_sales_invoice" else "Cash"
         mock_frappe.get_all.side_effect = lambda dt, **kwargs: [{"amount": 20, "movement_type": "Expense"}] if dt == "POS Cash Movement" else []
         opening = SimpleNamespace(as_dict=lambda: opening_shift)
-        with patch.object(creation, "get_authorized_opening_shift", return_value=opening), patch.object(overview_module, "frappe", mock_frappe):
+        with patch.object(creation, "get_authorized_opening_shift", return_value=opening), patch.object(overview_module, "frappe", mock_frappe), patch.object(creation, "currency_precision", return_value=2), patch.object(creation, "flt", side_effect=lambda value, precision=None: frappe.utils.flt(value, precision, rounding_method="Banker's Rounding")):
             result = unwrap(creation.make_closing_shift_from_opening)(json.dumps(opening_shift))
 
         self.assertEqual(result["closing_shift"], closing_doc)

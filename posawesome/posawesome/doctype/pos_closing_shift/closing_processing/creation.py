@@ -1,6 +1,5 @@
-import math
-
 import frappe
+from erpnext.accounts.expense_services.policy import currency_precision
 from frappe import _
 from frappe.utils import flt, json
 from posawesome.posawesome.doctype.pos_closing_shift.closing_processing.utils import get_base_value
@@ -154,6 +153,11 @@ def make_closing_shift_from_opening(opening_shift):
     pos_payments = get_payments_entries(opening_shift.get("name"))
     pos_payments_table = [build_pos_payment_reference(py) for py in pos_payments]
     snapshot = build_closing_overview(frappe._dict(opening_shift), invoices, pos_payments)
+    precision = currency_precision(closing_shift.company)
+    snapshot["currency_precision"] = precision
+    for row in snapshot["reconciliation"]:
+        row["expected_amount"] = flt(row["expected_amount"], precision)
+        row["opening_amount"] = flt(row["opening_amount"], precision)
     payments = [
         frappe._dict({
             "mode_of_payment": row["mode_of_payment"],
@@ -175,56 +179,31 @@ def make_closing_shift_from_opening(opening_shift):
     }
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def submit_closing_shift(closing_shift):
     closing_shift = json.loads(closing_shift)
-    if closing_shift.get("doctype") != "POS Closing Shift":
+    if not isinstance(closing_shift, dict) or closing_shift.get("doctype") != "POS Closing Shift":
         frappe.throw(_("Closing shift does not match the opening shift."))
-    closing_shift_doc = frappe.get_doc(closing_shift)
-    opening = get_authorized_opening_shift(closing_shift_doc.pos_opening_shift)
-    if (
-        closing_shift_doc.company != opening.company
-        or closing_shift_doc.pos_profile != opening.pos_profile
-        or closing_shift_doc.user != opening.user
+    # POS creates a new closing. Native Desk handles saved drafts/amendments with
+    # its own permissions. Never escalate caller-supplied identities or flags.
+    payload = {key: closing_shift.get(key) for key in (
+        "doctype", "pos_opening_shift", "company", "pos_profile", "user", "posting_date", "discrepancy_reason"
+    )}
+    for field, columns in (
+        ("pos_transactions", ("sales_invoice", "pos_invoice")),
+        ("pos_payments", ("payment_entry",)),
+        ("payment_reconciliation", ("mode_of_payment", "expected_amount", "closing_amount")),
     ):
-        frappe.throw(_("Closing shift does not match the opening shift."))
-    use_pos_invoice = frappe.db.get_value(
-        "POS Profile", opening.pos_profile, "create_pos_invoice_instead_of_sales_invoice"
-    )
-    doctype = "POS Invoice" if use_pos_invoice else "Sales Invoice"
-    invoices = get_pos_invoices(opening.name, doctype, submit_printed=0)
-    entries = get_payments_entries(opening.name)
-    invoice_names = {
-        row.get("sales_invoice") or row.get("pos_invoice")
-        for row in closing_shift_doc.get("pos_transactions", [])
-    }
-    payment_names = {row.get("payment_entry") for row in closing_shift_doc.get("pos_payments", [])}
-    if invoice_names != {row["name"] for row in invoices} or payment_names != {row["name"] for row in entries}:
-        frappe.throw(_("Shift totals changed. Reload the closing summary before closing."))
-    current = build_closing_overview(opening, invoices, entries)["reconciliation"]
-    expected = {row["mode_of_payment"]: row for row in current}
-    submitted = closing_shift_doc.get("payment_reconciliation", [])
-    if len(submitted) != len(expected) or {row.mode_of_payment for row in submitted} != set(expected):
-        frappe.throw(_("Shift totals changed. Reload the closing summary before closing."))
-    precision = int(frappe.get_cached_value("System Settings", None, "currency_precision") or 3)
-    for row in submitted:
-        actual = row.get("closing_amount")
-        try:
-            valid = actual not in (None, "") and math.isfinite(float(actual))
-        except (ValueError, TypeError):
-            valid = False
-        if not valid:
-            frappe.throw(_("Enter an actual amount for every payment method."))
-        fresh = expected[row.mode_of_payment]
-        if flt(row.expected_amount, precision) != flt(fresh["expected_amount"], precision):
+        rows = closing_shift.get(field) or []
+        if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
             frappe.throw(_("Shift totals changed. Reload the closing summary before closing."))
-        row.expected_amount = fresh["expected_amount"]
-        row.opening_amount = fresh["opening_amount"]
-    closing_shift_doc.grand_total = sum(get_base_value(row, "grand_total", "base_grand_total") for row in invoices)
-    closing_shift_doc.net_total = sum(get_base_value(row, "net_total", "base_net_total") for row in invoices)
-    closing_shift_doc.total_quantity = sum(flt(row.get("total_qty")) for row in invoices)
-    closing_shift_doc.period_start_date = opening.period_start_date
-    closing_shift_doc.period_end_date = frappe.utils.get_datetime()
+        payload[field] = [{key: row.get(key) for key in columns} for row in rows]
+    closing_shift_doc = frappe.get_doc(payload)
+    # POS, native Desk and direct Documents share one authoritative validator.
+    # Authorize before this API's constrained permission escalation; before_submit
+    # checks again at the native submission boundary.
+    from posawesome.posawesome.shift_review.closing import validate
+    validate(closing_shift_doc)
     closing_shift_doc.flags.ignore_permissions = True
     normalize_pos_payment_references(closing_shift_doc)
     closing_shift_doc.save()

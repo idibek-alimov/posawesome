@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from frappe.utils import getdate, nowdate
+from frappe.utils import flt, getdate, nowdate
 
 from .permissions import (
     ensure_cancel_allowed,
@@ -34,26 +34,62 @@ def _enforce_shift_access(pos_opening_shift):
         frappe.throw(_("You are not allowed to access this shift."))
 
 
+def _authorized_replay(existing, data, movement_type):
+    """A receipt lookup may survive closure/config changes; it never posts money."""
+    from decimal import Decimal, InvalidOperation
+    from erpnext.accounts.expense_services.policy import check_company, check_user_scope, currency_precision
+    from posawesome.posawesome.api.expense_context import validate_context
+
+    if existing.user != frappe.session.user or existing.owner != frappe.session.user:
+        frappe.throw(_("This request ID belongs to a different cash movement."), frappe.PermissionError)
+    check_company(existing.company)
+    check_user_scope("Account", existing.source_account)
+    check_user_scope("Account", existing.target_account)
+    validate_context(existing.company, existing.pos_profile, existing.pos_opening_shift,
+                     "POS", "read", frappe.session.user, legacy=True)
+    existing.check_permission("read")
+    expected = {"pos_opening_shift": existing.pos_opening_shift, "pos_opening_shift_name": existing.pos_opening_shift,
+                "pos_profile": existing.pos_profile, "pos_profile_name": existing.pos_profile,
+                "company": existing.company, "movement_type": movement_type}
+    if existing.movement_type != movement_type or any(data.get(key) and data[key] != value for key, value in expected.items()):
+        frappe.throw(_("This request ID belongs to a different cash movement."), frappe.PermissionError)
+    try:
+        amount = Decimal(str(data.get("amount")))
+        if not amount.is_finite() or Decimal(str(flt(amount, currency_precision(existing.company)))) != Decimal(str(existing.amount)):
+            raise ValueError
+    except (InvalidOperation, ValueError, TypeError):
+        frappe.throw(_("This request ID was already used with different movement details."))
+    for key in ("source_account", "expense_account", "target_account", "against_name", "remarks"):
+        supplied = key in data and (key in {"remarks", "against_name"} or bool(data.get(key)))
+        if supplied and str(data.get(key) or "").strip() != (existing.get(key) or ""):
+            frappe.throw(_("This request ID was already used with different movement details."))
+    if data.get("posting_date") and getdate(data["posting_date"]) != getdate(existing.posting_date):
+        frappe.throw(_("This request ID was already used with different movement details."))
+    return existing.as_dict()
+
+
 def _create_cash_movement(payload, movement_type):
+    from erpnext.accounts.expense_services.commands import lock_actor
+
     data = parse_payload(payload)
+    if data.get("movement_type") and data.get("movement_type") != movement_type:
+        frappe.throw(_("The movement type does not match the original request."))
+    # Serialize before looking for the old ID, including under REPEATABLE READ.
+    lock_actor()
+    existing = ensure_no_duplicate_client_request(data.get("client_request_id"))
+    if existing:
+        return _authorized_replay(existing, data, movement_type)
     opening_shift_name = data.get("pos_opening_shift") or data.get("pos_opening_shift_name")
     opening_shift = get_opening_shift(opening_shift_name)
-
     profile_name = data.get("pos_profile") or data.get("pos_profile_name") or opening_shift.pos_profile
     profile_doc = get_pos_profile(profile_name)
-
     validate_company_consistency(opening_shift, profile_doc)
     ensure_feature_enabled(profile_doc)
     ensure_movement_allowed(profile_doc, movement_type)
-
     amount = validate_amount(data.get("amount"), profile_doc)
     remarks = (data.get("remarks") or "").strip()
     against_name = (data.get("against_name") or "").strip()
     validate_remarks(remarks, profile_doc)
-
-    existing = ensure_no_duplicate_client_request(data.get("client_request_id"))
-    if existing:
-        return existing.as_dict()
 
     source_account = resolve_source_cash_account(data, profile_doc)
     target_account, expense_account = resolve_target_account(data, profile_doc, movement_type)
@@ -93,6 +129,23 @@ def _create_cash_movement(payload, movement_type):
 
 
 @frappe.whitelist()
+def get_cash_movement_request_outcome(client_request_id):
+    from erpnext.accounts.expense_services.commands import lock_actor
+
+    if not isinstance(client_request_id, str) or not client_request_id.strip() or len(client_request_id) > 140:
+        frappe.throw(_("A stable request ID is required. Refresh the expense form and try again."))
+    lock_actor()
+    existing = ensure_no_duplicate_client_request(client_request_id)
+    if not existing:
+        return {"status": "not_found", "client_request_id": client_request_id}
+    # Reuse full original-intent authorization; there is no create permission or open-shift requirement.
+    data = dict(existing.as_dict(), amount=existing.amount)
+    _authorized_replay(existing, data, existing.movement_type)
+    return dict(name=existing.name, docstatus=existing.docstatus, journal_entry=existing.journal_entry,
+        status={0: "draft", 1: "submitted", 2: "cancelled"}.get(existing.docstatus, "unknown"))
+
+
+@frappe.whitelist()
 def get_cash_movement_context(pos_profile=None, pos_opening_shift=None):
     profile_name = pos_profile
     if not profile_name and pos_opening_shift:
@@ -109,7 +162,21 @@ def get_cash_movement_context(pos_profile=None, pos_opening_shift=None):
     except Exception:
         default_source_account = None
 
+    shared_expense_ready = False
+    if pos_opening_shift:
+        from erpnext.accounts.expense_services import policy
+        from erpnext.accounts.page.expense_desk.expense_desk import get_categories
+        try:
+            with policy.quiet_setup_checks():
+                context = policy.get_context(profile_doc.company, profile_doc.name, pos_opening_shift, action="read")
+                shift = frappe.db.get_value("POS Opening Shift", pos_opening_shift, ["status", "docstatus"], as_dict=True)
+                shared_expense_ready = bool(shift and shift.docstatus == 1 and shift.status == "Open" and not profile_doc.disabled
+                    and all(frappe.has_permission("Quick Expense", action) for action in ("create", "submit"))
+                    and policy.get_sources(context) and get_categories(profile_doc.company))
+        except (frappe.PermissionError, frappe.ValidationError):
+            pass  # Keep the original entry available until explicit shared setup is usable.
     return {
+        "shared_expense_ready": shared_expense_ready,
         "pos_profile": profile_doc.name,
         "company": profile_doc.company,
         "currency": profile_doc.currency,
@@ -135,12 +202,12 @@ def get_cash_movement_context(pos_profile=None, pos_opening_shift=None):
     }
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def create_pos_expense(payload):
     return _create_cash_movement(payload, "Expense")
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def create_cash_deposit(payload):
     return _create_cash_movement(payload, "Deposit")
 
@@ -175,10 +242,15 @@ def get_submitted_expenses(pos_opening_shift, limit_start=0, limit_page_length=5
     )
 
 
-@frappe.whitelist()
-def cancel_cash_movement(name):
-    movement_doc = frappe.get_doc("POS Cash Movement", name)
-    ensure_owner_or_manager(movement_doc)
+@frappe.whitelist(methods=["POST"])
+def cancel_cash_movement(name, reason=None):
+    movement_doc = frappe.get_doc("POS Cash Movement", name, for_update=True)
+    if movement_doc.movement_type == "Expense":
+        from erpnext.accounts.expense_services.policy import require_manager
+        require_manager()
+        movement_doc.cancellation_reason = reason
+    else:
+        ensure_owner_or_manager(movement_doc)
     if movement_doc.docstatus != 1:
         frappe.throw(_("Only submitted cash movements can be cancelled."))
 
@@ -191,7 +263,7 @@ def cancel_cash_movement(name):
     return {"name": movement_doc.name, "docstatus": movement_doc.docstatus}
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def delete_cash_movement(name):
     movement_doc = frappe.get_doc("POS Cash Movement", name)
     ensure_owner_or_manager(movement_doc)
@@ -206,7 +278,7 @@ def delete_cash_movement(name):
     return {"deleted": name}
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def duplicate_cash_movement(name, posting_date=None):
     movement_doc = frappe.get_doc("POS Cash Movement", name)
     ensure_owner_or_manager(movement_doc)

@@ -157,4 +157,18 @@ describe("usePosShift closing warnings", () => {
 		expect(invoice.additionalDiscount).toBe(25);
 		expect(offlineState.clearOpeningStorage).not.toHaveBeenCalled();
 	});
+    it("blocks preparation while an ordinary shift expense result is unknown", async () => {
+        const uiStore = useUIStore();
+        uiStore.posOpeningShift = { name: "POS-OPEN-PENDING" };
+        const pending = JSON.stringify({ id: "original-expense", args: { pos_opening_shift: "POS-OPEN-PENDING" } });
+        vi.stubGlobal("localStorage", { getItem: (key: string) => key.endsWith(":record_quick_expense") ? pending : null });
+        try {
+            const shift = usePosShift();
+            await shift.get_closing_data();
+            expect((globalThis as any).frappe.call).not.toHaveBeenCalled();
+        } finally {
+            vi.unstubAllGlobals();
+        }
+    });
+
 });

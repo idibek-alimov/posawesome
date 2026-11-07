@@ -1,1270 +1,1251 @@
 <template>
-	<div class="pa-3 pos-expense-desk">
-		<!-- Top Bar: Title, Context Badges & Global Actions -->
-		<div class="d-flex flex-wrap align-center justify-space-between ga-3 mb-3">
-			<div class="d-flex align-center ga-2">
-				<v-icon color="primary" size="28">mdi-cash-register</v-icon>
+	<section class="pos-expense-desk pa-4">
+		<header class="expense-header">
+			<div>
+				<h1 class="text-h6">{{ __("Expenses") }}</h1>
+				<p class="expense-muted text-body-2" v-if="session.status === 'ready'">
+					{{ session.pos_profile }} · {{ __("Shift") }} {{ session.pos_opening_shift }} ·
+					{{ currency }}
+				</p>
+			</div>
+			<div class="expense-actions">
+				<v-btn variant="text" to="/pos">{{ __("Back to POS") }}</v-btn>
+				<v-btn variant="text" :loading="loading" :disabled="busy || offline" @click="fetchData">{{
+					__("Refresh")
+				}}</v-btn>
+				<v-btn
+					v-if="session.cash_movement_enabled || legacyPending"
+					variant="text"
+					to="/cash-movement"
+					>{{ __("Cash movements") }}</v-btn
+				>
+			</div>
+		</header>
+
+		<v-alert v-if="offline" type="warning" variant="tonal" class="mb-4" role="status">
+			{{
+				__(
+					"Offline. New expenses need a connection. Keep your input and reconnect to submit or check a result.",
+				)
+			}}
+		</v-alert>
+		<v-alert v-if="legacyPending" type="warning" variant="tonal" class="mb-4">
+			{{
+				__(
+					"There are pending cash movements. Review their status before entering the same expense again.",
+				)
+			}}
+			<v-btn variant="text" to="/cash-movement">{{ __("Review pending movements") }}</v-btn>
+		</v-alert>
+
+		<div v-if="pendingOperations.length || recoveryError" class="expense-panel mb-4" aria-live="polite">
+			<h2 class="text-subtitle-1 mb-2">{{ __("Result needs confirmation") }}</h2>
+			<p class="text-body-2 mb-2">
+				{{
+					__(
+						"Check the original request before recording the payment again. Checking does not pay money.",
+					)
+				}}
+			</p>
+			<p v-if="recoveryError" role="alert">{{ recoveryError }}</p>
+			<div v-for="operation in pendingOperations" :key="operation.id" class="expense-pending">
 				<div>
-					<div class="text-h6 font-weight-bold d-flex align-center ga-2">
-						{{ __("Расходы кассы") }}
-						<v-chip size="small" color="primary" variant="tonal" class="font-weight-bold">
-							💵 {{ currentProfileName || __("Загрузка кассы...") }}
-						</v-chip>
+					<strong>{{
+						operation.action === RECORD ? __("Record expense") : __("Cancel expense")
+					}}</strong>
+					<div>
+						{{ operation.args.pos_opening_shift || operation.args.expense_name }} ·
+						{{ operation.args.paid_from }}
 					</div>
-					<div class="text-caption text-grey d-flex align-center ga-2">
-						<span v-if="currentShiftName" class="text-success font-weight-medium">
-							• <strong>{{ __("Смена") }}:</strong> {{ currentShiftName }}
-						</span>
-						<span v-else class="text-warning font-weight-medium">
-							• {{ __("Смена не открыта (общий режим кассы)") }}
-						</span>
-						<span>• {{ __("Только операции этой кассы") }}</span>
+					<div v-if="operation.args.amount">
+						{{ operation.args.amount }} · {{ operation.args.company }}
 					</div>
+					<small class="expense-muted">{{ operation.id }}</small>
+				</div>
+				<div class="expense-actions">
+					<v-btn
+						variant="outlined"
+						:disabled="offline || busy"
+						:loading="checking === operation.action"
+						@click="checkResult(operation.action)"
+						>{{ __("Check result") }}</v-btn
+					>
+					<v-btn variant="text" :disabled="offline || busy" @click="retryOriginal(operation)">{{
+						__("Retry original request")
+					}}</v-btn>
 				</div>
 			</div>
-
-			<div class="d-flex align-center ga-2">
-				<v-btn
-					icon="mdi-refresh"
-					variant="text"
-					density="comfortable"
-					:loading="loading"
-					@click="fetchData"
-					:title="__('Обновить данные')"
-				/>
-			</div>
 		</div>
+		<v-alert v-if="resultMessage" :type="resultType" variant="tonal" class="mb-4" role="status">
+			{{ resultMessage }}
+			<a
+				v-if="resultDocument"
+				:href="sourceDocumentUrl(resultDocument)"
+				target="_blank"
+				rel="noopener"
+				>{{ resultDocument.name }}</a
+			>
+			<v-btn v-if="resultDocument" variant="text" to="/pos">{{
+				__("Return to POS and refresh closing totals")
+			}}</v-btn>
+		</v-alert>
 
-		<v-row dense class="pos-expense-row">
-			<!-- Left Column: Record Expense Form (cols 12, md 5) -->
-			<v-col cols="12" md="5" class="pos-col-left">
-				<v-card class="pa-4 pos-themed-card h-100 d-flex flex-column overflow-y-auto" elevation="1">
-					<div class="d-flex align-center justify-space-between mb-3">
-						<div class="text-subtitle-1 font-weight-bold text-primary d-flex align-center ga-2">
-							<v-icon size="20" color="primary">mdi-plus-circle-outline</v-icon>
-							{{ __("Новый расход") }}
+		<v-alert
+			v-if="!loading && ['no_shift', 'select_shift'].includes(session.status)"
+			type="info"
+			variant="tonal"
+		>
+			{{
+				session.status === "select_shift"
+					? __("Choose your active register in POS before recording expenses.")
+					: __("Open your shift in POS before recording expenses.")
+			}}
+			<v-btn variant="text" to="/pos">{{ __("Back to POS") }}</v-btn>
+		</v-alert>
+		<v-alert v-if="loadError" type="error" variant="tonal" class="mb-4" role="alert">
+			{{ loadError }}
+			<v-btn variant="text" :disabled="offline || busy" @click="fetchData">{{ __("Retry") }}</v-btn>
+		</v-alert>
+		<v-progress-linear
+			v-if="loading"
+			indeterminate
+			:aria-label="__('Loading expenses...')"
+			class="mb-4"
+		/>
+
+		<div v-if="session.status === 'ready'" class="expense-layout">
+			<section class="expense-panel expense-entry" :aria-label="__('Record expense')">
+				<h2 class="text-subtitle-1 mb-4">{{ __("Record expense") }}</h2>
+				<v-alert
+					v-if="!loading && !loadError && (!categories.length || !paymentSources.length)"
+					type="info"
+					variant="tonal"
+					class="mb-4"
+				>
+					{{
+						__(
+							"Expense setup is incomplete. Ask a manager to configure approved sources and category accounts.",
+						)
+					}}
+				</v-alert>
+				<p v-else-if="!session.can_record" class="mb-4">
+					{{ __("You can view expenses here. Ask a manager for expense recording access.") }}
+				</p>
+				<v-form @submit.prevent="submitExpense">
+					<fieldset :disabled="entryDisabled" class="expense-fieldset">
+						<v-select
+							v-model="form.category"
+							:items="categoryOptions"
+							:label="__('Category')"
+							variant="outlined"
+							density="comfortable"
+							:disabled="entryDisabled"
+							hide-details="auto"
+							class="mb-4"
+						/>
+						<v-text-field
+							v-model="form.amount"
+							:label="__('Amount')"
+							:suffix="currency"
+							type="number"
+							inputmode="decimal"
+							min="0"
+							step="any"
+							variant="outlined"
+							density="comfortable"
+							:disabled="entryDisabled"
+							hide-details="auto"
+							class="mb-4"
+						/>
+						<v-select
+							v-model="form.source_id"
+							:items="paymentSourceOptions"
+							:label="__('Paid from')"
+							variant="outlined"
+							density="comfortable"
+							:disabled="entryDisabled"
+							hide-details="auto"
+							class="mb-2"
+						>
+							<template #item="{ item, props }"
+								><v-list-item v-bind="props" :subtitle="item.raw.account"
+							/></template>
+						</v-select>
+						<p v-if="selectedSource" class="text-caption expense-muted mb-3">
+							{{ selectedSource.account }}
+						</p>
+						<p class="text-caption expense-muted mb-3">
+							{{ __("A submitted expense reduces this source's expected shift amount once.") }}
+						</p>
+						<v-textarea
+							v-if="session.note_required"
+							v-model="form.description"
+							:label="__('Expense note (required by this register)')"
+							rows="2"
+							variant="outlined"
+							:disabled="entryDisabled"
+							hide-details="auto"
+							class="mb-4"
+						/>
+						<details class="mb-4">
+							<summary>{{ __("Note, recipient and receipt") }}</summary>
+							<div class="pt-4">
+								<v-textarea
+									v-if="!session.note_required"
+									v-model="form.description"
+									:label="__('Note (optional)')"
+									rows="2"
+									variant="outlined"
+									:disabled="entryDisabled"
+									hide-details="auto"
+									class="mb-4"
+								/>
+								<v-text-field
+									v-model="form.beneficiary_name"
+									:label="__('Recipient (optional)')"
+									variant="outlined"
+									:disabled="entryDisabled"
+									hide-details="auto"
+									class="mb-4"
+								/>
+								<v-file-input
+									v-model="receiptFile"
+									:label="__('Receipt photo or PDF (optional)')"
+									accept="image/*,application/pdf"
+									variant="outlined"
+									density="comfortable"
+									:disabled="entryDisabled || uploading"
+									:loading="uploading"
+									hide-details="auto"
+									@update:model-value="selectReceipt"
+								/>
+								<p v-if="form.receipt_attachment" class="text-caption mt-2">
+									<a
+										:href="receiptUrl(form.receipt_attachment)"
+										target="_blank"
+										rel="noopener"
+										>{{ __("View receipt") }}</a
+									>
+									· {{ __("Private attachment") }}
+								</p>
+								<p v-if="uploadError" class="text-error text-body-2 mt-2" role="alert">
+									{{ uploadError }}
+								</p>
+							</div>
+						</details>
+					</fieldset>
+					<p v-if="submitError" class="text-error text-body-2 mb-3" role="alert">
+						{{ submitError }}
+					</p>
+					<v-btn
+						type="submit"
+						color="primary"
+						variant="flat"
+						block
+						:loading="submitting"
+						:disabled="entryDisabled || uploading || !!uploadError || !isFormValid"
+						>{{ submitting ? __("Submitting expense…") : __("Record expense") }}</v-btn
+					>
+				</v-form>
+				<details class="mt-4 text-body-2">
+					<summary>{{ __("Paid personally or not yet paid?") }}</summary>
+					<p class="mt-2">
+						{{
+							__(
+								"For personal spending, ask for an Expense Claim. For an unpaid supplier bill, use Purchase Invoice. Record here only money paid from this register.",
+							)
+						}}
+					</p>
+					<a v-if="canOpenClaims" href="/app/expense-claim" target="_blank" rel="noopener">{{
+						__("Expense Claims")
+					}}</a>
+					<a
+						v-if="canOpenBills"
+						class="ml-3"
+						href="/app/purchase-invoice"
+						target="_blank"
+						rel="noopener"
+						>{{ __("Purchase Invoices") }}</a
+					>
+				</details>
+			</section>
+
+			<section class="expense-panel expense-history" :aria-label="__('Shift expense history')">
+				<div class="expense-header mb-3">
+					<h2 class="text-subtitle-1">{{ __("Shift expense history") }}</h2>
+					<small class="expense-muted">{{ __("Only this shift's expenses") }}</small>
+				</div>
+				<div v-if="!loading && !loadError && !offline && historyReady" class="expense-totals mb-4">
+					<div>
+						<div class="expense-muted text-body-2">{{ __("Paid expenses") }}</div>
+						<strong class="text-h6">{{ money(summary.period_total || 0) }}</strong>
+						<div class="text-caption expense-muted">
+							{{ periodLabel }} · {{ summary.period_count || 0 }} {{ __("expenses") }}
 						</div>
-						<v-chip size="x-small" color="primary" variant="outlined">
-							{{ currentProfileName }}
-						</v-chip>
+						<div v-if="activeFilterLabel" class="text-caption expense-muted">
+							{{ activeFilterLabel }}
+						</div>
 					</div>
-
-					<v-form @submit.prevent="submitExpense" ref="expenseFormRef" class="d-flex flex-column flex-grow-1">
-						<!-- Amount Input -->
-						<div class="expense-amount-box mb-3">
-							<div class="text-caption text-grey mb-1">{{ __("Сумма расхода") }} ({{ currency }})</div>
-							<v-text-field
-								v-model.number="form.amount"
-								type="number"
-								min="0.01"
-								step="0.01"
-								variant="outlined"
-								density="comfortable"
-								class="expense-amount-input text-h5 font-weight-bold"
-								:prefix="currency"
-								placeholder="0.00"
-								:rules="[amountRule]"
-								required
-								hide-details="auto"
-							/>
-							<!-- Quick Add Chips -->
-							<div class="d-flex flex-wrap ga-1 mt-2">
-								<v-chip
-									v-for="amt in [10, 20, 50, 100, 200, 500]"
-									:key="amt"
-									size="small"
-									variant="tonal"
-									color="primary"
-									class="cursor-pointer"
-									@click="addQuickAmount(amt)"
-								>
-									+{{ amt }}
-								</v-chip>
-								<v-chip
-									size="small"
-									variant="text"
-									color="error"
-									class="cursor-pointer"
-									v-if="form.amount > 0"
-									@click="form.amount = 0"
-								>
-									{{ __("Сбросить") }}
-								</v-chip>
-							</div>
-						</div>
-
-						<!-- Category Picker -->
-						<div class="mb-3">
-							<div class="text-caption text-grey mb-1">{{ __("Категория расхода") }}</div>
-							<div class="category-chips-grid">
-								<div
-									v-for="cat in categories"
-									:key="cat.name"
-									class="category-chip-item"
-									:class="{ 'category-chip-item--active': form.category === cat.category_name }"
-									@click="selectCategory(cat)"
-								>
-									<span class="category-chip-icon">{{ cat.icon || "🏷️" }}</span>
-									<span class="category-chip-label">{{ __(cat.category_name) }}</span>
-								</div>
-							</div>
-						</div>
-
-						<!-- Payment Source (Cash till vs Bank only) -->
-						<div class="mb-3">
-							<div class="text-caption text-grey mb-1">
-								{{ __("Источник оплаты (Откуда списать)") }}
-							</div>
-							<v-select
-								v-model="form.source_id"
-								:items="paymentSourceOptions"
-								item-title="label"
-								item-value="id"
-								variant="outlined"
-								density="compact"
-								hide-details
-							>
-								<template #selection="{ item }">
-									<span class="d-flex align-center ga-1 font-weight-medium">
-										{{ item.raw.label }}
-										<span v-if="item.raw.balance !== undefined" class="text-caption text-grey">
-											({{ formatCurrency(item.raw.balance) }})
-										</span>
-									</span>
-								</template>
-								<template #item="{ item, props }">
-									<v-list-item v-bind="props" :subtitle="formatCurrency(item.raw.balance)">
-										<template #prepend>
-											<v-icon :color="item.raw.type === 'pos' ? 'success' : 'info'" size="20">
-												{{ item.raw.type === "pos" ? "mdi-cash" : "mdi-credit-card-outline" }}
-											</v-icon>
-										</template>
-									</v-list-item>
-								</template>
-							</v-select>
-							<div class="text-caption text-grey mt-1 d-flex align-center ga-1" v-if="isCashSource">
-								<v-icon size="14" color="success">mdi-check-decagram</v-icon>
-								{{ __("Списание из кассы автоматически уменьшит ожидаемые наличные при закрытии смены") }}
-							</div>
-						</div>
-
-						<!-- Beneficiary / Employee -->
-						<div class="mb-3">
-							<div class="text-caption text-grey mb-1">{{ __("Кому выдано / Получатель (Необязательно)") }}</div>
-							<v-combobox
-								v-model="form.beneficiary_name"
-								:items="employeeOptions"
-								variant="outlined"
-								density="compact"
-								hide-details
-								:placeholder="__('Сотрудник, курьер или организация')"
-								clearable
-							/>
-						</div>
-
-						<!-- Description / Comment -->
-						<div class="mb-4">
-							<div class="text-caption text-grey mb-1">{{ __("Примечание / На что потрачено") }}</div>
-							<v-text-field
-								v-model="form.description"
-								variant="outlined"
-								density="compact"
-								hide-details
-								:placeholder="__('Например: Купили 5 упаковок пакетов на оптовке')"
-							/>
-						</div>
-
-						<v-spacer></v-spacer>
-
-						<!-- Submit Button (compact & sleek) -->
-						<div class="d-flex justify-end mt-3">
-							<v-btn
-								type="submit"
-								color="primary"
-								density="comfortable"
-								:loading="submitting"
-								:disabled="!isFormValid || submitting"
-								class="expense-submit-btn text-none font-weight-bold"
-							>
-								<v-icon start size="18">mdi-check</v-icon>
-								{{ __("Списать расход") }}
-								<span v-if="form.amount > 0" class="ml-1">({{ formatCurrency(form.amount) }})</span>
-							</v-btn>
-						</div>
-					</v-form>
-				</v-card>
-			</v-col>
-
-			<!-- Right Column: Stats, Full Filter Suite & Isolated History (cols 12, md 7) -->
-			<v-col cols="12" md="7" class="pos-col-right">
-				<v-card class="pa-4 pos-themed-card h-100 d-flex flex-column overflow-hidden" elevation="1">
-					<!-- Top Stat Cards (Isolated to this POS) -->
-					<div class="expense-stats-grid mb-3">
-						<div class="expense-stat-card expense-stat-card--total">
-							<div class="text-caption text-grey">{{ __("Расход за период") }}</div>
-							<div class="text-h6 font-weight-bold text-error">
-								{{ formatCurrency(summary.period_total || 0) }}
-							</div>
-							<div class="text-caption text-grey">{{ summary.period_count || 0 }} {{ __("операций") }}</div>
-						</div>
-
-						<div class="expense-stat-card expense-stat-card--cash">
-							<div class="text-caption text-grey">{{ __("Наличные (Касса)") }}</div>
-							<div class="text-h6 font-weight-bold text-warning">
-								{{ formatCurrency(summary.cash_total || cashTotal) }}
-							</div>
-							<div class="text-caption text-grey">{{ __("Списано из ящика кассы") }}</div>
-						</div>
-
-						<div class="expense-stat-card expense-stat-card--bank">
-							<div class="text-caption text-grey">{{ __("Безналичные (Банк)") }}</div>
-							<div class="text-h6 font-weight-bold text-info">
-								{{ formatCurrency(summary.bank_total || bankTotal) }}
-							</div>
-							<div class="text-caption text-grey">{{ __("Оплата картой / банком") }}</div>
-						</div>
-
-						<div class="expense-stat-card expense-stat-card--today">
-							<div class="text-caption text-grey">{{ __("Всего сегодня") }}</div>
-							<div class="text-h6 font-weight-bold text-primary">
-								{{ formatCurrency(summary.today_total || 0) }}
-							</div>
-							<div class="text-caption text-grey">{{ __("За весь день по кассе") }}</div>
-						</div>
+					<div>
+						<div class="expense-muted text-body-2">{{ __("Cash") }}</div>
+						<span>{{ money(summary.cash_total || 0) }}</span>
 					</div>
-
-					<!-- Comprehensive Filter Suite -->
-					<div class="expense-filter-box pa-3 mb-3 rounded border">
-						<!-- Row 1: Period Pills -->
-						<div class="d-flex flex-wrap align-center justify-space-between ga-2 mb-2">
-							<div class="d-flex flex-wrap align-center ga-1">
-								<v-btn
-									v-if="currentShiftName"
-									size="small"
-									:variant="filters.period === 'shift' ? 'flat' : 'outlined'"
-									:color="filters.period === 'shift' ? 'primary' : 'default'"
-									class="text-none"
-									@click="setPeriod('shift')"
-								>
-									<v-icon start size="16">mdi-clock-time-four-outline</v-icon>
-									{{ __("Смена") }}
-								</v-btn>
-
-								<v-btn
-									size="small"
-									:variant="filters.period === 'today' ? 'flat' : 'outlined'"
-									:color="filters.period === 'today' ? 'primary' : 'default'"
-									class="text-none"
-									@click="setPeriod('today')"
-								>
-									{{ __("Сегодня") }}
-								</v-btn>
-
-								<v-btn
-									size="small"
-									:variant="filters.period === 'yesterday' ? 'flat' : 'outlined'"
-									:color="filters.period === 'yesterday' ? 'primary' : 'default'"
-									class="text-none"
-									@click="setPeriod('yesterday')"
-								>
-									{{ __("Вчера") }}
-								</v-btn>
-
-								<v-btn
-									size="small"
-									:variant="filters.period === 'week' ? 'flat' : 'outlined'"
-									:color="filters.period === 'week' ? 'primary' : 'default'"
-									class="text-none"
-									@click="setPeriod('week')"
-								>
-									{{ __("7 дней") }}
-								</v-btn>
-
-								<v-btn
-									size="small"
-									:variant="filters.period === 'month' ? 'flat' : 'outlined'"
-									:color="filters.period === 'month' ? 'primary' : 'default'"
-									class="text-none"
-									@click="setPeriod('month')"
-								>
-									{{ __("Месяц") }}
-								</v-btn>
-
-								<v-btn
-									size="small"
-									:variant="filters.period === 'all' ? 'flat' : 'outlined'"
-									:color="filters.period === 'all' ? 'primary' : 'default'"
-									class="text-none"
-									@click="setPeriod('all')"
-								>
-									{{ __("Все") }}
-								</v-btn>
-
-								<v-btn
-									size="small"
-									:variant="filters.period === 'custom' ? 'flat' : 'outlined'"
-									:color="filters.period === 'custom' ? 'primary' : 'default'"
-									class="text-none"
-									@click="toggleCustomPeriod"
-								>
-									<v-icon start size="16">mdi-calendar-range</v-icon>
-									{{ __("Период...") }}
-								</v-btn>
-							</div>
-
-							<v-btn
-								v-if="hasActiveFilters"
-								size="small"
-								variant="text"
-								color="error"
-								class="text-none"
-								@click="resetFilters"
-							>
-								<v-icon start size="16">mdi-close</v-icon>
-								{{ __("Сбросить фильтры") }}
-							</v-btn>
-						</div>
-
-						<!-- Custom Date Range Subpanel -->
-						<div v-if="filters.period === 'custom'" class="d-flex align-center ga-2 mb-2 pt-2 border-t">
+					<div>
+						<div class="expense-muted text-body-2">{{ __("Bank and wallets") }}</div>
+						<span>{{ money(summary.bank_total || 0) }}</span>
+					</div>
+				</div>
+				<details class="expense-filters mb-3">
+					<summary>{{ __("Filter history") }}</summary>
+					<div class="expense-filter-grid pt-4">
+						<v-select
+							v-model="filters.period"
+							:items="periods"
+							:label="__('Period')"
+							variant="outlined"
+							density="compact"
+							hide-details
+							@update:model-value="filterChanged"
+						/>
+						<v-select
+							v-model="filters.category"
+							:items="categoryFilterOptions"
+							:label="__('Category')"
+							variant="outlined"
+							density="compact"
+							hide-details
+							@update:model-value="filterChanged"
+						/>
+						<v-select
+							v-model="filters.source_id"
+							:items="sourceFilterOptions"
+							:label="__('Paid from')"
+							variant="outlined"
+							density="compact"
+							hide-details
+							@update:model-value="filterChanged"
+						/>
+						<v-select
+							v-model="filters.status"
+							:items="statuses"
+							:label="__('Status')"
+							variant="outlined"
+							density="compact"
+							hide-details
+							@update:model-value="filterChanged"
+						/>
+						<template v-if="filters.period === 'custom'">
 							<v-text-field
 								v-model="filters.from_date"
+								@update:model-value="markHistoryDirty"
 								type="date"
+								:label="__('From date')"
 								variant="outlined"
 								density="compact"
 								hide-details
-								:label="__('С даты')"
 							/>
 							<v-text-field
 								v-model="filters.to_date"
+								@update:model-value="markHistoryDirty"
 								type="date"
+								:label="__('To date')"
 								variant="outlined"
 								density="compact"
 								hide-details
-								:label="__('По дату')"
 							/>
-							<v-btn color="primary" size="small" variant="flat" class="text-none" @click="applyFilters">
-								{{ __("Применить") }}
-							</v-btn>
-						</div>
-
-						<!-- Row 2: Secondary Filters (Category, Source, Employee, Search) -->
-						<v-row dense class="mt-1">
-							<v-col cols="12" sm="3">
-								<v-select
-									v-model="filters.category"
-									:items="categoryFilterOptions"
-									variant="outlined"
-									density="compact"
-									hide-details
-									:label="__('Категория')"
-									@update:model-value="applyFilters"
-								/>
-							</v-col>
-							<v-col cols="12" sm="3">
-								<v-select
-									v-model="filters.source_id"
-									:items="sourceFilterOptions"
-									variant="outlined"
-									density="compact"
-									hide-details
-									:label="__('Источник')"
-									@update:model-value="applyFilters"
-								/>
-							</v-col>
-							<v-col cols="12" sm="3">
-								<v-select
-									v-model="filters.employee"
-									:items="employeeFilterOptions"
-									variant="outlined"
-									density="compact"
-									hide-details
-									:label="__('Сотрудник')"
-									@update:model-value="applyFilters"
-								/>
-							</v-col>
-							<v-col cols="12" sm="3">
-								<v-text-field
-									v-model="filters.search"
-									variant="outlined"
-									density="compact"
-									hide-details
-									prepend-inner-icon="mdi-magnify"
-									:placeholder="__('Поиск...')"
-									clearable
-									@update:model-value="debounceSearch"
-								/>
-							</v-col>
-						</v-row>
+						</template>
+						<v-text-field
+							v-model="filters.search"
+							:label="__('Search expenses')"
+							variant="outlined"
+							density="compact"
+							hide-details
+							clearable
+							@update:model-value="debounceSearch"
+						/>
+						<v-select
+							v-if="employees.length"
+							v-model="filters.employee"
+							:items="employeeOptions"
+							:label="__('Recipient')"
+							variant="outlined"
+							density="compact"
+							hide-details
+							@update:model-value="filterChanged"
+						/>
 					</div>
-
-					<!-- Category Distribution Pills -->
-					<div class="mb-3" v-if="summary.category_breakdown && summary.category_breakdown.length">
-						<div class="text-caption text-grey mb-1">{{ __("Распределение по категориям:") }}</div>
-						<div class="d-flex flex-wrap ga-2">
-							<v-chip
-								v-for="cat in summary.category_breakdown"
-								:key="cat.category"
-								size="small"
-								variant="tonal"
-								color="primary"
-							>
-								<span class="mr-1">{{ cat.icon }}</span>
-								{{ cat.category }}: <strong>{{ formatCurrency(cat.total) }}</strong> ({{ cat.percent }}%)
-							</v-chip>
-						</div>
+					<div class="expense-actions mt-2">
+						<v-btn
+							v-if="filters.period === 'custom'"
+							variant="text"
+							:disabled="offline"
+							@click="applyFilters()"
+							>{{ __("Apply") }}</v-btn
+						><v-btn variant="text" :disabled="offline" @click="resetFilters">{{
+							__("Reset filters")
+						}}</v-btn>
 					</div>
-
-					<!-- History Feed Header -->
-					<div class="d-flex align-center justify-space-between mb-2">
-						<div class="text-subtitle-2 font-weight-bold d-flex align-center ga-1">
-							<v-icon size="18" color="primary">mdi-history</v-icon>
-							{{ __("Журнал расходов этой кассы") }}
-							<span class="text-caption text-grey">({{ filteredExpenses.length }})</span>
-						</div>
-						<span class="text-caption text-grey">
-							{{ getActivePeriodLabel() }}
-						</span>
-					</div>
-
-					<!-- Expenses Feed / List -->
-					<div class="expenses-feed-container flex-grow-1 overflow-y-auto pr-1">
-						<v-progress-linear v-if="loading" indeterminate color="primary" class="mb-2" />
-
-						<div v-if="filteredExpenses.length === 0 && !loading" class="text-center py-8 text-grey">
-							<v-icon size="48" color="grey-lighten-1" class="mb-2">mdi-cash-remove</v-icon>
-							<div class="text-subtitle-1">{{ __("Нет расходов за выбранный период") }}</div>
-							<div class="text-caption">{{ __("Все зафиксированные расходы этой кассы появятся здесь") }}</div>
-						</div>
-
-						<div v-else class="d-flex flex-column ga-2">
-							<div
-								v-for="item in filteredExpenses"
-								:key="item.name"
-								class="expense-row-card"
-								:class="{ 'expense-row-card--cancelled': item.docstatus === 2 }"
-							>
-								<div class="d-flex align-center justify-space-between ga-2">
-									<!-- Left: Category, Details & Payee -->
-									<div class="d-flex align-center ga-3 flex-grow-1 min-w-0">
-										<div class="expense-icon-bubble">
-											{{ item.icon || "🏷️" }}
-										</div>
-										<div class="min-w-0">
-											<div class="d-flex align-center ga-2 flex-wrap">
-												<span class="font-weight-bold text-subtitle-2 text-truncate">
-													{{ __(item.expense_category) }}
-												</span>
-												<v-chip
-													size="x-small"
-													:color="item.pos_profile ? 'success' : 'info'"
-													variant="tonal"
-												>
-													{{ item.pos_profile ? `💵 ${item.pos_profile}` : "💳 Банк" }}
-												</v-chip>
-												<v-chip
-													v-if="item.pos_opening_shift"
-													size="x-small"
-													color="primary"
-													variant="outlined"
-												>
-													{{ item.pos_opening_shift }}
-												</v-chip>
-												<v-chip
-													v-if="item.docstatus === 2"
-													size="x-small"
-													color="error"
-													variant="flat"
-												>
-													{{ __("Отменено") }}
-												</v-chip>
-											</div>
-
-											<div class="text-caption text-grey text-truncate mt-1">
-												<span v-if="item.employee_name || item.beneficiary_name">
-													<strong>{{ item.employee_name || item.beneficiary_name }}</strong> •
-												</span>
-												<span v-if="item.description">{{ item.description }} • </span>
-												<span>{{ item.formatted_date }} {{ item.formatted_time }}</span>
-											</div>
-										</div>
-									</div>
-
-									<!-- Right: Amount & Void button -->
-									<div class="d-flex align-center ga-3 flex-shrink-0">
-										<div class="text-right">
-											<div
-												class="text-subtitle-1 font-weight-bold"
-												:class="item.docstatus === 2 ? 'text-grey text-decoration-line-through' : 'text-error'"
-											>
-												-{{ formatCurrency(item.amount) }}
-											</div>
-											<div class="text-caption text-grey">
-												{{ item.name }}
-											</div>
-										</div>
-
-										<v-btn
-											v-if="item.docstatus === 1"
-											icon="mdi-close-circle-outline"
-											variant="text"
-											color="error"
-											size="small"
-											:title="__('Отменить расход')"
-											:loading="cancellingId === item.name"
-											@click="confirmCancelExpense(item)"
-										/>
-									</div>
-								</div>
+				</details>
+				<p v-if="offline" class="expense-muted">
+					{{ __("Reconnect and refresh to see confirmed expense totals.") }}
+				</p>
+				<p v-else-if="!historyReady && !loading && !loadError" class="expense-muted">
+					{{ __("Choose dates and apply to see expenses.") }}
+				</p>
+				<template v-else-if="!loadError && !loading && historyReady">
+					<p v-if="!recentExpenses.length" class="expense-muted py-4">
+						{{ __("No expenses match these filters.") }}
+					</p>
+					<div v-for="item in recentExpenses" :key="item.source_id" class="expense-history-row">
+						<div class="expense-record-identity">
+							<strong>{{ __(item.expense_category) }}</strong>
+							<div class="text-body-2 expense-muted">{{ item.paid_from }}</div>
+							<div class="text-caption expense-muted">
+								{{ item.formatted_date }} {{ item.formatted_time }}
+							</div>
+							<div v-if="item.docstatus !== 1" class="text-caption">
+								{{ statusLabel(item.docstatus) }}
 							</div>
 						</div>
-					</div>
-
-					<!-- Fixed Bottom Summary Row (Visible with few or many rows) -->
-					<div class="expense-bottom-sum-row mt-auto pt-2">
-						<div class="d-flex align-center justify-space-between flex-wrap ga-2">
-							<div class="d-flex align-center flex-wrap ga-2">
-								<v-chip size="small" variant="tonal" color="default" class="font-weight-medium">
-									{{ __("Всего записей") }}: <strong>{{ filteredExpenses.length }}</strong>
-								</v-chip>
-								<v-chip
-									v-if="feedCashSum > 0"
-									size="small"
-									variant="tonal"
-									color="warning"
-									class="font-weight-medium"
-								>
-									💵 {{ __("Касса") }}: <strong>{{ formatCurrency(feedCashSum) }}</strong>
-								</v-chip>
-								<v-chip
-									v-if="feedBankSum > 0"
-									size="small"
-									variant="tonal"
-									color="info"
-									class="font-weight-medium"
-								>
-									💳 {{ __("Банк") }}: <strong>{{ formatCurrency(feedBankSum) }}</strong>
-								</v-chip>
-							</div>
-
-							<div class="d-flex align-center ga-2">
-								<span class="text-caption text-grey text-uppercase font-weight-bold">
-									{{ __("Итого к списанию") }}:
-								</span>
-								<span class="text-h6 font-weight-black text-error">
-									{{ formatCurrency(feedTotalSum) }}
-								</span>
-							</div>
+						<div class="expense-record-amount">
+							<strong>{{ money(item.amount) }}</strong
+							><v-btn variant="text" size="small" @click="openDetail(item)">{{
+								__("Details")
+							}}</v-btn>
 						</div>
 					</div>
-				</v-card>
-			</v-col>
-		</v-row>
+					<v-btn v-if="hasMore" variant="text" @click="applyFilters(true)">{{
+						__("Load more")
+					}}</v-btn>
+					<p v-if="recentExpenses.length" class="text-caption expense-muted mt-3">
+						{{ __("Shown") }} {{ recentExpenses.length }} / {{ summary.matching_count }} ·
+						{{ __("Totals include all matching submitted expenses.") }}
+					</p>
+				</template>
+			</section>
+		</div>
 
-		<!-- Confirmation Dialog for Cancellation -->
-		<v-dialog v-model="cancelDialogVisible" max-width="400">
-			<v-card class="pa-4 pos-themed-card">
-				<v-card-title class="text-h6 font-weight-bold text-error px-0 pt-0 d-flex align-center ga-2">
-					<v-icon color="error">mdi-alert-circle-outline</v-icon>
-					{{ __("Отмена расхода") }}
-				</v-card-title>
-				<v-card-text class="px-0 py-2">
-					{{ __("Вы уверены, что хотите отменить этот расход на сумму") }}
-					<strong>{{ formatCurrency(selectedCancelExpense?.amount || 0) }}</strong>?
-					<div class="text-caption text-grey mt-2">
-						{{ __("Будет отменена связанная бухгалтерская запись и восстановлен баланс кассы.") }}
-					</div>
-				</v-card-text>
-				<v-card-actions class="px-0 pb-0 justify-end ga-2">
-					<v-btn variant="text" @click="cancelDialogVisible = false">
-						{{ __("Назад") }}
-					</v-btn>
-					<v-btn
-						color="error"
-						variant="flat"
-						:loading="cancellingId === selectedCancelExpense?.name"
-						@click="doCancelExpense"
+		<v-dialog
+			v-model="detailVisible"
+			max-width="560"
+			aria-labelledby="expense-detail-title"
+			@after-leave="clearDetail"
+		>
+			<v-card class="pa-4">
+				<h2 id="expense-detail-title" class="text-h6 mb-3">{{ __("Expense details") }}</h2>
+				<v-progress-linear v-if="detailLoading" indeterminate />
+				<p v-if="detailError" role="alert" class="text-error">
+					{{ detailError
+					}}<v-btn variant="text" @click="openDetail(selectedExpense)">{{ __("Retry") }}</v-btn>
+				</p>
+				<template v-if="detail">
+					<div class="text-h6">{{ money(detail.amount) }}</div>
+					<dl class="expense-detail-list">
+						<dt>{{ __("Date") }}</dt>
+						<dd>{{ detail.formatted_date || detail.posting_date }}</dd>
+						<dt>{{ __("Category") }}</dt>
+						<dd>{{ __(detail.expense_category) }}</dd>
+						<dt>{{ __("Paid from") }}</dt>
+						<dd>{{ detail.paid_from }}</dd>
+						<dt>{{ __("Status") }}</dt>
+						<dd>{{ statusLabel(detail.docstatus) }}</dd>
+						<dt>{{ __("Shift") }}</dt>
+						<dd>{{ detail.pos_opening_shift }}</dd>
+						<template v-for="review in detail.shift_links?.reviews || []" :key="review.name">
+							<dt>{{ __("Shift Review") }}</dt>
+							<dd>
+								<a v-if="review.url" :href="review.url" target="_blank" rel="noopener">{{
+									__(review.status)
+								}}</a
+								><span v-else>{{ __(review.status) }}</span>
+							</dd>
+						</template>
+						<dt v-if="detail.beneficiary_name">{{ __("Recipient") }}</dt>
+						<dd v-if="detail.beneficiary_name">{{ detail.beneficiary_name }}</dd>
+						<dt v-if="detail.description">{{ __("Note") }}</dt>
+						<dd v-if="detail.description">{{ detail.description }}</dd>
+						<dt v-if="detail.cancellation_reason">{{ __("Cancellation reason") }}</dt>
+						<dd v-if="detail.cancellation_reason">{{ detail.cancellation_reason }}</dd>
+					</dl>
+					<a :href="sourceDocumentUrl(detail)" target="_blank" rel="noopener"
+						>{{ detail.name }} · {{ __("Open source document") }}</a
 					>
-						{{ __("Да, отменить") }}
-					</v-btn>
-				</v-card-actions>
+					<div v-if="receiptUrl(detail.receipt_attachment)" class="mt-3">
+						<a :href="receiptUrl(detail.receipt_attachment)" target="_blank" rel="noopener">{{
+							__("View receipt")
+						}}</a>
+					</div>
+					<div v-for="link in accountingLinks" :key="link.url" class="mt-2">
+						<a :href="link.url" target="_blank" rel="noopener">{{ link.name }}</a>
+					</div>
+					<v-btn
+						v-if="
+							canCancel && detail.docstatus === 1 && detail.source_doctype === 'Quick Expense'
+						"
+						color="error"
+						variant="text"
+						class="mt-3"
+						:disabled="busy || pendingOperations.length > 0"
+						@click="confirmCancel"
+						>{{ __("Cancel expense") }}</v-btn
+					>
+				</template>
+				<v-card-actions class="justify-end"
+					><v-btn variant="text" @click="detailVisible = false">{{
+						__("Close")
+					}}</v-btn></v-card-actions
+				>
 			</v-card>
 		</v-dialog>
-	</div>
+		<v-dialog
+			v-model="cancelVisible"
+			max-width="480"
+			:persistent="busy"
+			aria-labelledby="expense-cancel-title"
+		>
+			<v-card class="pa-4">
+				<h2 id="expense-cancel-title" class="text-h6 mb-3">{{ __("Cancel expense") }}</h2>
+				<p class="mb-3">
+					{{
+						__(
+							"Cancellation reverses the linked accounting entry. It does not return physical money. Enter a reason for the audit history.",
+						)
+					}}
+				</p>
+				<v-textarea
+					v-model="cancelReason"
+					:label="__('Cancellation reason')"
+					variant="outlined"
+					rows="2"
+					:disabled="busy"
+				/>
+				<p v-if="cancelError" class="text-error" role="alert">{{ cancelError }}</p>
+				<v-card-actions class="justify-end"
+					><v-btn :disabled="busy" @click="cancelVisible = false">{{ __("Back") }}</v-btn
+					><v-btn
+						color="error"
+						:loading="cancelling"
+						:disabled="busy || !cancelReason.trim() || offline"
+						@click="cancelExpense"
+						>{{ __("Cancel expense") }}</v-btn
+					></v-card-actions
+				>
+			</v-card>
+		</v-dialog>
+	</section>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, reactive, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { useUIStore } from "../../../stores/uiStore";
-import { useToastStore } from "../../../stores/toastStore";
 import { useFormat } from "../../../format";
+import { isOffline } from "../../../../offline/db";
+import { getOfflineCashMovements } from "../../../../offline/cash_movements";
+import { receiptUrl, uploadExpenseReceipt } from "../../../composables/pos/expenses/receipt";
 
 declare const frappe: any;
-const __ = window.__ || ((text: string, _args?: any[]) => text);
-
+const __ = window.__ || ((text: string) => text);
+const base = "erpnext.accounts.page.expense_desk.expense_desk.";
+const RECORD = "record_quick_expense";
+const CANCEL = "cancel_quick_expense";
 const uiStore = useUIStore();
-const toastStore = useToastStore();
 const { formatCurrency } = useFormat();
-
-const loading = ref(false);
-const submitting = ref(false);
-const cancellingId = ref<string | null>(null);
-
-const resolvedProfile = ref("");
-const resolvedShift = ref("");
-const resolvedCompany = ref("");
-
-const currentProfileName = computed(() => {
-	return (
-		resolvedProfile.value ||
-		uiStore.posProfile?.name ||
-		frappe.boot?.pos_profile?.name ||
-		(typeof frappe.boot?.pos_profile === "string" ? frappe.boot?.pos_profile : "") ||
-		""
-	);
-});
-
-const currentShiftName = computed(() => {
-	return resolvedShift.value || uiStore.posOpeningShift?.name || "";
-});
-
-const currentCompanyName = computed(() => {
-	return resolvedCompany.value || uiStore.posProfile?.company || frappe.defaults?.get_user_default("Company") || "";
-});
-
-const currency = ref("TJS");
+const money = (value: any) => formatCurrency(value, currency.value);
+const session = ref<any>({ status: "loading" });
+const currency = ref("");
 const categories = ref<any[]>([]);
 const paymentSources = ref<any[]>([]);
 const employees = ref<any[]>([]);
-const recentExpenses = ref<any[]>([]);
-const summary = ref<any>({
-	period_total: 0,
-	period_count: 0,
-	today_total: 0,
-	cash_total: 0,
-	bank_total: 0,
-	category_breakdown: [],
-});
-
+const canCancel = ref(false);
+const loading = ref(false);
+const loadError = ref("");
+const offline = ref(isOffline());
+const legacyPending = ref(0);
+const submitting = ref(false);
+const cancelling = ref(false);
+const checking = ref("");
+const busy = computed(() => submitting.value || cancelling.value || !!checking.value);
+const uploading = ref(false);
+const receiptFile = ref<File | null>(null);
+const historyReady = ref(false);
+const uploadError = ref("");
+const submitError = ref("");
+const cancelError = ref("");
+const recoveryError = ref("");
+const pendingOperations = ref<any[]>([]);
+const resultMessage = ref("");
+const resultDocument = ref<any>(null);
+const resultType = ref<"success" | "warning" | "info">("success");
 const form = reactive({
-	amount: 0,
-	category: "Упаковка и пакеты",
+	category: "",
+	amount: "" as string | number,
 	source_id: "",
-	beneficiary_name: "",
 	description: "",
+	beneficiary_name: "",
+	receipt_attachment: "",
 });
-
-interface ExpenseFilters {
-	period: string;
-	from_date: string;
-	to_date: string;
-	category: string;
-	source_id: string;
-	employee: string;
-	search: string;
-}
-
-const filters = reactive<ExpenseFilters>({
-	period: "today",
+const recentExpenses = ref<any[]>([]);
+const summary = ref<any>({});
+const hasMore = ref(false);
+const filters = reactive({
+	period: "shift",
 	from_date: "",
 	to_date: "",
 	category: "all",
 	source_id: "all",
 	employee: "all",
 	search: "",
+	status: "submitted",
 });
-
-let searchDebounceTimer: any = null;
-
-const cancelDialogVisible = ref(false);
-const selectedCancelExpense = ref<any>(null);
-
-const amountRule = (v: any) => (Number(v) > 0 ? true : __("Введите сумму больше 0"));
-
-const isCashSource = computed(() => {
-	const src = paymentSources.value.find((s) => s.id === form.source_id);
-	return src?.type === "pos";
-});
-
-const isFormValid = computed(() => {
-	return Number(form.amount) > 0 && !!form.category && !!form.source_id;
-});
-
-const paymentSourceOptions = computed(() => {
-	return paymentSources.value.map((s) => ({
-		id: s.id,
-		label: s.label,
-		balance: s.balance,
-		type: s.type,
-		account: s.account,
-		pos_profile: s.pos_profile,
-	}));
-});
-
-const employeeOptions = computed(() => {
-	return employees.value.map((e) => e.employee_name || e.name);
-});
-
-const categoryFilterOptions = computed(() => {
-	const list = [{ value: "all", title: __("Все категории") }];
-	categories.value.forEach((c) => {
-		list.push({
-			value: c.category_name,
-			title: `${c.icon || "🏷️"} ${c.category_name}`,
-		});
-	});
-	return list;
-});
-
-const sourceFilterOptions = computed(() => {
-	const list = [
-		{ value: "all", title: __("Все источники") },
-		{ value: "cash", title: `💵 ${__("Только касса")} (${currentProfileName.value})` },
-		{ value: "bank", title: `💳 ${__("Только банк")}` },
-	];
-	paymentSources.value.forEach((s) => {
-		list.push({
-			value: s.id,
-			title: s.label,
-		});
-	});
-	return list;
-});
-
-const employeeFilterOptions = computed(() => {
-	const list = [{ value: "all", title: __("Все сотрудники") }];
-	employees.value.forEach((e) => {
-		list.push({
-			value: e.name,
-			title: `👤 ${e.employee_name || e.name}`,
-		});
-	});
-	return list;
-});
-
-const cashTotal = computed(() => {
-	return recentExpenses.value
-		.filter((e) => e.docstatus === 1 && e.pos_profile)
-		.reduce((sum, e) => sum + Number(e.amount || 0), 0);
-});
-
-const bankTotal = computed(() => {
-	return recentExpenses.value
-		.filter((e) => e.docstatus === 1 && !e.pos_profile)
-		.reduce((sum, e) => sum + Number(e.amount || 0), 0);
-});
-
-const feedTotalSum = computed(() => {
-	return (recentExpenses.value || [])
-		.filter((e) => e.docstatus === 1)
-		.reduce((sum, e) => sum + Number(e.amount || 0), 0);
-});
-
-const feedCashSum = cashTotal;
-const feedBankSum = bankTotal;
-
-const hasActiveFilters = computed(() => {
-	return (
-		filters.period !== "today" ||
-		filters.category !== "all" ||
-		filters.source_id !== "all" ||
-		filters.employee !== "all" ||
-		Boolean(filters.search) ||
-		Boolean(filters.from_date) ||
-		Boolean(filters.to_date)
-	);
-});
-
-const filteredExpenses = computed(() => {
-	return recentExpenses.value || [];
-});
-
-function addQuickAmount(amt: number) {
-	form.amount = Math.round(((Number(form.amount) || 0) + amt) * 100) / 100;
-}
-
-function selectCategory(cat: any) {
-	form.category = cat.category_name;
-}
-
-function setPeriod(p: string) {
-	filters.period = p;
-	applyFilters();
-}
-
-function toggleCustomPeriod() {
-	if (filters.period === "custom") {
-		filters.period = "today";
-	} else {
-		filters.period = "custom";
-	}
-	applyFilters();
-}
-
-function resetFilters() {
-	filters.period = "today";
-	filters.from_date = "";
-	filters.to_date = "";
-	filters.category = "all";
-	filters.source_id = "all";
-	filters.employee = "all";
-	filters.search = "";
-	applyFilters();
-}
-
-function debounceSearch() {
-	if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
-	searchDebounceTimer = setTimeout(() => {
-		applyFilters();
-	}, 300);
-}
-
-function getActivePeriodLabel() {
-	switch (filters.period) {
-		case "shift":
-			return __("Текущая смена");
-		case "today":
-			return __("Сегодня");
-		case "yesterday":
-			return __("Вчера");
-		case "week":
-			return __("Последние 7 дней");
-		case "month":
-			return __("Текущий месяц");
-		case "all":
-			return __("Все время");
-		case "custom":
-			return `${filters.from_date || "..."} - ${filters.to_date || "..."}`;
-		default:
-			return __("Сегодня");
-	}
-}
-
-async function ensureProfileAndShift() {
-	if (uiStore.posProfile?.name) {
-		resolvedProfile.value = uiStore.posProfile.name;
-		resolvedShift.value = uiStore.posOpeningShift?.name || "";
-		resolvedCompany.value = uiStore.posProfile.company || "";
-		return;
-	}
-
-	// 1. Check opening shift from posawesome API
-	try {
-		const user = frappe.session?.user || "Administrator";
-		const r = await frappe.call("posawesome.posawesome.api.shifts.check_opening_shift", { user });
-		if (r?.message) {
-			uiStore.setRegisterData(r.message);
-			resolvedProfile.value = r.message.pos_profile?.name || r.message.pos_profile || "";
-			resolvedShift.value = r.message.pos_opening_shift?.name || r.message.pos_opening_shift || "";
-			resolvedCompany.value = r.message.company?.name || r.message.pos_profile?.company || "";
-			return;
-		}
-	} catch (e) {
-		console.warn("Could not check opening shift", e);
-	}
-
-	// 2. Check frappe.boot
-	if (frappe.boot?.pos_profile) {
-		const bootName = frappe.boot.pos_profile.name || frappe.boot.pos_profile;
-		resolvedProfile.value = bootName;
-		return;
-	}
-
-	// 3. Fallback: query default active POS profile
-	try {
-		const res = await frappe.call({
-			method: "frappe.client.get_list",
-			args: {
-				doctype: "POS Profile",
-				filters: { disabled: 0 },
-				limit: 1,
-				fields: ["name", "company"],
-			},
-		});
-		if (res?.message && res.message.length > 0) {
-			resolvedProfile.value = res.message[0].name;
-			resolvedCompany.value = res.message[0].company || "";
-		}
-	} catch (e) {
-		console.warn("Could not fetch fallback POS profile", e);
-	}
-}
-
-async function fetchData() {
-	loading.value = true;
-	try {
-		await ensureProfileAndShift();
-
-		const response = await frappe.call({
-			method: "erpnext.accounts.page.expense_desk.expense_desk.get_expense_desk_init_data",
-			args: {
-				company: currentCompanyName.value || null,
-				pos_profile: currentProfileName.value || null,
-				pos_opening_shift: currentShiftName.value || null,
-				from_pos: 1,
-			},
-		});
-
-		if (response.message) {
-			const data = response.message;
-			currency.value = data.currency || "TJS";
-			categories.value = data.categories || [];
-			paymentSources.value = data.payment_sources || [];
-			employees.value = data.employees || [];
-			recentExpenses.value = data.recent_expenses || [];
-			summary.value = data.summary || summary.value;
-
-			// Auto-select POS cash till as default source if not selected
-			if (!form.source_id && paymentSources.value.length) {
-				const posSource = paymentSources.value.find((s) => s.type === "pos");
-				form.source_id = posSource ? posSource.id : paymentSources.value[0].id;
-			}
-		}
-	} catch (error) {
-		console.error("Error fetching expense desk data:", error);
-		toastStore.show({
-			title: __("Ошибка"),
-			message: __("Не удалось загрузить данные расходов"),
-			color: "error",
-		});
-	} finally {
-		loading.value = false;
-	}
-}
-
-async function applyFilters() {
-	loading.value = true;
-	try {
-		const response = await frappe.call({
-			method: "erpnext.accounts.page.expense_desk.expense_desk.get_filtered_expenses",
-			args: {
-				period: filters.period,
-				from_date: filters.from_date || null,
-				to_date: filters.to_date || null,
-				source_id: filters.source_id,
-				category: filters.category,
-				employee: filters.employee,
-				search: filters.search || null,
-				company: currentCompanyName.value || null,
-				pos_profile: currentProfileName.value || null,
-				pos_opening_shift: currentShiftName.value || null,
-				from_pos: 1,
-			},
-		});
-
-		if (response.message) {
-			recentExpenses.value = response.message.recent_expenses || [];
-			summary.value = response.message.summary || summary.value;
-		}
-	} catch (error) {
-		console.error("Error filtering expenses:", error);
-	} finally {
-		loading.value = false;
-	}
-}
-
-async function submitExpense() {
-	if (!isFormValid.value || submitting.value) return;
-
-	submitting.value = true;
-	try {
-		const selectedSource = paymentSources.value.find((s) => s.id === form.source_id);
-		const paidFromAccount = selectedSource?.account || null;
-
-		// Resolve employee party if match found
-		let partyType: string | null = null;
-		let party: string | null = null;
-		if (form.beneficiary_name) {
-			const emp = employees.value.find(
-				(e) => e.employee_name === form.beneficiary_name || e.name === form.beneficiary_name
-			);
-			if (emp) {
-				partyType = "Employee";
-				party = emp.name;
-			}
-		}
-
-		const response = await frappe.call({
-			method: "erpnext.accounts.page.expense_desk.expense_desk.record_quick_expense",
-			args: {
-				category: form.category,
-				amount: form.amount,
-				paid_from: paidFromAccount,
-				pos_profile: currentProfileName.value,
-				pos_opening_shift: currentShiftName.value || null,
-				created_from_pos: 1,
-				description: form.description || null,
-				beneficiary_name: form.beneficiary_name || null,
-				party_type: partyType,
-				party: party,
-				company: currentCompanyName.value || null,
-			},
-		});
-
-		if (response.message) {
-			const data = response.message;
-			recentExpenses.value = data.recent_expenses || [];
-			summary.value = data.summary || summary.value;
-			paymentSources.value = data.payment_sources || paymentSources.value;
-
-			toastStore.show({
-				title: __("Успешно"),
-				message: `${__("Расход")} ${formatCurrency(form.amount)} ${__("зафиксирован")}`,
-				color: "success",
-			});
-
-			// Reset form fields
-			form.amount = 0;
-			form.beneficiary_name = "";
-			form.description = "";
-		}
-	} catch (error: any) {
-		console.error("Error submitting expense:", error);
-		toastStore.show({
-			title: __("Ошибка сохранения"),
-			message: error?.message || __("Не удалось зафиксировать расход"),
-			color: "error",
-		});
-	} finally {
-		submitting.value = false;
-	}
-}
-
-function confirmCancelExpense(item: any) {
-	selectedCancelExpense.value = item;
-	cancelDialogVisible.value = true;
-}
-
-async function doCancelExpense() {
-	if (!selectedCancelExpense.value) return;
-
-	cancellingId.value = selectedCancelExpense.value.name;
-	try {
-		const response = await frappe.call({
-			method: "erpnext.accounts.page.expense_desk.expense_desk.cancel_quick_expense",
-			args: {
-				expense_name: selectedCancelExpense.value.name,
-				company: currentCompanyName.value || null,
-				pos_profile: currentProfileName.value || null,
-				pos_opening_shift: currentShiftName.value || null,
-			},
-		});
-
-		if (response.message) {
-			const data = response.message;
-			recentExpenses.value = data.recent_expenses || [];
-			summary.value = data.summary || summary.value;
-			paymentSources.value = data.payment_sources || paymentSources.value;
-
-			toastStore.show({
-				title: __("Отменено"),
-				message: __("Расход успешно отменен"),
-				color: "warning",
-			});
-		}
-	} catch (error: any) {
-		console.error("Error cancelling expense:", error);
-		toastStore.show({
-			title: __("Ошибка отмены"),
-			message: error?.message || __("Не удалось отменить расход"),
-			color: "error",
-		});
-	} finally {
-		cancellingId.value = null;
-		cancelDialogVisible.value = false;
-		selectedCancelExpense.value = null;
-	}
-}
-
-watch(
-	[() => uiStore.posProfile?.name, () => uiStore.posOpeningShift?.name],
-	([newProfile, newShift]) => {
-		if (newProfile && (newProfile !== resolvedProfile.value || newShift !== resolvedShift.value)) {
-			resolvedProfile.value = newProfile;
-			resolvedShift.value = newShift || "";
-			fetchData();
-		}
-	}
+let requestVersion = 0;
+let detailVersion = 0;
+let timer: ReturnType<typeof setInterval>;
+let searchTimer: ReturnType<typeof setTimeout>;
+let disposed = false;
+let inputScope = "";
+let restoredId = "";
+let sourceNeedsDefault = true;
+const selectedSource = computed(() => paymentSources.value.find((s) => s.id === form.source_id));
+const entryDisabled = computed(
+	() =>
+		busy.value ||
+		offline.value ||
+		loading.value ||
+		!!loadError.value ||
+		!session.value.can_record ||
+		!!recoveryError.value ||
+		pendingOperations.value.length > 0,
+);
+const isFormValid = computed(
+	() =>
+		Number.isFinite(Number(form.amount)) &&
+		Number(form.amount) > 0 &&
+		categories.value.some((c) => c.name === form.category) &&
+		!!selectedSource.value &&
+		(!session.value.note_required || !!form.description.trim()),
+);
+const categoryOptions = computed(() =>
+	categories.value.map((c) => ({ title: __(c.category_name), value: c.name })),
+);
+const paymentSourceOptions = computed(() =>
+	paymentSources.value.map((s) => ({ title: s.label, value: s.id, account: s.account })),
+);
+const categoryFilterOptions = computed(() => [
+	{ title: __("All categories"), value: "all" },
+	...categories.value.map((c) => ({ title: __(c.category_name), value: c.category_name })),
+]);
+const sourceFilterOptions = computed(() => [
+	{ title: __("All sources"), value: "all" },
+	{ title: __("Cash"), value: "cash" },
+	{ title: __("Bank and wallets"), value: "bank" },
+	...paymentSourceOptions.value,
+]);
+const employeeOptions = computed(() => [
+	{ title: __("All recipients"), value: "all" },
+	...employees.value.map((e) => ({ title: e.employee_name || e.name, value: e.name })),
+]);
+const statuses = [
+	{ title: __("Submitted"), value: "submitted" },
+	{ title: __("All statuses"), value: "all" },
+	{ title: __("Cancelled"), value: "cancelled" },
+	{ title: __("Draft"), value: "draft" },
+];
+const periods = [
+	{ title: __("Whole shift"), value: "shift" },
+	{ title: __("Today within this shift"), value: "today" },
+	{ title: __("Yesterday within this shift"), value: "yesterday" },
+	{ title: __("Custom dates within this shift"), value: "custom" },
+];
+const periodLabel = computed(() =>
+	filters.period === "custom"
+		? `${filters.from_date} — ${filters.to_date}`
+		: periods.find((p) => p.value === filters.period)?.title || "",
+);
+const activeFilterLabel = computed(() =>
+	[
+		filters.category !== "all" ? __(filters.category) : "",
+		filters.source_id !== "all"
+			? sourceFilterOptions.value.find((s) => s.value === filters.source_id)?.title
+			: "",
+		filters.status !== "submitted" ? statuses.find((s) => s.value === filters.status)?.title : "",
+		filters.employee !== "all"
+			? employeeOptions.value.find((e) => e.value === filters.employee)?.title
+			: "",
+		filters.search,
+	]
+		.filter(Boolean)
+		.join(" · "),
+);
+const canOpenClaims = !!frappe.boot?.user?.can_read?.includes("Expense Claim");
+const canOpenBills = !!frappe.boot?.user?.can_read?.includes("Purchase Invoice");
+const detailVisible = ref(false);
+const detailLoading = ref(false);
+const detailError = ref("");
+const detail = ref<any>(null);
+const selectedExpense = ref<any>(null);
+const cancelVisible = ref(false);
+const cancelReason = ref("");
+const accountingLinks = computed(() =>
+	(
+		[
+			["journal_entry", "journal-entry"],
+			["payment_entry", "payment-entry"],
+			["purchase_invoice", "purchase-invoice"],
+		] as [string, string][]
+	).flatMap(([field, route]) =>
+		detail.value?.[field]
+			? [{ name: detail.value[field], url: `/app/${route}/${encodeURIComponent(detail.value[field])}` }]
+			: [],
+	),
 );
 
-onMounted(async () => {
-	await fetchData();
+function contextArgs() {
+	return {
+		company: session.value.company,
+		pos_profile: session.value.pos_profile,
+		pos_opening_shift: session.value.pos_opening_shift,
+		from_pos: 1,
+	};
+}
+function readPending() {
+	try {
+		recoveryError.value = "";
+		pendingOperations.value = [RECORD, CANCEL].flatMap((action) => {
+			const operation = frappe.expense_requests?.pending(action);
+			if (!operation) return [];
+			if (!operation.id || !operation.args || typeof operation.args !== "object")
+				throw new Error("invalid");
+			return [{ ...operation, action }];
+		});
+	} catch {
+		recoveryError.value = __(
+			"The saved request cannot be read. Keep this browser's data and ask a manager to review it.",
+		);
+	}
+}
+function pollState() {
+	offline.value = isOffline();
+	readPending();
+	legacyPending.value = getOfflineCashMovements().filter((row: any) => {
+		try {
+			const raw = row.args?.payload || row.payload;
+			const payload = typeof raw === "string" ? JSON.parse(raw) : raw;
+			return (
+				!session.value.pos_opening_shift ||
+				!payload?.pos_opening_shift ||
+				payload.pos_opening_shift === session.value.pos_opening_shift
+			);
+		} catch {
+			return true;
+		}
+	}).length;
+}
+function resetInput() {
+	sourceNeedsDefault = true;
+	form.amount = "";
+	form.category = "";
+	form.source_id = "";
+	form.description = "";
+	form.beneficiary_name = "";
+	form.receipt_attachment = "";
+	receiptFile.value = null;
+	uploadError.value = "";
+}
+async function fetchData() {
+	const version = ++requestVersion;
+	loading.value = true;
+	loadError.value = "";
+	try {
+		await frappe.require("/assets/erpnext/js/expense_requests.js");
+		readPending();
+		const response = await frappe.call({
+			method: "posawesome.posawesome.api.expense_context.get_pos_expense_session",
+			args: { pos_opening_shift: uiStore.posOpeningShift?.name || null },
+		});
+		if (disposed || version !== requestVersion) return;
+		session.value = response.message || { status: "no_shift" };
+		if (session.value.status !== "ready") {
+			recentExpenses.value = [];
+			paymentSources.value = [];
+			summary.value = {};
+			return;
+		}
+		const scope = `${session.value.company}:${session.value.pos_opening_shift}`;
+		if (inputScope && inputScope !== scope) {
+			resetInput();
+			restoredId = "";
+			resetFilterValues();
+		}
+		inputScope = scope;
+		const result = await frappe.call({
+			method: base + "get_expense_desk_init_data",
+			args: { ...contextArgs(), ...filters },
+		});
+		if (disposed || version !== requestVersion) return;
+		if (!result.message) throw new Error(__("Could not load expenses."));
+		const data = result.message;
+		if (
+			data.company !== session.value.company ||
+			data.pos_profile !== session.value.pos_profile ||
+			data.pos_opening_shift !== session.value.pos_opening_shift
+		)
+			throw new Error(__("Expense session changed. Refresh before continuing."));
+		currency.value = data.currency;
+		categories.value = data.categories || [];
+		paymentSources.value = data.payment_sources || [];
+		employees.value = data.employees || [];
+		canCancel.value = !!data.can_cancel;
+		setHistory(data);
+		const pending = pendingOperations.value.find(
+			(p) => p.action === RECORD && p.args.pos_opening_shift === session.value.pos_opening_shift,
+		);
+		if (pending && restoredId !== pending.id) {
+			form.amount = pending.args.amount;
+			form.category = pending.args.category;
+			form.description = pending.args.description || "";
+			form.beneficiary_name = pending.args.beneficiary_name || "";
+			form.receipt_attachment = pending.args.receipt_attachment || "";
+			form.source_id = paymentSources.value.find((s) => s.account === pending.args.paid_from)?.id || "";
+			restoredId = pending.id;
+		}
+		// Only choose an unambiguous approved Cash source. Never guess a bank wallet.
+		const cash = paymentSources.value.filter((s) => s.account_type === "Cash");
+		if (!pending && sourceNeedsDefault && paymentSources.value.length) {
+			sourceNeedsDefault = false;
+			if (!form.source_id && cash.length === 1) form.source_id = cash[0].id;
+		} else if (!pending && form.source_id && !selectedSource.value) form.source_id = "";
+	} catch (error: any) {
+		if (disposed || version !== requestVersion) return;
+		loadError.value = error?.message || __("Could not load expenses.");
+		paymentSources.value = [];
+		canCancel.value = false;
+	} finally {
+		if (!disposed && version === requestVersion) {
+			loading.value = false;
+			pollState();
+		}
+	}
+}
+function setHistory(data: any, append = false) {
+	historyReady.value = true;
+	recentExpenses.value = append
+		? [...recentExpenses.value, ...(data.recent_expenses || [])]
+		: data.recent_expenses || [];
+	summary.value = data.summary || {};
+	hasMore.value = !!data.has_more;
+}
+function markHistoryDirty() {
+	++requestVersion;
+	historyReady.value = false;
+	loading.value = false;
+}
+function filterChanged() {
+	++requestVersion;
+	if (filters.period !== "custom") void applyFilters();
+	else {
+		historyReady.value = false;
+		recentExpenses.value = [];
+		summary.value = {};
+		hasMore.value = false;
+		loading.value = false;
+	}
+}
+function resetFilterValues() {
+	Object.assign(filters, {
+		period: "shift",
+		from_date: "",
+		to_date: "",
+		category: "all",
+		source_id: "all",
+		employee: "all",
+		search: "",
+		status: "submitted",
+	});
+}
+function resetFilters() {
+	resetFilterValues();
+	void applyFilters();
+}
+function debounceSearch() {
+	clearTimeout(searchTimer);
+	// Invalidate the previous scope immediately, before debounce elapses.
+	++requestVersion;
+	loading.value = true;
+	searchTimer = setTimeout(() => {
+		void applyFilters();
+	}, 300);
+}
+async function applyFilters(append = false) {
+	if (session.value.status !== "ready" || offline.value) return;
+	const version = ++requestVersion;
+	loading.value = true;
+	try {
+		if (
+			filters.period === "custom" &&
+			(!filters.from_date || !filters.to_date || filters.from_date > filters.to_date)
+		)
+			throw new Error(__("Choose a valid start and end date."));
+		const response = await frappe.call({
+			method: base + "get_filtered_expenses",
+			args: { ...contextArgs(), ...filters, limit_start: append ? recentExpenses.value.length : 0 },
+		});
+		if (disposed || version !== requestVersion) return;
+		if (!response.message) throw new Error(__("Could not load expenses."));
+		loadError.value = "";
+		setHistory(response.message, append);
+	} catch (error: any) {
+		if (disposed || version !== requestVersion) return;
+		loadError.value = error?.message || __("Could not load expenses.");
+		recentExpenses.value = [];
+		hasMore.value = false;
+	} finally {
+		if (!disposed && version === requestVersion) loading.value = false;
+	}
+}
+async function selectReceipt(value: File | File[] | null) {
+	const file = Array.isArray(value) ? value[0] : value;
+	if (entryDisabled.value || uploading.value) return;
+	uploadError.value = "";
+	form.receipt_attachment = "";
+	if (!file) return;
+	const scope = inputScope;
+	uploading.value = true;
+	try {
+		const url = await uploadExpenseReceipt(file);
+		if (!disposed && inputScope === scope) form.receipt_attachment = url;
+	} catch (error: any) {
+		if (!disposed && inputScope === scope)
+			uploadError.value =
+				error?.message || __("Receipt upload failed. Your expense has not been submitted.");
+	} finally {
+		uploading.value = false;
+	}
+}
+function completed(action: string, expense: any) {
+	resultDocument.value = { ...expense, source_doctype: "Quick Expense" };
+	resultType.value = expense.docstatus === 2 ? "warning" : "success";
+	resultMessage.value =
+		expense.docstatus === 2
+			? __("Expense cancelled. Ask a manager to review the reversal before making another payment.")
+			: __("Expense submitted. This source's expected shift amount is reduced once.");
+	if (
+		action === RECORD &&
+		expense.docstatus === 1 &&
+		expense.pos_opening_shift === session.value.pos_opening_shift
+	) {
+		resetInput();
+		restoredId = "";
+	}
+	resultMessage.value += ` ${formatCurrency(expense.amount, expense.currency)} · ${expense.paid_from} · ${expense.pos_opening_shift || ""}`;
+	submitError.value = "";
+	cancelVisible.value = false;
+	detailVisible.value = false;
+}
+async function submitExpense() {
+	if (entryDisabled.value || !isFormValid.value || uploading.value || uploadError.value) return;
+	submitting.value = true;
+	submitError.value = "";
+	resultMessage.value = "";
+	resultDocument.value = null;
+	try {
+		const data = await frappe.expense_requests.run(RECORD, {
+			category: form.category,
+			amount: Number(form.amount),
+			paid_from: selectedSource.value.account,
+			company: session.value.company,
+			pos_profile: session.value.pos_profile,
+			pos_opening_shift: session.value.pos_opening_shift,
+			created_from_pos: 1,
+			description: form.description || null,
+			beneficiary_name: form.beneficiary_name || null,
+			receipt_attachment: form.receipt_attachment || null,
+		});
+		completed(RECORD, data.expense);
+		await fetchData();
+	} catch (error: any) {
+		submitError.value = error?.message || __("Could not submit the expense. Your input is retained.");
+	} finally {
+		submitting.value = false;
+		readPending();
+	}
+}
+async function checkResult(action: string) {
+	if (busy.value || offline.value) return;
+	checking.value = action;
+	recoveryError.value = "";
+	resultDocument.value = null;
+	try {
+		const result = await frappe.expense_requests.check(action);
+		if (!result) {
+			readPending();
+			return;
+		}
+		const terminal =
+			action === RECORD
+				? ["submitted", "cancelled"].includes(result.status)
+				: result.status === "cancelled";
+		if (terminal && result.name && result.docstatus === (result.status === "submitted" ? 1 : 2)) {
+			completed(action, result);
+			await fetchData();
+		} else {
+			resultType.value = "info";
+			resultDocument.value = result.name ? { ...result, source_doctype: "Quick Expense" } : null;
+			resultMessage.value =
+				result.status === "not_found"
+					? __(
+							"No recorded result yet. The original request is retained. Retry it when the connection and setup are ready.",
+						)
+					: __(
+							"The request is not complete. Keep the original request and ask a manager to review it.",
+						);
+		}
+	} catch (error: any) {
+		resultType.value = "warning";
+		resultDocument.value = null;
+		resultMessage.value =
+			error?.message || __("Could not check the result. The original request is retained.");
+	} finally {
+		checking.value = "";
+		readPending();
+	}
+}
+async function retryOriginal(operation: any) {
+	if (busy.value || offline.value) return;
+	checking.value = operation.action;
+	resultDocument.value = null;
+	try {
+		const data = await frappe.expense_requests.run(operation.action, operation.args);
+		completed(operation.action, data.expense);
+		await fetchData();
+	} catch (error: any) {
+		resultType.value = "warning";
+		resultMessage.value =
+			error?.message || __("Could not check the result. The original request is retained.");
+	} finally {
+		checking.value = "";
+		readPending();
+	}
+}
+function sourceDocumentUrl(item: any) {
+	return `/app/${item.source_doctype === "POS Cash Movement" ? "pos-cash-movement" : "quick-expense"}/${encodeURIComponent(item.name)}`;
+}
+function statusLabel(status: number) {
+	return status === 1 ? __("Submitted") : status === 2 ? __("Cancelled") : __("Draft");
+}
+async function openDetail(item: any) {
+	const version = ++detailVersion;
+	selectedExpense.value = item;
+	detailVisible.value = true;
+	detailLoading.value = true;
+	detailError.value = "";
+	detail.value = null;
+	try {
+		const response = await frappe.call({
+			method: base + "get_expense_detail",
+			args: { expense_name: item.name, source_doctype: item.source_doctype },
+		});
+		if (!disposed && version === detailVersion && detailVisible.value) {
+			if (!response.message) throw new Error(__("Could not load expense details."));
+			detail.value = { ...item, ...response.message };
+		}
+	} catch (error: any) {
+		if (version === detailVersion)
+			detailError.value = error?.message || __("Could not load expense details.");
+	} finally {
+		if (version === detailVersion) detailLoading.value = false;
+	}
+}
+function clearDetail() {
+	++detailVersion;
+	detail.value = null;
+}
+function refreshFromNative() {
+	if (disposed || busy.value || document.visibilityState === "hidden") return;
+	void fetchData();
+	if (detailVisible.value && selectedExpense.value) void openDetail(selectedExpense.value);
+}
+function confirmCancel() {
+	cancelReason.value = "";
+	cancelError.value = "";
+	cancelVisible.value = true;
+}
+async function cancelExpense() {
+	if (busy.value || offline.value || !detail.value || !canCancel.value || !cancelReason.value.trim())
+		return;
+	cancelling.value = true;
+	cancelError.value = "";
+	try {
+		const data = await frappe.expense_requests.run(CANCEL, {
+			expense_name: detail.value.name,
+			company: session.value.company,
+			pos_profile: session.value.pos_profile,
+			pos_opening_shift: session.value.pos_opening_shift,
+			reason: cancelReason.value.trim(),
+			expected_modified: detail.value.modified,
+		});
+		completed(CANCEL, data.expense);
+		await fetchData();
+	} catch (error: any) {
+		cancelError.value = error?.message || __("Could not cancel the expense. Your reason is retained.");
+	} finally {
+		cancelling.value = false;
+		readPending();
+	}
+}
+watch([() => uiStore.posProfile?.name, () => uiStore.posOpeningShift?.name], () => {
+	++requestVersion;
+	resetInput();
+	session.value = { status: "loading" };
+	void fetchData();
+});
+onMounted(() => {
+	void fetchData();
+	timer = setInterval(pollState, 1000);
+	window.addEventListener("storage", pollState);
+	window.addEventListener("online", pollState);
+	window.addEventListener("offline", pollState);
+	window.addEventListener("focus", refreshFromNative);
+});
+onBeforeUnmount(() => {
+	disposed = true;
+	++requestVersion;
+	++detailVersion;
+	clearInterval(timer);
+	clearTimeout(searchTimer);
+	window.removeEventListener("storage", pollState);
+	window.removeEventListener("online", pollState);
+	window.removeEventListener("offline", pollState);
+	window.removeEventListener("focus", refreshFromNative);
 });
 </script>
 
 <style scoped>
 .pos-expense-desk {
-	height: calc(100dvh - 64px);
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
+	max-width: 1400px;
+	margin: 0 auto;
+	min-width: 0;
+	color: rgb(var(--v-theme-on-surface));
 }
-
-.pos-expense-row {
-	flex: 1 1 0;
-	min-height: 0;
-}
-
-.pos-col-left,
-.pos-col-right {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-}
-
-.category-chips-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-	gap: 6px;
-	max-height: 180px;
-	overflow-y: auto;
-	padding-right: 2px;
-}
-
-.category-chip-item {
+.expense-header,
+.expense-actions,
+.expense-pending {
 	display: flex;
 	align-items: center;
-	gap: 6px;
-	padding: 6px 10px;
-	border-radius: var(--pos-radius-sm, 8px);
-	border: 1px solid var(--pos-border, rgba(0, 0, 0, 0.12));
-	background: var(--pos-surface-variant, #f5f5f5);
+	justify-content: space-between;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+.expense-header {
+	margin-bottom: 20px;
+}
+.expense-actions {
+	justify-content: flex-start;
+	gap: 4px;
+}
+.expense-layout {
+	display: grid;
+	grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+	align-items: start;
+	gap: 20px;
+}
+.expense-panel {
+	min-width: 0;
+	padding: 20px;
+	border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+	border-radius: 6px;
+	background: rgb(var(--v-theme-surface));
+}
+.expense-muted {
+	color: rgba(var(--v-theme-on-surface), 0.7);
+}
+.expense-fieldset {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	min-width: 0;
+}
+.expense-totals {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 16px 28px;
+	padding-bottom: 16px;
+	border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+.expense-filter-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+}
+.expense-history-row {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 14px 0;
+	border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+.expense-record-identity {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+.expense-record-amount {
+	display: flex;
+	align-items: flex-end;
+	flex-direction: column;
+	flex-shrink: 0;
+	font-variant-numeric: tabular-nums;
+}
+.expense-detail-list {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+	gap: 8px 16px;
+	margin: 16px 0;
+}
+.expense-detail-list dt {
+	opacity: 0.7;
+}
+.expense-detail-list dd {
+	margin: 0;
+	overflow-wrap: anywhere;
+	white-space: pre-wrap;
+}
+.expense-pending {
+	padding: 12px 0;
+	overflow-wrap: anywhere;
+}
+.pos-expense-desk :deep(.v-input),
+.pos-expense-desk :deep(.v-field) {
+	min-width: 0;
+}
+.pos-expense-desk a {
+	color: rgb(var(--v-theme-primary));
+	overflow-wrap: anywhere;
+}
+.pos-expense-desk :deep(.v-btn) {
+	text-transform: none;
+	letter-spacing: normal;
+}
+summary {
 	cursor: pointer;
-	font-size: 0.78rem;
-	user-select: none;
-	transition: all 0.15s ease;
+	min-height: 40px;
+	padding: 8px 0;
 }
-
-.category-chip-item:hover {
-	border-color: var(--pos-primary, #0097a7);
-	background: var(--pos-hover-bg, rgba(0, 151, 167, 0.08));
-}
-
-.category-chip-item--active {
-	border-color: var(--pos-primary, #0097a7);
-	background: var(--pos-primary-container, #e0f7fa);
-	color: var(--pos-primary-variant, #00838f);
-	font-weight: 600;
-}
-
-.category-chip-icon {
-	font-size: 1.1rem;
-	line-height: 1;
-}
-
-.category-chip-label {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.expense-stats-grid {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 8px;
-}
-
-@media (max-width: 960px) {
-	.expense-stats-grid {
-		grid-template-columns: repeat(2, 1fr);
+@media (max-width: 850px) {
+	.expense-layout {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	.expense-panel {
+		padding: 16px;
 	}
 }
-
-.expense-stat-card {
-	padding: 10px 12px;
-	border-radius: var(--pos-radius-sm, 10px);
-	border: 1px solid var(--pos-border, rgba(0, 0, 0, 0.08));
-	background: var(--pos-surface-variant, #fbfbfb);
-}
-
-.expense-stat-card--total {
-	border-left: 3px solid var(--pos-error, #e86674);
-}
-
-.expense-stat-card--cash {
-	border-left: 3px solid var(--pos-warning, #ff9800);
-}
-
-.expense-stat-card--bank {
-	border-left: 3px solid var(--pos-info, #2196f3);
-}
-
-.expense-stat-card--today {
-	border-left: 3px solid var(--pos-primary, #0097a7);
-}
-
-.expense-filter-box {
-	background: var(--pos-surface-variant, #f8f9fa);
-	border-color: var(--pos-border, rgba(0, 0, 0, 0.08)) !important;
-}
-
-.expenses-feed-container {
-	flex: 1 1 0;
-	min-height: 120px;
-	overflow-y: auto;
-}
-
-.expense-row-card {
-	padding: 10px 14px;
-	border-radius: var(--pos-radius-sm, 8px);
-	border: 1px solid var(--pos-border, rgba(0, 0, 0, 0.08));
-	background: var(--pos-surface, #ffffff);
-	transition: background-color 0.15s;
-}
-
-.expense-row-card:hover {
-	background: var(--pos-surface-variant, #f9f9f9);
-}
-
-.expense-row-card--cancelled {
-	opacity: 0.55;
-	background: var(--pos-surface-variant, #f0f0f0);
-}
-
-.expense-icon-bubble {
-	width: 36px;
-	height: 36px;
-	border-radius: 50%;
-	background: var(--pos-hover-bg, rgba(0, 0, 0, 0.04));
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 1.25rem;
-	flex-shrink: 0;
-}
-
-.expense-bottom-sum-row {
-	flex-shrink: 0;
-	margin-top: auto;
-	padding: 10px 14px;
-	border-radius: var(--pos-radius-sm, 8px);
-	border: 1px solid var(--pos-border, rgba(0, 0, 0, 0.08));
-	background: var(--pos-surface-variant, #fcfcfc);
-}
-
-.expense-submit-btn {
-	border-radius: var(--pos-radius-sm, 8px);
-	height: 38px !important;
-	padding: 0 20px !important;
-	font-size: 0.875rem !important;
-}
-
-@media (max-width: 959px) {
-	.pos-expense-desk {
-		height: auto;
-		overflow-y: auto;
-		display: block;
+@media (max-width: 480px) {
+	.expense-filter-grid {
+		grid-template-columns: minmax(0, 1fr);
 	}
-	.pos-expense-row {
-		height: auto;
-	}
-	.pos-col-left,
-	.pos-col-right {
-		height: auto;
-		margin-bottom: 16px;
-	}
-	.expenses-feed-container {
-		max-height: 400px;
+	.expense-record-amount {
+		max-width: 44%;
+		overflow-wrap: anywhere;
+		flex-shrink: 1;
 	}
 }
 </style>

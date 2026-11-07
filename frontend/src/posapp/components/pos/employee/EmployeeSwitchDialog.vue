@@ -151,7 +151,8 @@
 		</v-card>
 	</v-dialog>
 
-	<v-dialog :model-value="lockDialogOpen" max-width="480" persistent>
+	<!-- Keep the terminal locked while first-time shift setup chooses its register. -->
+	<v-dialog :model-value="lockDialogOpen && !!posProfileName" max-width="480" persistent>
 		<v-card class="pos-themed-card employee-lock-dialog" data-test="terminal-lock-dialog">
 			<v-card-title class="employee-switch-dialog__title">
 				<div>
@@ -302,13 +303,16 @@ const pinError = ref("");
 const isSubmitting = ref(false);
 const showPin = ref(false);
 const posProfileName = computed(
-	() => uiStore.posProfile?.name || window.frappe?.boot?.pos_profile?.name || "",
+	() =>
+		uiStore.posProfile?.name ||
+		window.frappe?.boot?.pos_profile?.name ||
+		employeeStore.terminalEmployeesProfile ||
+		"",
 );
 const cashiersLoading = computed(
 	() =>
 		!terminalEmployees.value.length &&
-		(terminalEmployeesLoadStatus.value === "idle" ||
-			terminalEmployeesLoadStatus.value === "loading"),
+		(terminalEmployeesLoadStatus.value === "idle" || terminalEmployeesLoadStatus.value === "loading"),
 );
 const cashiersLoadFailed = computed(
 	() => terminalEmployeesLoadStatus.value === "error" && !terminalEmployees.value.length,

@@ -15,7 +15,7 @@
 			</div>
 		</div>
 		<div class="text-body-2 text-grey mb-4">
-			{{ __("Book expense or deposit from active shift.") }}
+			{{ __("View previous movements or record a cash deposit.") }}
 		</div>
 
 		<v-alert
@@ -28,6 +28,15 @@
 			{{ __("No cash movement type is allowed for this POS Profile.") }}
 		</v-alert>
 
+		<v-btn
+			v-if="context?.shared_expense_ready"
+			to="/expenses"
+			variant="text"
+			color="primary"
+			class="mb-3"
+		>
+			{{ __("Record expenses in Expenses") }}
+		</v-btn>
 		<v-row dense>
 			<v-col cols="12" md="4">
 				<v-text-field
@@ -195,7 +204,9 @@ let previousAmount = 0;
 let amountEdited = false;
 
 const enabled = computed(() => !!props.context?.enable_cash_movement);
-const allowExpense = computed(() => !!props.context?.allow_pos_expense);
+const allowExpense = computed(
+	() => !!props.context?.allow_pos_expense && !props.context?.shared_expense_ready,
+);
 const allowDeposit = computed(() => !!props.context?.allow_cash_deposit);
 const allowSourceAccountOverride = computed(() => !!props.context?.allow_source_account_override);
 const targetAccountLocked = computed(() => !!props.context?.back_office_cash_account);

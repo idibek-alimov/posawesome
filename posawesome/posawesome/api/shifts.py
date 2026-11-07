@@ -49,9 +49,11 @@ def get_opening_dialog_data():
         order_by="parent",
         ignore_permissions=True,
     )
-    # set currency from pos profile
+    data["count_currency_basis"] = "company"
+    # Opening/closing counts are company-currency shift funds, independent of sales currency.
+    profile_companies = {profile.name: profile.company for profile in pos_profiles_data}
     for mode in data["payments_method"]:
-        mode["currency"] = frappe.get_cached_value("POS Profile", mode["parent"], "currency")
+        mode["currency"] = frappe.get_cached_value("Company", profile_companies[mode["parent"]], "default_currency")
 
     return data
 

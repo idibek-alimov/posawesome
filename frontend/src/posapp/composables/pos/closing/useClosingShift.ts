@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { actualAmount } from "./closingAmounts";
+import { actualAmount, hasClosingDifference } from "./closingAmounts";
 
 declare const frappe: any;
 
@@ -179,6 +179,7 @@ export function useClosingShift(eventBus: any) {
 
 		const normalize = (payload: any = {}) => ({
 			reconciliation: payload.reconciliation,
+			currency_precision: payload.currency_precision ?? 3,
 			salespeople: payload.salespeople || [],
 			movements: payload.movements || [],
 			total_invoices: toNumber(payload.total_invoices),
@@ -289,12 +290,14 @@ export function useClosingShift(eventBus: any) {
 			)
 			.then((r: any) => {
 				const previous = dialog_data.value.payment_reconciliation;
+				const reason = dialog_data.value.discrepancy_reason;
 				if (currentRequest !== requestId) return;
 				if (!r?.message?.closing_shift)
 					throw new Error("Missing closing draft");
 				dialog_data.value = {
 					...r.message.closing_shift,
 					payment_reconciliation: previous,
+					discrepancy_reason: reason || "",
 					skipped_printed_invoices:
 						r.message.skipped_printed_invoices || [],
 				};
@@ -317,8 +320,20 @@ export function useClosingShift(eventBus: any) {
 		const payments = dialog_data.value.payment_reconciliation || [];
 		if (
 			payments.some(
-				(row: any) => actualAmount(row.closing_amount) === null,
+				(row: any) =>
+					actualAmount(
+						row.closing_amount,
+						overview.value.currency_precision ?? 3,
+					) === null,
 			)
+		)
+			return false;
+		if (
+			hasClosingDifference(
+				payments,
+				overview.value.currency_precision ?? 3,
+			) &&
+			!dialog_data.value.discrepancy_reason?.trim()
 		)
 			return false;
 		submitting.value = true;

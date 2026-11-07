@@ -19,7 +19,7 @@ def get_opening_shift(opening_shift_name):
     if not opening_shift_name:
         frappe.throw(_("POS Opening Shift is required."))
 
-    opening_shift = frappe.get_doc("POS Opening Shift", opening_shift_name)
+    opening_shift = frappe.get_doc("POS Opening Shift", opening_shift_name, for_update=True)
     if opening_shift.docstatus != 1 or opening_shift.status != "Open":
         frappe.throw(_("POS Opening Shift must be submitted and open."))
     if opening_shift.user != frappe.session.user:
@@ -107,7 +107,9 @@ def resolve_source_cash_account(payload, profile_doc):
     allowed_sources = extract_allowed_accounts(profile_doc.get("posa_allowed_source_accounts"))
 
     if selected_source and not allow_override:
-        frappe.throw(_("Source account override is disabled for this POS Profile."))
+        if selected_source != _resolve_default_source_cash_account(profile_doc):
+            frappe.throw(_("Source account override is disabled for this POS Profile."))
+        selected_source = ""  # Echoing the configured default is not an override.
 
     if selected_source and allowed_sources and selected_source not in allowed_sources:
         frappe.throw(_("Selected source account is not allowed for this POS Profile."))
@@ -182,7 +184,8 @@ def ensure_no_duplicate_client_request(client_request_id):
         "POS Cash Movement",
         {"client_request_id": client_request_id},
         "name",
+        for_update=True,
     )
     if existing_name:
-        return frappe.get_doc("POS Cash Movement", existing_name)
+        return frappe.get_doc("POS Cash Movement", existing_name, for_update=True)
     return None
