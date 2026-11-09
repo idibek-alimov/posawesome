@@ -1899,6 +1899,7 @@ import {
 	shouldUseConfiguredQzDocumentPrinting,
 	shouldUseRawDocumentPrinting,
 } from "../../../services/documentPrint";
+import { copySalesTeam } from "../../../utils/salesTeam";
 import { isOffline } from "../../../../offline/index";
 import { buildInvoicePdfUrl, shouldDownloadPdfForShareError } from "../../../utils/invoiceSharing";
 import DocumentSourceSelector from "../shared/DocumentSourceSelector.vue";
@@ -3766,10 +3767,7 @@ export default {
 					pos_profile: this.posProfile?.name,
 					company: this.posProfile?.company,
 					sales_team: Array.isArray(returnDoc.sales_team)
-						? returnDoc.sales_team.map((st) => ({
-								sales_person: st.sales_person,
-								allocated_percentage: st.allocated_percentage || 100,
-							}))
+						? copySalesTeam(returnDoc.sales_team)
 						: returnDoc.custom_sales_person || returnDoc.sales_person
 							? [
 									{

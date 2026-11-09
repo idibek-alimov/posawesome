@@ -261,6 +261,7 @@ import PaymentAdditionalInfo from "./payments/PaymentAdditionalInfo.vue";
 import PaymentPurchaseOrder from "./payments/PaymentPurchaseOrder.vue";
 import PaymentCustomerCreditDetails from "./payments/PaymentCustomerCreditDetails.vue";
 import PaymentOptions from "./payments/PaymentOptions.vue";
+import { usePaymentSalesPerson } from "../../composables/pos/payments/usePaymentSalesPerson";
 import PaymentSelectionFields from "./payments/PaymentSelectionFields.vue";
 import PaymentDialogs from "./payments/PaymentDialogs.vue";
 
@@ -317,7 +318,6 @@ const paid_change = ref(0);
 const credit_change = ref(0);
 const loading = ref(false);
 const show_change_dialog = ref(false);
-const sales_person = ref("");
 const is_credit_return = ref(false);
 const customer_info = ref("");
 const print_format = ref("");
@@ -357,6 +357,8 @@ const invoice_doc = computed({
 	get: () => invoiceStore.invoiceDoc || {},
 	set: (value) => invoiceStore.setInvoiceDoc(value),
 });
+
+const sales_person = usePaymentSalesPerson(invoice_doc);
 
 const resolveBelowCostOverride = (result) => {
 	const resolver = belowCostOverrideResolver;
@@ -1840,7 +1842,6 @@ const submitInvoiceWrapper = async (print, callbackOverrides = {}, options = {})
 				is_cashback.value = true;
 				show_change_dialog.value = true;
 				is_credit_return.value = false;
-				sales_person.value = "";
 			},
 			onFinishNavigation: (clearInvoice) => {
 				finishSubmissionNavigation(clearInvoice);
@@ -2198,21 +2199,6 @@ watch(redeemed_customer_credit, () => {
 	rebalancePreferredPaymentCoverage();
 });
 
-watch(sales_person, (newVal) => {
-	if (!invoice_doc.value) return;
-	invoice_doc.value.custom_sales_person = newVal || "";
-	if (newVal) {
-		invoice_doc.value.sales_team = [
-			{
-				sales_person: newVal,
-				allocated_percentage: 100,
-			},
-		];
-	} else {
-		invoice_doc.value.sales_team = [];
-	}
-});
-
 watch(is_credit_sale, (newVal) => {
 	if (!invoice_doc.value || !Array.isArray(invoice_doc.value.payments)) return;
 
@@ -2377,15 +2363,6 @@ onMounted(() => {
 			loyalty_amount.value = 0;
 			redeemed_customer_credit.value = 0;
 			resetGiftCardState({ clearPayment: true });
-			if (Array.isArray(doc?.sales_team) && doc.sales_team.length > 0 && doc.sales_team[0]?.sales_person) {
-				sales_person.value = doc.sales_team[0].sales_person;
-			} else if (doc?.custom_sales_person) {
-				sales_person.value = doc.custom_sales_person;
-			} else if (doc?.sales_person) {
-				sales_person.value = doc.sales_person;
-			} else {
-				sales_person.value = "";
-			}
 
 			if (doc.customer) {
 				get_addresses();

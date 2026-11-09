@@ -48,7 +48,7 @@ def sync_sales_person(doc):
     if sales_team and doc.grand_total:
         for st in sales_team:
             if not st.get("allocated_amount"):
-                st.allocated_amount = flt(doc.grand_total) * flt(st.get("allocated_percentage") or 100.0) / 100.0
+                st.allocated_amount = flt(doc.grand_total) * flt(st.get("allocated_percentage")) / 100.0
 
 
 

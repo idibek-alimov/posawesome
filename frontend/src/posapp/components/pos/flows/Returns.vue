@@ -325,8 +325,9 @@
 
 <script>
 import format, { formatUtils } from "../../../format";
-import { useInvoiceStore } from "../../../stores/invoiceStore.js";
-import { useUIStore } from "../../../stores/uiStore.js";
+import { useInvoiceStore } from "../../../stores/invoiceStore";
+import { useUIStore } from "../../../stores/uiStore";
+import { copySalesTeam } from "../../../utils/salesTeam";
 import { computed } from "vue";
 import { useResponsive } from "../../../composables/core/useResponsive";
 import { useTheme } from "../../../composables/core/useTheme";
@@ -817,12 +818,7 @@ export default {
 				invoice_doc.update_stock = 1;
 				invoice_doc.pos_profile = this.pos_profile.name;
 				invoice_doc.company = this.company;
-				invoice_doc.sales_team = Array.isArray(return_doc.sales_team)
-					? return_doc.sales_team.map((st) => ({
-							sales_person: st.sales_person,
-							allocated_percentage: st.allocated_percentage || 100,
-						}))
-					: [];
+				invoice_doc.sales_team = copySalesTeam(return_doc.sales_team);
 				const resolvedSalesPerson =
 					return_doc.custom_sales_person ||
 					return_doc.sales_person ||

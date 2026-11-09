@@ -2,6 +2,10 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("../src/posapp/composables/core/useTheme", () => ({
+	useTheme: () => ({}),
+}));
+
 vi.mock("../src/offline/index", () => ({
 	getTaxTemplate: vi.fn(() => null),
 	getTaxInclusiveSetting: vi.fn(() => false),
@@ -12,6 +16,22 @@ vi.mock("../src/posapp/components/pos/invoice_utils/currency", () => ({
 	_getPlcConversionRate: vi.fn(() => 1),
 }));
 
+vi.mock("../src/posapp/plugins/print", () => ({
+	appendDebugPrintParam: (url: string) => url,
+	isDebugPrintEnabled: () => false,
+	silentPrint: vi.fn(),
+	watchPrintWindow: vi.fn(),
+}));
+vi.mock("../src/posapp/services/qzTray", () => ({
+	printDocumentViaQz: vi.fn(),
+}));
+
+import {
+	copySalesTeam,
+	resolveSalesPerson,
+} from "../src/posapp/utils/salesTeam";
+import InvoiceManagement from "../src/posapp/components/pos/flows/InvoiceManagement.vue";
+import Returns from "../src/posapp/components/pos/flows/Returns.vue";
 import { get_invoice_doc } from "../src/posapp/components/pos/invoice_utils/document";
 
 describe("Return Sales Person carry-over", () => {
@@ -51,15 +71,11 @@ describe("Return Sales Person carry-over", () => {
 			is_return: 1,
 			return_against: return_doc.name,
 			customer: return_doc.customer,
-			sales_team: Array.isArray(return_doc.sales_team)
-				? return_doc.sales_team.map((st: any) => ({
-						sales_person: st.sales_person,
-						allocated_percentage: st.allocated_percentage || 100,
-					}))
-				: [],
+			sales_team: copySalesTeam(return_doc.sales_team),
 			custom_sales_person:
 				return_doc.custom_sales_person ||
-				(return_doc.sales_team && return_doc.sales_team[0]?.sales_person) ||
+				(return_doc.sales_team &&
+					return_doc.sales_team[0]?.sales_person) ||
 				"",
 		};
 
@@ -75,18 +91,9 @@ describe("Return Sales Person carry-over", () => {
 	it("extracts the sales_person properly from sales_team array or fallback field", () => {
 		const docWithTeam = {
 			is_return: 1,
-			sales_team: [{ sales_person: "Rep Alpha", allocated_percentage: 100 }],
-		};
-
-		const resolveSalesPerson = (doc: any) => {
-			if (Array.isArray(doc?.sales_team) && doc.sales_team.length > 0 && doc.sales_team[0]?.sales_person) {
-				return doc.sales_team[0].sales_person;
-			} else if (doc?.custom_sales_person) {
-				return doc.custom_sales_person;
-			} else if (doc?.sales_person) {
-				return doc.sales_person;
-			}
-			return "";
+			sales_team: [
+				{ sales_person: "Rep Alpha", allocated_percentage: 100 },
+			],
 		};
 
 		expect(resolveSalesPerson(docWithTeam)).toBe("Rep Alpha");
@@ -153,4 +160,131 @@ describe("Return Sales Person carry-over", () => {
 			},
 		]);
 	});
+});
+
+describe("actual return reconstruction", () => {
+	for (const management of [false, true]) {
+		for (const doctype of ["Sales Invoice", "POS Invoice"]) {
+			it(`preserves zero and decimal split and item/payment lineage for ${doctype} via ${management ? "management" : "returns"}`, async () => {
+				const original: any = {
+					doctype,
+					name: "ORIGINAL",
+					customer: "Customer",
+					grand_total: 200,
+					paid_amount: 200,
+					discount_amount: 10,
+					additional_discount_percentage: 5,
+					sales_team: [
+						{
+							sales_person: "A",
+							allocated_percentage: 0,
+							allocated_amount: 0,
+						},
+						{
+							sales_person: "B",
+							allocated_percentage: 33.3333,
+							allocated_amount: 66.6666,
+						},
+						{
+							sales_person: "C",
+							allocated_percentage: 66.6667,
+							allocated_amount: 133.3334,
+						},
+					],
+					items: [
+						{
+							name: "original-row",
+							item_code: "Item",
+							qty: 2,
+							stock_qty: 4,
+							conversion_factor: 2,
+							uom: "Box",
+							rate: 100,
+							price_list_rate: 110,
+							discount_percentage: 5,
+							discount_amount: 10,
+							amount: 200,
+							net_amount: 200,
+						},
+					],
+					payments: [
+						{
+							mode_of_payment: "Cash",
+							amount: 200,
+							base_amount: 400,
+							currency: "USD",
+							conversion_rate: 2,
+						},
+					],
+				};
+				(globalThis as any).frappe = {
+					call: vi.fn(async () => ({ message: original })),
+				};
+				const emit = vi.fn();
+				if (management) {
+					await (InvoiceManagement as any).methods.createReturn.call(
+						{
+							posProfile: { name: "Profile", company: "Company" },
+							eventBus: { emit },
+							uiStore: { closeInvoiceManagement: vi.fn() },
+							toastStore: { show: vi.fn() },
+						},
+						original,
+					);
+				} else {
+					await (Returns as any).methods.submit_dialog.call({
+						selected: [{ name: original.name }],
+						pos_profile: {
+							name: "Profile",
+							create_pos_invoice_instead_of_sales_invoice: Number(
+								doctype === "POS Invoice",
+							),
+						},
+						company: "Company",
+						flt: Number,
+						currency_precision: 2,
+						eventBus: { emit },
+					});
+				}
+				const [event, { invoice_doc: doc, return_doc }] =
+					emit.mock.calls[0];
+				expect(event).toBe("load_return_invoice");
+				expect(return_doc).toBe(original);
+				expect(doc.sales_team).toEqual(
+					copySalesTeam(original.sales_team),
+				);
+				expect(doc.custom_sales_person).toBe("A");
+				expect(
+					doc.sales_team.every(
+						(r: any) => r.allocated_amount === undefined,
+					),
+				).toBe(true);
+				expect(
+					doc.items[0][
+						doctype === "POS Invoice"
+							? "pos_invoice_item"
+							: "sales_invoice_item"
+					],
+				).toBe("original-row");
+				expect(doc.items[0]).toMatchObject({
+					qty: -2,
+					stock_qty: -4,
+					conversion_factor: 2,
+					uom: "Box",
+					rate: 100,
+					discount_percentage: 5,
+				});
+				expect(doc.payments[0]).toMatchObject({
+					amount: management ? 200 : -200,
+					base_amount: management ? 400 : -400,
+					currency: "USD",
+					conversion_rate: 2,
+				});
+				expect(doc.grand_total).toBe(-200);
+				expect(doc.discount_amount).toBe(10);
+				expect(doc.company).toBe("Company");
+				expect(doc.pos_profile).toBe("Profile");
+			});
+		}
+	}
 });

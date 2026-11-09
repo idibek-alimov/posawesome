@@ -35,9 +35,7 @@ describe("PaymentSelectionFields", () => {
 			},
 		});
 
-		const html = wrapper.html();
-		expect(html).toContain("<!-- Print Format Selection -->");
-		expect(html).toContain("<!--v-if-->");
+		expect(wrapper.find(".print-format-card").exists()).toBe(false);
 	});
 
 	it("shows the print format field when selection is enabled", () => {
@@ -54,8 +52,6 @@ describe("PaymentSelectionFields", () => {
 			},
 		});
 
-		const html = wrapper.html();
-		expect(html).toContain("<!-- Print Format Selection -->");
-		expect(html).not.toContain("<!--v-if-->");
+		expect(wrapper.find(".print-format-card").exists()).toBe(true);
 	});
 });

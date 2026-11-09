@@ -41,6 +41,11 @@ describe("offline write queue durability", () => {
 		await saveOfflineInvoice({
 			invoice: {
 				name: "OFFLINE-SINV-1001",
+				sales_team: [
+					{ sales_person: "A", allocated_percentage: 0 },
+					{ sales_person: "B", allocated_percentage: 33.3333 },
+					{ sales_person: "C", allocated_percentage: 66.6667 },
+				],
 				customer: "CUST-001",
 				items: [{ item_code: "ITEM-1", item_name: "Item 1", qty: 1 }],
 			},
@@ -50,6 +55,11 @@ describe("offline write queue durability", () => {
 		const queued = getOfflineInvoices();
 		const dbRows = await db.table("write_queue").toArray();
 
+		const reloaded = JSON.parse(JSON.stringify(dbRows[0].payload.invoice));
+		expect(reloaded.sales_team).toEqual(queued[0].invoice.sales_team);
+		expect(
+			reloaded.sales_team.map((r: any) => r.allocated_percentage),
+		).toEqual([0, 33.3333, 66.6667]);
 		expect(queued).toHaveLength(1);
 		expect(dbRows).toHaveLength(1);
 		expect(dbRows[0]).toEqual(
@@ -62,7 +72,9 @@ describe("offline write queue durability", () => {
 				idempotency_key: expect.any(String),
 				created_at: expect.any(String),
 				payload: expect.objectContaining({
-					invoice: expect.objectContaining({ name: "OFFLINE-SINV-1001" }),
+					invoice: expect.objectContaining({
+						name: "OFFLINE-SINV-1001",
+					}),
 				}),
 			}),
 		);
@@ -248,7 +260,9 @@ describe("offline write queue durability", () => {
 			},
 		});
 
-		(globalThis as any).frappe.call.mockRejectedValue(new Error("server unavailable"));
+		(globalThis as any).frappe.call.mockRejectedValue(
+			new Error("server unavailable"),
+		);
 
 		let result = await syncOfflineCashMovements();
 		expect(result).toEqual({ pending: 1, synced: 0 });
@@ -285,7 +299,13 @@ describe("offline write queue durability", () => {
 				invoice: {
 					name: "LEGACY-SINV-0001",
 					customer: "CUST-LEGACY",
-					items: [{ item_code: "ITEM-LEGACY", item_name: "Legacy", qty: 1 }],
+					items: [
+						{
+							item_code: "ITEM-LEGACY",
+							item_name: "Legacy",
+							qty: 1,
+						},
+					],
 				},
 				data: {},
 			},

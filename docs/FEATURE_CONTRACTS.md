@@ -263,3 +263,12 @@ Phase 9 local native verification/release handoff is complete; see the
 [evidence report](shift-review-phase-9.md) and [release runbook](shift-review-release.md).
 Both apps must be updated together. Intended-site grants/permissions, backup/upgrade,
 installed-app handoffs and physical bank/printer checks remain operator release gates.
+
+## 10. Prospective staff commission capture
+
+The [POS capture handoff](staff-commission-capture-contract.md) links to the canonical
+ERPNext S2e1 adoption contract. Live capture is not enabled. Preserve profile/company,
+server shift/cashier, request-ledger, background/offline/date and payment/receipt behavior;
+private HR attribution/evidence must not enter cashier responses or caches. S2e2's recorded
+split/zero-share preservation repair is implemented/verified locally; S2e3's disabled
+private authority/outcomes/native bridge is next. See the handoff for verification limits.

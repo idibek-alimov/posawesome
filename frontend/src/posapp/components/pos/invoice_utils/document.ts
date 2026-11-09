@@ -5,6 +5,7 @@ import {
 } from "../../../../offline/index";
 import { _getPlcConversionRate } from "./currency";
 import { resolvePosDocumentDoctype } from "../../../utils/posDocumentMode";
+import { copySalesTeam } from "../../../utils/salesTeam";
 import { toCompanyCurrency } from "../../../utils/erpnextCurrency";
 
 declare const flt: (_value: unknown, _precision?: number) => number;
@@ -453,10 +454,7 @@ export function get_invoice_doc(context: any) {
 		context.invoice_doc?.sales_team ||
 		[];
 	if (Array.isArray(rawSalesTeam) && rawSalesTeam.length > 0) {
-		doc.sales_team = rawSalesTeam.map((st: any) => ({
-			sales_person: st.sales_person,
-			allocated_percentage: flt(st.allocated_percentage) || 100,
-		}));
+		doc.sales_team = copySalesTeam(rawSalesTeam);
 	}
 	const salesPerson =
 		sourceDoc.custom_sales_person ||
