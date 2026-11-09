@@ -53,6 +53,7 @@ from posawesome.posawesome.api.pos_access import (
 import json
 import hashlib
 import time
+import traceback
 from contextlib import contextmanager
 from frappe.utils import money_in_words
 from frappe.utils.background_jobs import enqueue
@@ -201,9 +202,14 @@ def _validate_invoice_opening_shift(
     return shift_doc
 
 
-def _get_scoped_invoice_doc(doctype, invoice_name, pos_profile, company, permission_type):
+def _get_scoped_invoice_doc(doctype, invoice_name, pos_profile, company, permission_type, *, for_update=False):
+    from posawesome.posawesome.api.invoice_processing.commission_capture import worker_context
+
+    # A queued replay must see the winning worker's committed source even if
+    # metadata/profile reads established an older repeatable-read snapshot.
+    current = for_update or worker_context() is not None
     return assert_invoice_request_scope(
-        frappe.get_doc(doctype, invoice_name),
+        frappe.get_doc(doctype, invoice_name, **({"for_update": True} if current else {})),
         pos_profile=pos_profile,
         company=company,
         permission_type=permission_type,
@@ -221,6 +227,19 @@ def _assert_submission_ledger_scope(ledger_doc, pos_profile, company, document_t
     ):
         _permission_denied(_("This invoice request is not available for the selected POS Profile."))
     return ledger_doc
+
+
+def _locked_worker_ledger(client_request_id, pos_profile, company, doctype):
+    from posawesome.posawesome.api.invoice_processing.commission_capture import worker_context
+
+    work = worker_context()
+    if not work or not work.get("ledger_name"):
+        return None
+    ledger = frappe.get_doc(LEDGER_DOCTYPE, work["ledger_name"], for_update=True)
+    _assert_submission_ledger_scope(ledger, pos_profile, company, doctype)
+    if ledger.get("client_request_id") != client_request_id:
+        _permission_denied(_("This invoice request is not available for the selected POS Profile."))
+    return ledger
 
 
 def _strip_client_cashier_identity(*payloads):
@@ -792,7 +811,10 @@ def _repair_submitted_invoice_post_submit(ledger_doc, invoice_doc):
             context.get("payments") or [],
             False,
             getattr(getattr(frappe, "session", None), "user", None),
-            ledger_doc.name,
+            # This repair owns the final ledger transition below. Letting the
+            # shared helper reload/save it first makes this object stale and
+            # turns a successful native repair into TimestampMismatchError.
+            None,
         )
         _update_submission_ledger(
             ledger_doc,
@@ -1758,6 +1780,9 @@ def submit_invoice(invoice, data, submit_in_background=False):
     if not doctype_supports_client_request_id(doctype):
         strip_invoice_client_request_id(invoice)
 
+    # Both actual worker paths acquire the durable request before its source.
+    # A duplicate waits here, then uses current reads and final-state replay.
+    worker_ledger = _locked_worker_ledger(client_request_id, pos_profile, company, doctype)
     client_invoice_name = invoice.get("name")
     if client_invoice_name and frappe.db.exists(doctype, client_invoice_name):
         client_invoice_doc = _get_scoped_invoice_doc(
@@ -1776,7 +1801,7 @@ def submit_invoice(invoice, data, submit_in_background=False):
             )
 
     ledger_scope = _resolve_ledger_scope(invoice, data, doctype)
-    ledger_doc = _get_submission_ledger(
+    ledger_doc = worker_ledger or _get_submission_ledger(
         client_request_id,
         ledger_scope.get("company"),
         ledger_scope.get("pos_profile"),
@@ -2145,7 +2170,11 @@ def submit_invoice(invoice, data, submit_in_background=False):
             },
         )
     else:
-        _run_without_return_outstanding_prompts(invoice_doc, invoice_doc.submit)
+        from posawesome.posawesome.api.invoice_processing.commission_capture import submit_source
+
+        _run_without_return_outstanding_prompts(
+            invoice_doc, lambda: submit_source(invoice_doc, ledger_doc.name if ledger_doc else None)
+        )
         if ledger_doc:
             _update_submission_ledger(
                 ledger_doc,
@@ -2217,7 +2246,7 @@ def submit_in_background_job(kwargs):
             frappe.flags.posa_background_opening_user = opening_user
         if opening_shift and opening_user:
             frappe.flags.posa_background_opening_accepted = True
-        ledger_doc = _get_submission_ledger_by_name(ledger_name) if ledger_name else None
+        ledger_doc = frappe.get_doc(LEDGER_DOCTYPE, ledger_name, for_update=True) if ledger_name else None
 
         if ledger_doc:
             _assert_submission_ledger_scope(
@@ -2226,14 +2255,19 @@ def submit_in_background_job(kwargs):
                 ledger_doc.get("company"),
                 doctype,
             )
+            if ledger_doc.get("invoice_name") != invoice:
+                _permission_denied(_("This invoice request is not available for the selected POS Profile."))
             invoice_doc = _get_scoped_invoice_doc(
                 doctype,
                 invoice,
                 ledger_doc.get("pos_profile"),
                 ledger_doc.get("company"),
                 "read",
+                for_update=True,
             )
-            profile_doc = frappe.get_doc("POS Profile", ledger_doc.get("pos_profile"))
+            profile_doc = get_authorized_pos_profile(
+                ledger_doc.get("pos_profile"), company=ledger_doc.get("company")
+            )
         else:
             invoice_doc = frappe.get_doc(doctype, invoice)
             profile_doc = _resolve_authorized_invoice_profile(
@@ -2261,13 +2295,20 @@ def submit_in_background_job(kwargs):
             _set_authoritative_cashier(invoice_doc, cashier)
 
         if invoice_doc.docstatus == 1:
-            if ledger_doc:
+            # A duplicate worker is neither payment repair nor a new submit.
+            # Keep completed and failed payment states exactly as persisted.
+            if ledger_doc and ledger_doc.get("state") not in FINAL_LEDGER_STATES | {STATE_FAILED}:
                 _update_submission_ledger(
                     ledger_doc,
                     STATE_SUBMITTED,
                     invoice_name=invoice_doc.name,
                 )
             return
+
+        if ledger_doc and ledger_doc.get("state") == STATE_FAILED:
+            _update_submission_ledger(
+                ledger_doc, STATE_DRAFT_CREATED, invoice_name=invoice_doc.name, error_message=""
+            )
 
         invoice_doc.flags.ignore_permissions = True
         frappe.flags.ignore_account_permission = True
@@ -2293,7 +2334,12 @@ def submit_in_background_job(kwargs):
         invoice_doc = _save_draft_with_latest_timestamp(invoice_doc)
         _normalize_return_payment_rows(invoice_doc, invoice_doc.get("conversion_rate") or 1)
 
-        invoice_doc.submit()
+        from posawesome.posawesome.api.invoice_processing.commission_capture import (
+            queued_submission, submit_source,
+        )
+
+        with queued_submission(kwargs):
+            submit_source(invoice_doc, ledger_name)
         if ledger_doc:
             _update_submission_ledger(
                 ledger_doc,
@@ -2329,11 +2375,11 @@ def submit_in_background_job(kwargs):
         if ledger_name:
             try:
                 ledger_doc = _get_submission_ledger_by_name(ledger_name)
-                if ledger_doc:
+                if ledger_doc and ledger_doc.get("state") not in FINAL_LEDGER_STATES:
                     _mark_ledger_failed(ledger_doc, error_msg)
             except Exception:
                 pass
-        frappe.log_error(f"POS Background Submission Failed for {invoice}: {error_msg}")
+        frappe.log_error(title="POS Background Submission Failed", message=traceback.format_exc())
         frappe.publish_realtime(
             "pos_invoice_submit_error",
             {"invoice": invoice, "error": error_msg},
@@ -2397,24 +2443,25 @@ def submit_payload_in_background_job(kwargs):
             frappe.flags.posa_background_opening_user = opening_user
         if opening_shift and opening_user:
             frappe.flags.posa_background_opening_accepted = True
-        submit_invoice(
-            json.dumps(invoice, default=str),
-            json.dumps(data, default=str),
-            submit_in_background=0,
-        )
+        from posawesome.posawesome.api.invoice_processing.commission_capture import queued_submission
+
+        with queued_submission(kwargs):
+            submit_invoice(
+                json.dumps(invoice, default=str),
+                json.dumps(data, default=str),
+                submit_in_background=0,
+            )
     except Exception as e:
         frappe.db.rollback()
         error_msg = str(e)
         if ledger_name:
             try:
                 ledger_doc = _get_submission_ledger_by_name(ledger_name)
-                if ledger_doc:
+                if ledger_doc and ledger_doc.get("state") not in FINAL_LEDGER_STATES:
                     _mark_ledger_failed(ledger_doc, error_msg)
             except Exception:
                 pass
-        frappe.log_error(
-            f"POS Background Payload Submission Failed for {invoice.get('name')}: {error_msg}"
-        )
+        frappe.log_error(title="POS Background Payload Submission Failed", message=traceback.format_exc())
         if hasattr(frappe, "publish_realtime"):
             frappe.publish_realtime(
                 "pos_invoice_submit_error",

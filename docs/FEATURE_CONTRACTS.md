@@ -271,4 +271,10 @@ ERPNext S2e1 adoption contract. Live capture is not enabled. Preserve profile/co
 server shift/cashier, request-ledger, background/offline/date and payment/receipt behavior;
 private HR attribution/evidence must not enter cashier responses or caches. S2e2's recorded
 split/zero-share preservation repair is implemented/verified locally; S2e3's disabled
-private authority/outcomes/native bridge is next. See the handoff for verification limits.
+private authority/outcomes/native bridge is verified locally in ERPNext. S2e4 now connects
+foreground and both real workers to exact-object private authority, serializes simultaneous
+same-request workers with current locking reads, preserves failed-payment/
+repair/retry states and adds explicit HR-authorized complete-manifest observations. Worker,
+race and bounded volume/graph checks pass locally; company opt-ins remain off. See the
+handoff for proof limits, measured latency, operator/fixture/device boundaries and the next
+native payroll handoff audit.

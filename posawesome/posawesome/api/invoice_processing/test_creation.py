@@ -4,7 +4,7 @@ import pathlib
 import sys
 import types
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[4]
 _ORIGINAL_MODULES = dict(sys.modules)
@@ -2189,7 +2189,7 @@ class TestInvoiceIdempotency(unittest.TestCase):
                 return invoice_doc.name
             return 0
 
-        def fake_get_doc(doctype, name):
+        def fake_get_doc(doctype, name, **kwargs):
             if doctype == "POS Invoice Submission Ledger":
                 return ledger_doc
             if doctype == "POS Profile":
@@ -2837,7 +2837,7 @@ class TestInvoiceIdempotency(unittest.TestCase):
                 return ledger_doc.name
             return None
 
-        def fake_get_doc(doctype, name):
+        def fake_get_doc(doctype, name, **kwargs):
             if doctype == "POS Invoice Submission Ledger":
                 return ledger_doc
             if doctype == "POS Profile":
@@ -2902,7 +2902,7 @@ class TestInvoiceIdempotency(unittest.TestCase):
         )
         invoice_doc.submit = lambda: setattr(invoice_doc, "docstatus", 1)
 
-        def fake_get_doc(doctype, name):
+        def fake_get_doc(doctype, name, **kwargs):
             if doctype == "POS Invoice Submission Ledger":
                 return ledger_doc
             if doctype == "POS Profile":
@@ -2973,7 +2973,7 @@ class TestInvoiceIdempotency(unittest.TestCase):
         )
         invoice_doc.submit = lambda: setattr(invoice_doc, "docstatus", 1)
 
-        def fake_get_doc(doctype, name):
+        def fake_get_doc(doctype, name, **kwargs):
             if doctype == "POS Invoice Submission Ledger":
                 return ledger_doc
             if doctype == "POS Profile":
@@ -2989,6 +2989,10 @@ class TestInvoiceIdempotency(unittest.TestCase):
         self.creation._process_post_submit_payments = lambda *args, **kwargs: (_ for _ in ()).throw(
             Exception("post submit failed")
         )
+        # The failure handler reloads the committed ledger after rollback. Its
+        # persisted state predates this worker's uncommitted SUBMITTED change.
+        self.addCleanup(setattr, self.creation.frappe.db, "rollback", self.creation.frappe.db.rollback)
+        self.creation.frappe.db.rollback = lambda: setattr(ledger_doc, "state", "DRAFT_CREATED")
 
         self.creation.submit_in_background_job(
             {
@@ -3009,6 +3013,21 @@ class TestInvoiceIdempotency(unittest.TestCase):
         self.assertEqual(invoice_doc.docstatus, 1)
         self.assertEqual(ledger_doc.state, "FAILED")
         self.assertIn("post submit failed", ledger_doc.error_message)
+
+    def test_late_duplicate_failure_keeps_winners_final_ledger_state(self):
+        for state in (self.creation.STATE_SUBMITTED, self.creation.STATE_POST_SUBMIT_DONE):
+            ledger = FakeDoc(doctype=self.creation.LEDGER_DOCTYPE, name="winner-ledger",
+                document_type="Sales Invoice", pos_profile="Main POS", company="Test Company",
+                invoice_name="winner-invoice", state=state)
+            source = FakeDoc(doctype="Sales Invoice", name="winner-invoice", docstatus=1,
+                pos_profile="Main POS", company="Test Company")
+            with patch.object(self.creation.frappe, "get_doc", side_effect=lambda dt, name, **kwargs: (
+                    ledger if dt == self.creation.LEDGER_DOCTYPE else source)), \
+                    patch.object(self.creation, "get_authorized_pos_profile",
+                    side_effect=PermissionError("revoked after winner completed")):
+                self.creation.submit_in_background_job(dict(invoice=source.name, doctype=source.doctype,
+                    ledger_name=ledger.name, user="test@example.com"))
+            self.assertEqual(ledger.state, state)
 
 
 if __name__ == "__main__":
