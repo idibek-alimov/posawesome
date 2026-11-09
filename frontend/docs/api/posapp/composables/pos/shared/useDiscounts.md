@@ -12,7 +12,7 @@
 
 > **useDiscounts**(): `object`
 
-Defined in: [posapp/composables/pos/shared/useDiscounts.ts:21](https://github.com/idibek-alimov/posawesome/blob/4efe41bc4172226a4578941d8dcec4493db4bc88/frontend/src/posapp/composables/pos/shared/useDiscounts.ts#L21)
+Defined in: [posapp/composables/pos/shared/useDiscounts.ts:21](https://github.com/idibek-alimov/posawesome/blob/ce4552b2271b03fb0458a5626cf8ef8e55838a32/frontend/src/posapp/composables/pos/shared/useDiscounts.ts#L21)
 
 #### Returns
 
