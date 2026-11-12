@@ -34,12 +34,12 @@ const canonicalBrandingFiles = [
 describe("POS Awesome branding", () => {
 	it("keeps the stable app identifier separate from the display brand", () => {
 		expect(POS_APP_ID).toBe("posawesome");
-		expect(POS_BRAND_NAME).toBe("POS Awesome");
-		expect(POS_BRAND_SHORT_NAME).toBe("POS");
+		expect(POS_BRAND_NAME).toBe("Radolfa");
+		expect(POS_BRAND_SHORT_NAME).toBe("Radolfa");
 	});
 
 	it("uses the canonical name in installed-app displays", () => {
-		expect(getPosAppDisplayName("posawesome")).toBe("POS Awesome");
+		expect(getPosAppDisplayName("posawesome")).toBe("Radolfa");
 		expect(getPosAppDisplayName("erpnext")).toBe("erpnext");
 	});
 
@@ -60,8 +60,8 @@ describe("POS Awesome branding", () => {
 
 	it("ignores custom values until custom branding is enabled", () => {
 		expect(resolvePosBranding({ posa_brand_name: "Unapproved Brand" })).toEqual({
-			name: "POS Awesome",
-			shortName: "POS",
+			name: "Radolfa",
+			shortName: "Radolfa",
 			logo: "",
 		});
 	});
@@ -90,12 +90,12 @@ describe("POS Awesome branding", () => {
 		expect(packageConfig.build.win.artifactName).toBe(
 			"POSAwesome-Setup-${version}.${ext}",
 		);
-		expect(manifest.name).toBe("POS Awesome");
-		expect(hooks).toContain('app_title = "POS Awesome"');
+		expect(manifest.name).toBe("Radolfa");
+		expect(hooks).toContain('app_title = "Radolfa"');
 		expect(dashboardHeader).toContain('__("Awesome Dashboard")');
 		expect(fixtures).toContain('"label": "POS Awesome Settings"');
 		expect(fixtures).not.toContain("RetailMind-POS");
-		expect(workspace.label).toBe("POS Awesome");
-		expect(workspace.title).toBe("POS Awesome");
+		expect(workspace.label).toBe("Radolfa");
+		expect(workspace.title).toBe("Radolfa");
 	});
 });

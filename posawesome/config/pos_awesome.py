@@ -5,7 +5,7 @@ from frappe import _
 def get_data():
     return [
         {
-            "label": _("POS Awesome"),
+            "label": _("Radolfa"),
             "items": [
                 {
                     "description": "POS Awesome",

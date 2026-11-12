@@ -101,4 +101,22 @@ describe("customer search helpers", () => {
 			}),
 		).toEqual(["mobile_no", "tax_id"]);
 	});
+
+	it("detects duplicate mobile numbers across country code and local formats", () => {
+		const customer: CustomerSummary = {
+			name: "CUST-002",
+			customer_name: "Qurbon",
+			mobile_no: "+992 98 610 4141",
+		};
+
+		expect(
+			getCustomerDuplicateFields(
+				customer,
+				{
+					mobile_no: "986104141",
+				},
+				false,
+			),
+		).toEqual(["mobile_no"]);
+	});
 });

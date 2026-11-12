@@ -23,7 +23,21 @@
 				<v-card-text class="pa-0">
 					<v-container>
 						<v-row>
-							<v-col cols="12">
+							<!-- Core Quick Registration fields: Mobile No, Customer Name, Tier -->
+							<v-col cols="12" sm="6">
+								<v-text-field
+									ref="mobileNoField"
+									density="compact"
+									color="primary"
+									:label="frappe._('Mobile No') + ' *'"
+									class="pos-themed-input"
+									hide-details
+									v-model="mobile_no"
+									placeholder="+992 986104141"
+									@keydown.enter="handleEnterKey"
+								></v-text-field>
+							</v-col>
+							<v-col cols="12" sm="6">
 								<v-text-field
 									ref="customerNameField"
 									density="compact"
@@ -32,9 +46,31 @@
 									hide-details
 									class="pos-themed-input"
 									v-model="customer_name"
+									placeholder="Имя Фамилия"
+									@keydown.enter="handleEnterKey"
 								></v-text-field>
 							</v-col>
-							<v-col cols="6">
+							<v-col cols="12">
+								<v-autocomplete
+									clearable
+									density="compact"
+									auto-select-first
+									color="primary"
+									:label="frappe._('Customer Tier') + ' *'"
+									v-model="group"
+									:items="tierSelectItems"
+									item-title="label"
+									item-value="name"
+									class="pos-themed-input"
+									:no-data-text="__('Tier not found')"
+									hide-details
+									required
+								>
+								</v-autocomplete>
+							</v-col>
+
+							<!-- Non-essential details (disclosed when hideNonEssential is false) -->
+							<v-col cols="6" v-if="!hideNonEssential">
 								<v-text-field
 									density="compact"
 									color="primary"
@@ -44,14 +80,14 @@
 									v-model="tax_id"
 								></v-text-field>
 							</v-col>
-							<v-col cols="6">
+							<v-col cols="6" v-if="!hideNonEssential">
 								<v-text-field
 									density="compact"
 									color="primary"
-									:label="frappe._('Mobile No')"
+									:label="frappe._('Email Id')"
 									class="pos-themed-input"
 									hide-details
-									v-model="mobile_no"
+									v-model="email_id"
 								></v-text-field>
 							</v-col>
 							<v-col cols="12" v-if="!hideNonEssential">
@@ -86,17 +122,7 @@
 								></v-select>
 							</v-col>
 
-							<v-col cols="6">
-								<v-text-field
-									density="compact"
-									color="primary"
-									:label="frappe._('Email Id')"
-									class="pos-themed-input"
-									hide-details
-									v-model="email_id"
-								></v-text-field>
-							</v-col>
-							<v-col cols="6">
+							<v-col cols="6" v-if="!hideNonEssential">
 								<v-select
 									density="compact"
 									:label="__('Gender')"
@@ -105,7 +131,7 @@
 									class="pos-themed-input"
 								></v-select>
 							</v-col>
-							<v-col cols="6">
+							<v-col cols="6" v-if="!hideNonEssential">
 								<v-text-field
 									density="compact"
 									color="primary"
@@ -115,7 +141,7 @@
 									v-model="referral_code"
 								></v-text-field>
 							</v-col>
-							<v-col cols="6">
+							<v-col cols="6" v-if="!hideNonEssential">
 								<v-text-field
 									v-model="birthday"
 									:label="frappe._('Birthday (DD-MM-YYYY)')"
@@ -134,22 +160,6 @@
 									density="compact"
 									auto-select-first
 									color="primary"
-									:label="frappe._('Customer Group') + ' *'"
-									v-model="group"
-									:items="groups"
-									class="pos-themed-input"
-									:no-data-text="__('Group not found')"
-									hide-details
-									required
-								>
-								</v-autocomplete>
-							</v-col>
-							<v-col cols="6" v-if="!hideNonEssential">
-								<v-autocomplete
-									clearable
-									density="compact"
-									auto-select-first
-									color="primary"
 									:label="frappe._('Territory') + ' *'"
 									v-model="territory"
 									:items="territorys"
@@ -160,6 +170,8 @@
 								>
 								</v-autocomplete>
 							</v-col>
+
+							<!-- Existing loyalty info if editing an active loyalty customer -->
 							<v-col cols="6" v-if="loyalty_program">
 								<v-text-field
 									v-model="loyalty_program"
@@ -251,13 +263,15 @@ export default {
 		mobile_no: "",
 		address_line1: "",
 		city: "",
-		country: "Pakistan",
+		country: "Tajikistan",
 		email_id: "",
 		referral_code: "",
 		birthday: "",
 		birthday_menu: false,
 		group: "",
 		groups: [],
+		tierOptions: [],
+		defaultTier: "Базовый",
 		territory: "",
 		territorys: [],
 		genders: [],
@@ -265,8 +279,9 @@ export default {
 		gender: "",
 		loyalty_points: null,
 		loyalty_program: null,
-		hideNonEssential: false,
+		hideNonEssential: true,
 		countries: [
+			"Tajikistan",
 			"Afghanistan",
 			"Australia",
 			"Bahrain",
@@ -290,6 +305,7 @@ export default {
 			"Pakistan",
 			"Philippines",
 			"Qatar",
+			"Russia",
 			"Saudi Arabia",
 			"Singapore",
 			"South Korea",
@@ -299,9 +315,11 @@ export default {
 			"Switzerland",
 			"Syria",
 			"Thailand",
+			"Turkey",
 			"United Arab Emirates",
 			"United Kingdom",
 			"United States",
+			"Uzbekistan",
 			"Vietnam",
 			"Yemen",
 		],
@@ -364,7 +382,14 @@ export default {
 			}
 		},
 	},
-	computed: {},
+	computed: {
+		tierSelectItems() {
+			if (this.tierOptions && this.tierOptions.length > 0) {
+				return this.tierOptions;
+			}
+			return this.groups.map((g) => ({ name: g, label: g }));
+		},
+	},
 	methods: {
 		focusCustomerNameField() {
 			this.$nextTick(() => {
@@ -373,6 +398,26 @@ export default {
 					field.focus();
 				}
 			});
+		},
+		focusFirstField() {
+			this.$nextTick(() => {
+				const field = this.customer_id
+					? this.$refs.customerNameField
+					: (this.$refs.mobileNoField || this.$refs.customerNameField);
+				if (field && typeof field.focus === "function") {
+					field.focus();
+				}
+			});
+		},
+		handleEnterKey() {
+			if (this.mobile_no && this.customer_name) {
+				this.submit_dialog();
+			} else if (this.mobile_no && !this.customer_name) {
+				const field = this.$refs.customerNameField;
+				if (field && typeof field.focus === "function") {
+					field.focus();
+				}
+			}
 		},
 		handleDialogEscape() {
 			if (this.confirmDialog) {
@@ -438,17 +483,40 @@ export default {
 			this.mobile_no = "";
 			this.address_line1 = "";
 			this.city = "";
-			this.country = (this.pos_profile && this.pos_profile.posa_default_country) || "Pakistan";
+			this.country = (this.pos_profile && this.pos_profile.posa_default_country) || "Tajikistan";
 			this.email_id = "";
 			this.referral_code = "";
 			this.birthday = "";
-			this.group = frappe.defaults.get_user_default("Customer Group");
-			this.territory = frappe.defaults.get_user_default("Territory");
+			this.group = this.defaultTier || frappe.defaults.get_user_default("Customer Group") || "Базовый";
+			this.territory = frappe.defaults.get_user_default("Territory") || "All Territories";
 			this.customer_id = "";
 			this.customer_type = "Individual";
 			this.gender = "";
 			this.loyalty_points = null;
 			this.loyalty_program = null;
+		},
+		getCustomerTiers() {
+			const vm = this;
+			frappe.call({
+				method: "posawesome.posawesome.api.customers.get_customer_tiers",
+				callback: (r) => {
+					if (r && r.message && r.message.tiers && r.message.tiers.length > 0) {
+						vm.defaultTier = r.message.default_tier || "Базовый";
+						vm.tierOptions = r.message.tiers.map((t) => {
+							const disc = Number(t.discount_percentage || 0);
+							const pts = Number(t.points_percentage || 0);
+							const label = `${t.name} (${disc}% ${frappe._("discount") || "скидка"} / ${pts}% ${frappe._("points") || "баллы"})`;
+							return {
+								name: t.name,
+								label: label,
+							};
+						});
+						if (!vm.customer_id && !vm.group) {
+							vm.group = vm.defaultTier;
+						}
+					}
+				},
+			});
 		},
 		getCustomerGroups() {
 			if (this.groups.length > 0) return;
@@ -516,19 +584,25 @@ export default {
 		},
 		async submit_dialog() {
 			const vm = this;
+			this.customer_name = (this.customer_name || "").trim();
+			this.mobile_no = (this.mobile_no || "").trim();
+
 			if (!this.customer_name) {
 				frappe.throw(__("Customer Name is required"));
 				return;
 			}
 
-			if (!this.group) {
-				frappe.throw(__("Customer group is required"));
+			if (!this.customer_id && !this.mobile_no) {
+				frappe.throw(__("Mobile number is required for customer registration"));
 				return;
 			}
 
+			if (!this.group) {
+				this.group = this.defaultTier || "Базовый";
+			}
+
 			if (!this.territory) {
-				frappe.throw(__("Customer territory is required"));
-				return;
+				this.territory = frappe.defaults.get_user_default("Territory") || "All Territories";
 			}
 
 			// Format birthday to YYYY-MM-DD if it exists and is in another format
@@ -596,6 +670,7 @@ export default {
 				referral_code: this.referral_code,
 				birthday: formatted_birthday || this.birthday,
 				customer_group: this.group,
+				tier: this.group,
 				territory: this.territory,
 				customer_type: this.customer_type,
 				gender: this.gender,
@@ -628,13 +703,16 @@ export default {
 				if (duplicateCustomers.length) {
 					const existing = duplicateCustomers[0];
 					const existingLabel = existing.customer_name || existing.name;
+					const phoneLabel = existing.mobile_no ? ` (${existing.mobile_no})` : "";
 					const useExisting = window.confirm(
-						__("An existing customer matches these details: {0}. Select it instead?", [
+						__("An existing customer matches these details: {0}{1}. Select it instead?", [
 							existingLabel,
+							phoneLabel,
 						]),
 					);
 					if (useExisting) {
 						await customersStore.addOrUpdateCustomer(existing);
+						customersStore.setSelectedCustomer(existing.name);
 						vm.toastStore.show({
 							title: __("Existing customer selected"),
 							color: "info",
@@ -657,11 +735,13 @@ export default {
 				await customersStore.addOrUpdateCustomer({
 					name: args.name,
 					customer_name: args.customer_name,
+					customer_group: args.customer_group,
 					mobile_no: args.mobile_no,
 					email_id: args.email_id,
 					tax_id: args.tax_id,
 					primary_address: args.address_line1,
 				});
+				customersStore.setSelectedCustomer(args.name);
 				vm.close_dialog();
 				return;
 			}
@@ -670,7 +750,7 @@ export default {
 				method: "posawesome.posawesome.api.customers.create_customer",
 				args: apiArgs,
 				callback: async (r) => {
-					if (!r.exc && r.message.name) {
+					if (!r.exc && r.message && r.message.name) {
 						let text = __("Customer created successfully.");
 						if (vm.customer_id) {
 							text = __("Customer updated successfully.");
@@ -679,16 +759,20 @@ export default {
 							title: text,
 							color: "success",
 						});
-						args.name = r.message.name;
 						frappe.utils.play_sound("submit");
-						await customersStore.addOrUpdateCustomer({
-							name: args.name,
-							customer_name: args.customer_name,
-							mobile_no: args.mobile_no,
-							email_id: args.email_id,
-							tax_id: args.tax_id,
+						const saved = {
+							...r.message,
+							name: r.message.name,
+							customer_name: r.message.customer_name || args.customer_name,
+							customer_group: r.message.customer_group || args.customer_group,
+							loyalty_program: r.message.loyalty_program || args.loyalty_program,
+							mobile_no: r.message.mobile_no || args.mobile_no,
+							email_id: r.message.email_id || args.email_id,
+							tax_id: r.message.tax_id || args.tax_id,
 							primary_address: args.address_line1,
-						});
+						};
+						await customersStore.addOrUpdateCustomer(saved);
+						customersStore.setSelectedCustomer(saved.name);
 						vm.close_dialog();
 					} else {
 						frappe.utils.play_sound("error");
@@ -745,7 +829,7 @@ export default {
 			() => this.isUpdateCustomerDialogOpen,
 			(isOpen) => {
 				if (isOpen) {
-					this.focusCustomerNameField();
+					this.focusFirstField();
 					const data = this.customerToUpdate;
 					if (data) {
 						this.customer_name = data.customer_name || data.name || ""; // fallback
@@ -755,7 +839,7 @@ export default {
 						this.country =
 							data.country ||
 							(this.pos_profile && this.pos_profile.posa_default_country) ||
-							"Pakistan";
+							"Tajikistan";
 						this.tax_id = data.tax_id;
 						this.mobile_no = data.mobile_no;
 						this.email_id = data.email_id;
@@ -780,22 +864,13 @@ export default {
 			(profile) => {
 				if (profile) {
 					this.pos_profile = profile;
-					this.country = (profile && profile.posa_default_country) || "Pakistan";
+					this.country = (profile && profile.posa_default_country) || "Tajikistan";
 				}
 			},
 			{ deep: true, immediate: true },
 		);
 
-		/*
-		this.eventBus.on("register_pos_profile", (data) => {
-			this.pos_profile = data.pos_profile;
-			this.country = (this.pos_profile && this.pos_profile.posa_default_country) || "Pakistan";
-		});
-		this.eventBus.on("payments_register_pos_profile", (data) => {
-			this.pos_profile = data.pos_profile;
-			this.country = (this.pos_profile && this.pos_profile.posa_default_country) || "Pakistan";
-		});
-		*/
+		this.getCustomerTiers();
 		this.getCustomerGroups();
 		this.getCustomerTerritorys();
 		this.getGenders();

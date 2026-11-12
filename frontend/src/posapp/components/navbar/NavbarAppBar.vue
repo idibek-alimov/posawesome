@@ -24,7 +24,8 @@
 			<v-img
 				:src="branding.logo || posLogo"
 				:alt="branding.name"
-				:max-width="isMobile ? 24 : 32"
+				:max-width="isMobile ? 36 : 48"
+				:max-height="isMobile ? 36 : 48"
 				:class="['pos-navbar-logo', isRtl ? 'rtl-logo' : 'ltr-logo']"
 				loading="lazy"
 			/>
@@ -502,8 +503,8 @@ export default {
 }
 
 .pos-navbar-title-compact {
-	font-weight: 600;
-	font-size: 1.05rem;
+	font-weight: 800 !important;
+	font-size: 1.25rem !important;
 	letter-spacing: 0.03em;
 }
 
@@ -694,10 +695,13 @@ export default {
 
 /* Title Text Styling */
 .pos-navbar-title-light {
-	font-weight: 300 !important;
+	font-weight: 900 !important;
+	font-size: 1.5rem !important;
 	letter-spacing: 0.5px;
 	margin-right: 2px;
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
+	line-height: 1;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;

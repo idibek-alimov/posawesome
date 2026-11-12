@@ -1,6 +1,6 @@
 {
-  "name": "POS Awesome",
-  "short_name": "POS Awesome",
+  "name": "Radolfa",
+  "short_name": "Radolfa",
   "start_url": "/app/posapp",
   "display": "standalone",
   "background_color": "#FFFFFF",

@@ -1,6 +1,6 @@
 export const POS_APP_ID = "posawesome";
-export const POS_BRAND_NAME = "POS Awesome";
-export const POS_BRAND_SHORT_NAME = "POS";
+export const POS_BRAND_NAME = "Radolfa";
+export const POS_BRAND_SHORT_NAME = "Radolfa";
 
 export type PosBrandingProfile = {
 	posa_enable_custom_branding?: unknown;

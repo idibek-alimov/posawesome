@@ -71,3 +71,10 @@ def get_customer_balance(customer, company=None):
 def create_customer(*args, **kwargs):
     """Backward compatible wrapper for ``api.customers.create_customer``."""
     return customers.create_customer(*args, **kwargs)
+
+
+@frappe.whitelist()
+def get_customer_tiers():
+    """Wrapper for ``api.customers.get_customer_tiers``."""
+    return customers.get_customer_tiers()
+

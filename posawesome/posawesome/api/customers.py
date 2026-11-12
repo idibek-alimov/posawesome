@@ -70,6 +70,29 @@ def _find_duplicate_customer_records(
         checks.append(("tax_id", str(tax_id).strip()))
 
     matches = {}
+    if mobile_no:
+        try:
+            from erpnext.selling.page.customer_hub.customer_data import find_duplicate_phone_customer
+            dup = find_duplicate_phone_customer(mobile_no, exclude_customer=exclude_customer)
+            if dup:
+                dup_name = dup.get("name")
+                if dup_name:
+                    match = matches.setdefault(
+                        dup_name,
+                        {
+                            "name": dup_name,
+                            "customer_name": dup.get("customer_name"),
+                            "mobile_no": dup.get("mobile_no"),
+                            "email_id": dup.get("email_id"),
+                            "tax_id": dup.get("tax_id"),
+                            "matching_fields": [],
+                        },
+                    )
+                    if "mobile_no" not in match["matching_fields"]:
+                        match["matching_fields"].append("mobile_no")
+        except Exception:
+            pass
+
     for fieldname, value in checks:
         if not value:
             continue
@@ -410,6 +433,7 @@ def create_customer(
     referral_code=None,
     birthday=None,
     customer_group=None,
+    tier=None,
     territory=None,
     customer_type=None,
     gender=None,
@@ -467,12 +491,28 @@ def create_customer(
                     "gender": gender,
                 }
             )
-            if customer_group and not frappe.db.get_value("Customer Group", customer_group, "is_group"):
+
+            # Resolve tier and loyalty program
+            selected_tier = tier or customer_group
+            tier_doc = None
+            if selected_tier and frappe.db.exists("Customer Tier", selected_tier):
+                tier_doc = frappe.get_doc("Customer Tier", selected_tier)
+            elif not selected_tier or selected_tier in ("Individual", "All Customer Groups"):
+                default_tier = frappe.db.get_single_value("Customer Loyalty Settings", "default_tier") or "Базовый"
+                if frappe.db.exists("Customer Tier", default_tier):
+                    tier_doc = frappe.get_doc("Customer Tier", default_tier)
+
+            if tier_doc:
+                customer.customer_group = tier_doc.customer_group
+                customer.loyalty_program = tier_doc.loyalty_program
+                customer.loyalty_program_tier = tier_doc.tier_name
+            elif customer_group and not frappe.db.get_value("Customer Group", customer_group, "is_group"):
                 customer.customer_group = customer_group
             else:
                 customer.customer_group = (
                     frappe.db.get_value("Customer Group", {"is_group": 0}, "name") or "Individual"
                 )
+
             if territory and not frappe.db.get_value("Territory", territory, "is_group"):
                 customer.territory = territory
             else:
@@ -509,6 +549,18 @@ def create_customer(
         customer_doc.posa_birthday = formatted_birthday
         customer_doc.customer_type = customer_type
         customer_doc.gender = gender
+
+        # If tier changed, sync via update_customer_tier so points follow
+        selected_tier = tier or customer_group
+        if selected_tier and frappe.db.exists("Customer Tier", selected_tier):
+            if customer_doc.customer_group != selected_tier:
+                try:
+                    from erpnext.selling.page.customer_hub.customer_data import update_customer_tier
+                    update_customer_tier(customer_doc.name, selected_tier)
+                    customer_doc.reload()
+                except Exception as e:
+                    frappe.log_error(frappe.get_traceback(), "POS Customer Tier Update Error")
+
         customer_doc.save()
 
         # ensure contact details are synced correctly
@@ -654,3 +706,22 @@ def make_address(args):
 @frappe.whitelist()
 def get_sales_person_names(pos_profile=None):
     return fetch_sales_person_names(pos_profile=pos_profile)
+
+
+@frappe.whitelist()
+def get_customer_tiers():
+    """Return available customer tiers for POS quick registration."""
+    tiers = []
+    default_tier = "Базовый"
+    try:
+        if frappe.db.exists("DocType", "Customer Tier"):
+            from erpnext.selling.doctype.customer_tier.customer_tier import get_ordered_tiers
+            tiers = get_ordered_tiers()
+            default_tier = frappe.db.get_single_value("Customer Loyalty Settings", "default_tier") or "Базовый"
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "get_customer_tiers error")
+    return {
+        "tiers": tiers,
+        "default_tier": default_tier,
+    }
+

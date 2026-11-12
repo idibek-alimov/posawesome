@@ -150,7 +150,7 @@ function loadServer(serverUrl) {
 function buildAppMenu() {
 	const template = [
 		{
-			label: "POS Awesome",
+			label: "Radolfa",
 			submenu: [
 				{
 					label: "Change server",

@@ -1019,9 +1019,12 @@ export function usePaymentSubmission(options: PaymentSubmissionOptions) {
 			if (paidChange) paidChange.value = pChange;
 		}
 
+		// Preserve checkout time through offline synchronization and retries.
+		doc.__checkout_completed_at ||= new Date().toISOString();
 		const submissionDoc = buildSubmissionInvoiceDoc(doc);
 
 		const data = {
+			checkout_completed_at: doc.__checkout_completed_at,
 			total_change: changeLimit,
 			paid_change: pChange,
 			credit_change: cChange,

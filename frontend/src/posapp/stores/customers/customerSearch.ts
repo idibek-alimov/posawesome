@@ -164,10 +164,26 @@ export function getCustomerDuplicateFields(
 			field,
 			candidate[field],
 		);
-		return (
-			Boolean(candidateValue) &&
-			candidateValue ===
-				normalizeCustomerDuplicateValue(field, customer[field])
+		const customerValue = normalizeCustomerDuplicateValue(
+			field,
+			customer[field],
 		);
+		if (!candidateValue || !customerValue) {
+			return false;
+		}
+		if (field === "mobile_no") {
+			const candDigits =
+				candidateValue.length >= 9
+					? candidateValue.slice(-9)
+					: candidateValue;
+			const custDigits =
+				customerValue.length >= 9
+					? customerValue.slice(-9)
+					: customerValue;
+			return (
+				candDigits === custDigits || candidateValue === customerValue
+			);
+		}
+		return candidateValue === customerValue;
 	});
 }

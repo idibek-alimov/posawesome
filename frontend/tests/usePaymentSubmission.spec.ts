@@ -594,7 +594,7 @@ describe("usePaymentSubmission", () => {
 		);
 	});
 
-	it("adds a stable client request id to invoice submissions", async () => {
+	it("adds a stable client request id and checkout timestamp to invoice submissions", async () => {
 		const invoiceService = (
 			await import("../src/posapp/services/invoiceService")
 		).default;
@@ -647,6 +647,11 @@ describe("usePaymentSubmission", () => {
 		const [, submittedDoc] = (invoiceService.submitInvoice as any).mock
 			.calls[0];
 		expect(submittedDoc.posa_client_request_id).toEqual(expect.any(String));
+		const data = (invoiceService.submitInvoice as any).mock.calls[0][0];
+		expect(data.checkout_completed_at).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+		expect(data.checkout_completed_at).toBe(
+			invoiceDoc.value.__checkout_completed_at,
+		);
 		expect(invoiceDoc.value.posa_client_request_id).toBe(
 			submittedDoc.posa_client_request_id,
 		);
@@ -712,7 +717,7 @@ describe("usePaymentSubmission", () => {
 		expect(submittedDoc.base_write_off_amount).toBe(2800);
 	});
 
-	it("reuses one identity after an ambiguous timeout and Submit & Print retry", async () => {
+	it("reuses one identity and checkout time after an ambiguous timeout and Submit & Print retry", async () => {
 		const invoiceService = (
 			await import("../src/posapp/services/invoiceService")
 		).default;
@@ -785,12 +790,18 @@ describe("usePaymentSubmission", () => {
 			onFinishNavigation: vi.fn(),
 		});
 
-		const firstData = (invoiceService.submitInvoice as any).mock.calls[0][0];
+		const firstData = (invoiceService.submitInvoice as any).mock
+			.calls[0][0];
 		const firstSubmittedDoc = (invoiceService.submitInvoice as any).mock
 			.calls[0][1];
-		const secondData = (invoiceService.submitInvoice as any).mock.calls[1][0];
+		const secondData = (invoiceService.submitInvoice as any).mock
+			.calls[1][0];
 		const secondSubmittedDoc = (invoiceService.submitInvoice as any).mock
 			.calls[1][1];
+		expect(secondData.checkout_completed_at).toBe(
+			firstData.checkout_completed_at,
+		);
+		expect(firstData.checkout_completed_at).toEqual(expect.any(String));
 
 		expect(firstSubmittedDoc.posa_client_request_id).toEqual(
 			expect.any(String),
@@ -813,12 +824,15 @@ describe("usePaymentSubmission", () => {
 				client_request_id: firstSubmittedDoc.posa_client_request_id,
 			}),
 		);
-		expect(offlineModule.enqueueInvoiceOutboxEntry).toHaveBeenCalledTimes(2);
+		expect(offlineModule.enqueueInvoiceOutboxEntry).toHaveBeenCalledTimes(
+			2,
+		);
 		expect(offlineModule.enqueueInvoiceOutboxEntry).toHaveBeenNthCalledWith(
 			1,
 			expect.objectContaining({
 				invoice: expect.objectContaining({
-					posa_client_request_id: firstSubmittedDoc.posa_client_request_id,
+					posa_client_request_id:
+						firstSubmittedDoc.posa_client_request_id,
 				}),
 			}),
 		);
@@ -1220,7 +1234,7 @@ describe("usePaymentSubmission", () => {
 		);
 	});
 
-	it("normalizes loyalty redemption fields before saving an offline invoice", async () => {
+	it("preserves checkout time and loyalty before saving an offline invoice", async () => {
 		const offlineModule = await import("../src/offline/index");
 		(offlineModule.isOffline as any).mockReturnValue(true);
 
@@ -1294,6 +1308,10 @@ describe("usePaymentSubmission", () => {
 			}),
 		);
 
+		expect(
+			(offlineModule.saveOfflineInvoice as any).mock.calls[0][0].data
+				.checkout_completed_at,
+		).toBe(invoiceDoc.value.__checkout_completed_at);
 		(offlineModule.isOffline as any).mockReturnValue(false);
 	});
 
