@@ -3,7 +3,7 @@
 		v-model="drawerOpen"
 		:rail="mini"
 		expand-on-hover
-		width="220"
+		width="260"
 		:class="['drawer-custom', { 'drawer-visible': drawerOpen }, rtlClasses]"
 		@mouseleave="handleMouseLeave"
 		temporary
@@ -26,25 +26,80 @@
 
 				<v-divider />
 
-				<v-list density="compact" nav v-model:selected="activeItem" selected-class="active-item">
-					<v-list-item
-						v-for="(item, index) in items"
-						:key="item.text"
-						:value="index"
-						:to="item.to"
-						@click="handleItemClick"
-						class="drawer-item"
-						active-class="active-item"
+				<!-- Primary Flagship Actions: POS and Expense (prominent, bold, larger font) -->
+				<div class="drawer-primary-section">
+					<v-list density="default" nav class="drawer-list-primary">
+						<v-list-item
+							v-for="(item, index) in primaryItems"
+							:key="item.to || item.text"
+							:value="item.to || index"
+							:to="item.to"
+							@click="handleItemClick"
+							class="drawer-item drawer-item--primary"
+							active-class="active-item"
+							:data-test="`drawer-item-${item.to ? item.to.replace('/', '') : index}`"
+						>
+							<template v-slot:prepend>
+								<div class="drawer-icon-wrap drawer-icon-wrap--primary">
+									<v-icon class="drawer-icon drawer-icon--primary">{{ item.icon }}</v-icon>
+								</div>
+							</template>
+							<v-list-item-title class="drawer-item-title drawer-item-title--primary">
+								{{ item.text }}
+							</v-list-item-title>
+						</v-list-item>
+					</v-list>
+				</div>
+
+				<!-- Collapsible Secondary Items (hidden by default) -->
+				<div v-if="secondaryItems.length" class="drawer-secondary-section">
+					<button
+						type="button"
+						class="drawer-more-btn"
+						@click="toggleShowMore"
+						:aria-expanded="showMore"
+						data-test="drawer-more-toggle"
 					>
-						<template v-slot:prepend>
-							<v-icon class="drawer-icon">{{ item.icon }}</v-icon>
-						</template>
-						<v-list-item-title class="drawer-item-title">{{ item.text }}</v-list-item-title>
-					</v-list-item>
-				</v-list>
-				<!-- Sport section, hidden by default -->
-				<div v-if="showSport">
-					<!-- Sport content goes here -->
+						<div class="drawer-more-btn__content">
+							<span class="drawer-more-btn__label">
+								{{ showMore ? __('Show less') : __('More options') }}
+							</span>
+							<span v-if="!showMore" class="drawer-more-btn__count">
+								{{ secondaryItems.length }}
+							</span>
+						</div>
+						<v-icon size="18" class="drawer-more-btn__icon">
+							{{ showMore ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+						</v-icon>
+					</button>
+
+					<v-expand-transition>
+						<div
+							v-show="showMore"
+							class="drawer-secondary-collapse"
+							data-test="drawer-secondary-collapse"
+						>
+							<v-list density="compact" nav class="drawer-list-secondary">
+								<v-list-item
+									v-for="(item, index) in secondaryItems"
+									:key="item.to || item.text"
+									:value="item.to || (primaryItems.length + index)"
+									:to="item.to"
+									@click="handleItemClick"
+									class="drawer-item drawer-item--secondary"
+									active-class="active-item"
+									:data-test="`drawer-item-${item.to ? item.to.replace('/', '') : index}`"
+								>
+									<template v-slot:prepend>
+										<v-icon class="drawer-icon drawer-icon--secondary">{{ item.icon }}</v-icon>
+									</template>
+									<v-list-item-title class="drawer-item-title drawer-item-title--secondary">
+										{{ item.text }}
+									</v-list-item-title>
+								</v-list-item>
+							</v-list>
+						</div>
+					</v-expand-transition>
 				</div>
 			</div>
 
@@ -73,6 +128,7 @@
 
 <script setup>
 import { computed, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { useRtl } from "../../composables/core/useRtl";
 
 defineOptions({
@@ -95,11 +151,50 @@ const props = defineProps({
 const emit = defineEmits(["update:drawer", "update:item", "open-settings"]);
 const { isRtl, rtlClasses } = useRtl();
 
+let route = null;
+try {
+	route = useRoute();
+} catch {
+	route = null;
+}
+
 const mini = ref(false);
 const drawerOpen = ref(props.drawer);
 const activeItem = ref(props.item);
-const showSport = ref(true);
+const showMore = ref(false);
 let closeTimeout = null;
+
+function __(text, ...args) {
+	if (typeof window !== "undefined" && typeof window.__ === "function") {
+		return window.__(text, ...args);
+	}
+	return text;
+}
+
+const primaryItems = computed(() => {
+	const list = props.items || [];
+	return list.filter((item, index) => Boolean(item.primary || index < 2));
+});
+
+const secondaryItems = computed(() => {
+	const list = props.items || [];
+	return list.filter((item, index) => !item.primary && index >= 2);
+});
+
+// Auto-expand secondary items when current route is inside secondary items
+watch(
+	() => route?.path,
+	(currentPath) => {
+		if (currentPath && secondaryItems.value.some((item) => item.to === currentPath)) {
+			showMore.value = true;
+		}
+	},
+	{ immediate: true },
+);
+
+function toggleShowMore() {
+	showMore.value = !showMore.value;
+}
 
 const scrimColor = computed(() => {
 	// Use an opaque background in light mode so that
@@ -205,19 +300,134 @@ function closeDrawer() {
 	font-family: "Roboto", sans-serif;
 }
 
-/* Styling for icons within the navigation drawer list items */
-.drawer-icon {
-	font-size: 24px;
-	color: var(--pos-primary);
+/* Primary Section (POS and Expenses) */
+.drawer-primary-section {
+	padding: 6px 6px 2px 6px;
 }
 
-/* Styling for the title text of navigation drawer list items */
-.drawer-item-title {
-	margin-left: 8px;
-	font-weight: 500;
-	font-size: 0.95rem;
+.drawer-list-primary {
+	padding: 0 !important;
+}
+
+.drawer-item--primary {
+	min-height: 52px !important;
+	border-radius: 12px !important;
+	margin: 4px 4px 6px 4px !important;
+	padding: 8px 12px !important;
+	transition:
+		background-color 0.18s ease,
+		border-color 0.18s ease,
+		transform 0.18s ease;
+}
+
+.drawer-item--primary:hover {
+	background-color: rgba(25, 118, 210, 0.08) !important;
+	transform: translateX(2px);
+}
+
+.drawer-icon-wrap--primary {
+	width: 38px;
+	height: 38px;
+	border-radius: 10px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(25, 118, 210, 0.08);
+	flex-shrink: 0;
+	transition: background-color 0.2s ease;
+}
+
+.drawer-icon--primary {
+	font-size: 24px !important;
+	color: var(--pos-primary, #1976d2);
+}
+
+.drawer-item-title--primary {
+	margin-left: 10px;
+	font-weight: 700 !important;
+	font-size: 1.15rem !important;
+	line-height: 1.3;
 	color: var(--pos-text-primary) !important;
 	font-family: "Roboto", sans-serif;
+	letter-spacing: 0.01em;
+}
+
+/* Secondary Collapsible Section */
+.drawer-secondary-section {
+	padding: 4px 10px 8px 10px;
+}
+
+.drawer-more-btn {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 12px;
+	border-radius: 10px;
+	border: 1px dashed var(--pos-border, rgba(0, 0, 0, 0.15));
+	background: transparent;
+	color: var(--pos-text-secondary, #666666);
+	cursor: pointer;
+	font-family: "Roboto", sans-serif;
+	font-size: 0.85rem;
+	font-weight: 600;
+	transition: all 0.2s ease;
+	margin-top: 4px;
+	margin-bottom: 6px;
+}
+
+.drawer-more-btn:hover {
+	background: rgba(25, 118, 210, 0.06);
+	border-color: var(--pos-primary, #1976d2);
+	color: var(--pos-primary, #1976d2);
+}
+
+.drawer-more-btn__content {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.drawer-more-btn__label {
+	font-size: 0.85rem;
+	font-weight: 600;
+}
+
+.drawer-more-btn__count {
+	font-size: 0.72rem;
+	font-weight: 700;
+	padding: 1px 6px;
+	border-radius: 10px;
+	background: rgba(0, 0, 0, 0.06);
+	color: var(--pos-text-secondary);
+}
+
+.drawer-more-btn__icon {
+	color: inherit;
+	transition: transform 0.2s ease;
+}
+
+.drawer-list-secondary {
+	padding: 0 !important;
+}
+
+.drawer-item--secondary {
+	min-height: 40px !important;
+	border-radius: 8px !important;
+	margin: 2px 0 !important;
+	padding: 6px 10px !important;
+}
+
+.drawer-icon--secondary {
+	font-size: 20px !important;
+	color: var(--pos-text-secondary) !important;
+}
+
+.drawer-item-title--secondary {
+	margin-left: 8px;
+	font-size: 0.92rem !important;
+	font-weight: 500 !important;
+	color: var(--pos-text-primary) !important;
 }
 
 /* Hover effect for all list items in the navigation drawer */
@@ -285,7 +495,18 @@ function closeDrawer() {
 /* Styling for the actively selected list item in the navigation drawer */
 .active-item {
 	background-color: rgba(25, 118, 210, 0.12) !important;
-	border-right: 3px solid #1976d2;
+	border-right: 3px solid var(--pos-primary, #1976d2);
+}
+
+.active-item.drawer-item--primary .drawer-icon-wrap--primary {
+	background: rgba(25, 118, 210, 0.18);
+}
+
+.rtl-drawer .active-item,
+:deep(.rtl) .active-item,
+[dir="rtl"] .active-item {
+	border-right: none;
+	border-left: 3px solid var(--pos-primary, #1976d2);
 }
 
 /* Theme-aware drawer styling */
@@ -300,12 +521,60 @@ function closeDrawer() {
 	border-bottom: 1px solid var(--pos-border);
 }
 
-:deep([data-theme="dark"]) .drawer-item-title,
-:deep(.v-theme--dark) .drawer-item-title {
+:deep([data-theme="dark"]) .drawer-item-title--primary,
+:deep(.v-theme--dark) .drawer-item-title--primary {
+	color: var(--pos-text-primary) !important;
+	font-weight: 700 !important;
+	font-size: 1.15rem !important;
+	font-family: "Roboto", sans-serif;
+}
+
+:deep([data-theme="dark"]) .drawer-icon-wrap--primary,
+:deep(.v-theme--dark) .drawer-icon-wrap--primary {
+	background: rgba(144, 202, 249, 0.12);
+}
+
+:deep([data-theme="dark"]) .drawer-item--primary:hover,
+:deep(.v-theme--dark) .drawer-item--primary:hover {
+	background-color: rgba(144, 202, 249, 0.08) !important;
+}
+
+:deep([data-theme="dark"]) .active-item.drawer-item--primary .drawer-icon-wrap--primary,
+:deep(.v-theme--dark) .active-item.drawer-item--primary .drawer-icon-wrap--primary {
+	background: rgba(144, 202, 249, 0.22);
+}
+
+:deep([data-theme="dark"]) .drawer-more-btn,
+:deep(.v-theme--dark) .drawer-more-btn {
+	border-color: rgba(255, 255, 255, 0.18);
+	color: rgba(255, 255, 255, 0.7);
+}
+
+:deep([data-theme="dark"]) .drawer-more-btn:hover,
+:deep(.v-theme--dark) .drawer-more-btn:hover {
+	background: rgba(144, 202, 249, 0.08);
+	border-color: #90caf9;
+	color: #90caf9;
+}
+
+:deep([data-theme="dark"]) .drawer-more-btn__count,
+:deep(.v-theme--dark) .drawer-more-btn__count {
+	background: rgba(255, 255, 255, 0.12);
+	color: rgba(255, 255, 255, 0.7);
+}
+
+:deep([data-theme="dark"]) .drawer-item-title--secondary,
+:deep(.v-theme--dark) .drawer-item-title--secondary {
 	color: var(--pos-text-primary) !important;
 	font-weight: 500;
-	font-size: 0.95rem;
+	font-size: 0.92rem;
 	font-family: "Roboto", sans-serif;
+}
+
+:deep([data-theme="dark"]) .drawer-icon--secondary,
+:deep(.v-theme--dark) .drawer-icon--secondary {
+	color: rgba(255, 255, 255, 0.7) !important;
+	font-size: 20px;
 }
 
 :deep([data-theme="dark"]) .drawer-company,
@@ -349,13 +618,13 @@ function closeDrawer() {
 /* Responsive adjustments for width and dark theme */
 @media (max-width: 900px) and (orientation: landscape) {
 	.drawer-custom.drawer-visible {
-		width: 180px !important;
+		width: 200px !important;
 	}
 }
 
 @media (min-width: 601px) and (max-width: 1024px) {
 	.drawer-custom.drawer-visible {
-		width: 240px !important;
+		width: 250px !important;
 	}
 }
 

@@ -308,8 +308,8 @@ export default {
 			mini: true,
 			item: 0,
 			baseItems: [
-				{ text: "POS", icon: "mdi-network-pos", to: "/pos" },
-				{ text: "Expenses", icon: "mdi-cash-register", to: "/expenses" },
+				{ text: "POS", icon: "mdi-network-pos", to: "/pos", primary: true },
+				{ text: "Expenses", icon: "mdi-cash-register", to: "/expenses", primary: true },
 				{ text: "Payments", icon: "mdi-credit-card", to: "/payments" },
 				{ text: "Purchase Order", icon: "mdi-cart-plus", to: "/orders" },
 				{ text: "Barcode Printing", icon: "mdi-barcode", to: "/barcode" },
@@ -567,29 +567,50 @@ export default {
 			}
 		},
 		updateNavigationItems() {
-			const items = this.baseItems.map((item) => ({ ...item, text: this.__(item.text) }));
-			if (this.posProfile?.posa_use_gift_cards) {
-				items.splice(2, 0, {
-					text: this.__("Gift Cards"),
-					icon: "mdi-card-account-details-outline",
-					to: "/gift-cards",
-				});
-			}
+			const primary = [
+				{
+					text: this.__("POS"),
+					icon: "mdi-network-pos",
+					to: "/pos",
+					primary: true,
+				},
+				{
+					text: this.__("Expenses"),
+					icon: "mdi-cash-register",
+					to: "/expenses",
+					primary: true,
+				},
+			];
+
+			const secondary = [];
 			if (this.currentCashier?.is_supervisor) {
-				items.splice(1, 0, {
+				secondary.push({
 					text: this.__("Awesome Dashboard"),
 					icon: "mdi-view-dashboard-outline",
 					to: "/dashboard",
 				});
 			}
+			if (this.posProfile?.posa_use_gift_cards) {
+				secondary.push({
+					text: this.__("Gift Cards"),
+					icon: "mdi-card-account-details-outline",
+					to: "/gift-cards",
+				});
+			}
+			secondary.push(
+				{ text: this.__("Payments"), icon: "mdi-credit-card", to: "/payments" },
+				{ text: this.__("Purchase Order"), icon: "mdi-cart-plus", to: "/orders" },
+				{ text: this.__("Barcode Printing"), icon: "mdi-barcode", to: "/barcode" },
+			);
 			if (this.posProfile?.posa_enable_cash_movement) {
-				items.push({
+				secondary.push({
 					text: this.__("Cash Movement"),
 					icon: "mdi-cash-sync",
 					to: "/cash-movement",
 				});
 			}
-			this.items = items;
+
+			this.items = [...primary, ...secondary];
 		},
 		async fetchTerminalEmployees() {
 			const profileName = this.posProfileName;
