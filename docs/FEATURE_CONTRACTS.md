@@ -278,3 +278,42 @@ repair/retry states and adds explicit HR-authorized complete-manifest observatio
 race and bounded volume/graph checks pass locally; company opt-ins remain off. See the
 handoff for proof limits, measured latency, operator/fixture/device boundaries and the next
 native payroll handoff audit.
+
+## 11. MARKET checkout, receipts and quick returns
+
+The owner-approved scope, reference measurements, implementation and verification limits
+are in [MARKET checkout and returns](market-checkout-returns.md).
+
+- Checkout distinguishes no paper, MARKET store receipt and TP809 fiscal receipt.
+  Native form/import/API saves cannot forge fiscal identifiers or copy them to new records.
+  Fiscal amounts come from the submitted server invoice, in integer tiyins. Never derive
+  fiscal totals from the open cart or copy reference code's float/tax-name heuristics.
+- POS Profile supplies printer/bridge configuration. Electron main process owns direct
+  device HTTP; browsers use the local bridge. Both retain attempt results across retries.
+- A timeout/paper error retains an unknown result. Recover the existing FD, acknowledge
+  the saved success, or explicitly audit a cashier's check that the journal has no FD.
+  Never automatically resend or turn an unknown result into a non-fiscal sale.
+- Store receipt and recent/last printing use one renderer and submitted invoice values.
+  Sales Orders, quotations and draft printing retain their normal document flow.
+- «Возврат» and «Чеки» open the same paginated purchase history, today/newest first,
+  with phone/name/invoice/FD search and older date ranges. Search spans permitted
+  registers in the current company and both submitted SI/POS sales, excludes drafts,
+  returns and consolidated accounting summaries, and exposes no cost/margin fields.
+  Read-only item inspection never loads the cart. «Чеки» always prints an ordinary
+  receipt through the shared renderer; it cannot issue/reconcile a fiscal document
+  and does not rely on a browser's remembered last sale or claim physical-print status.
+- The photographed TP809 slips supersede FastReport typography for ordinary receipts:
+  compact monospaced 80mm layout, dashed separators and Tajik labels. Ordinary paper
+  uses the OS driver (native isolated Electron printing or browser/QZ); it never calls
+  formReceipt. Official fiscal identifiers/QR remain firmware-owned.
+- Fiscal checkout validates the submitted invoice and server-verified active cashier,
+  checks detailed device status and opens a closed hardware shift before preparing an
+  attempt. Never automatically close expired shifts. An opening timeout stops receipt
+  transmission; retry reads status first. OFD connectivity/queue differs from device
+  reachability and confirmed registration in fiscal memory.
+- Quick returns are bounded to permitted registers/company and use native idempotent
+  submission, stock, payments, customer credit and cashier/shift authority. Preserve the
+  remaining source row quantities, cumulative cash-refund cap and batch/serial cart path.
+- Fiscal checkout and quick refunds require ERP connectivity; existing offline carts and
+  invoice queues remain intact. Credit/loyalty tenders must never be invented as cash for
+  a fiscal document. Physical printer/OFD acceptance is separate from mocked/native tests.

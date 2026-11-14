@@ -448,7 +448,7 @@ describe("usePaymentSubmission", () => {
 			docstatus: 1,
 		});
 		expect(invoiceDoc.value.name).toBe("SAL-ORD-0001");
-		expect(setLastInvoice).toHaveBeenCalledWith("SAL-ORD-0001");
+		expect(setLastInvoice).toHaveBeenCalledWith("SAL-ORD-0001", "Sales Order");
 	});
 
 	it("shows a merged processing toast instead of a plain success toast when post-submit payments are pending", async () => {

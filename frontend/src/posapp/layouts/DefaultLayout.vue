@@ -4,6 +4,7 @@
 		<UpdatePrompt />
 		<v-main class="main-content">
 			<ClosingDialog />
+			<ReceiptHistory />
 			<Navbar
 				:pos-profile="posProfile"
 				:pending-invoices="pendingInvoicesCount"
@@ -85,6 +86,7 @@ import { ref, computed, onMounted, onBeforeUnmount, watch, getCurrentInstance } 
 // Note paths updated to be relative to layouts/ directory
 import Navbar from "../components/Navbar.vue";
 import ClosingDialog from "../components/pos/shell/ClosingDialog.vue";
+import ReceiptHistory from "../components/pos/flows/ReceiptHistory.vue";
 import AppLoadingOverlay from "../components/ui/LoadingOverlay.vue";
 import UpdatePrompt from "../components/ui/UpdatePrompt.vue";
 import { useLoading } from "../composables/core/useLoading.js";

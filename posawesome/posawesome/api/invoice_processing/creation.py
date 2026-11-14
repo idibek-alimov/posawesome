@@ -248,6 +248,9 @@ def _strip_client_cashier_identity(*payloads):
             continue
         for key in CLIENT_CASHIER_KEYS:
             payload.pop(key, None)
+        for key in tuple(payload):
+            if key.startswith("custom_fiscal_"):
+                payload.pop(key, None)
 
 
 def _supports_authoritative_cashier(doctype):

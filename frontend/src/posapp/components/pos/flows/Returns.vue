@@ -1,1088 +1,157 @@
 <template>
-	<v-row justify="center">
-		<v-dialog
-			v-model="invoicesDialog"
-			:max-width="returnsDialogMaxWidth"
-			:fullscreen="isCompactReturns"
-			:width="returnsDialogWidth"
-			scrollable
-			class="returns-dialog"
-			:theme="isDarkTheme ? 'dark' : 'light'"
-		>
-			<v-card class="returns-card pos-themed-card" :theme="isDarkTheme ? 'dark' : 'light'">
-				<v-card-title class="returns-card__title">
-					<div class="returns-card__title-copy">
-						<span class="text-h5 text-primary">{{ __("Select Return Invoice") }}</span>
-						<span class="returns-card__subtitle">
-							{{ __("Search an invoice and continue the return flow without extra steps.") }}
-						</span>
+	<v-dialog v-model="open" max-width="1100" scrollable :persistent="busy">
+		<v-card class="quick-returns">
+			<v-card-title class="d-flex align-center">{{ __("Возврат") }}<v-spacer /><v-btn icon="mdi-close" variant="text" :disabled="busy" :aria-label="__('Close')" @click="open = false" /></v-card-title>
+			<v-card-text>
+				<v-alert v-if="error" type="warning" variant="tonal" class="mb-3">{{ error }}</v-alert>
+				<v-alert v-if="pending" type="info" variant="tonal" class="mb-3">{{ __("Результат возврата не подтверждён. Восстановите эту операцию перед новым возвратом.") }}</v-alert>
+				<template v-if="!completed && !pending">
+					<div class="mb-3"><v-btn v-if="scenario !== 'guest'" variant="text" :disabled="busy" @click="scenario = 'guest'">{{ __("Возврат без чека") }}</v-btn><v-btn v-else variant="text" :disabled="busy" prepend-icon="mdi-arrow-left" @click="scenario = 'receipt'">{{ __("История покупок") }}</v-btn></div>
+					<PurchaseHistory v-if="open && scenario !== 'guest'" v-show="!source" :profile="profile" :disabled="busy" :action-label="__('Выбрать')" @select="loadSale" />
+					<v-text-field v-if="scenario === 'guest'" ref="searchInput" v-model="query" autofocus clearable hide-details density="compact" variant="outlined" :disabled="busy"
+						:label="__('Штрихкод или код товара')" @keydown.enter.prevent="search" append-inner-icon="mdi-magnify" @click:append-inner="search" />
+					<v-progress-linear v-if="busy" indeterminate class="mt-2" />
+					<div v-if="source" class="mt-3 d-flex align-center"><b>{{ source.name }} · {{ source.customer_name }}</b><v-spacer /><v-btn size="small" @click="source = null; rows = []">{{ __("Другой чек") }}</v-btn></div>
+					<v-table v-if="rows.length" density="compact" class="return-items mt-3">
+						<thead><tr><th>{{ __("Вернуть") }}</th><th>{{ __("Товар") }}</th><th>{{ __("Кол-во") }}</th><th>{{ __("Цена") }}</th></tr></thead>
+						<tbody><tr v-for="(row, index) in rows" :key="row.name || row.item_code">
+							<td><v-checkbox-btn v-model="row.selected" :aria-label="`${__('Return')} ${row.item_name}`" /></td>
+							<td>{{ row.item_code }}<br>{{ row.item_name }}</td>
+							<td><v-text-field v-model.number="row.returnQty" type="number" min="0.001" :max="scenario === 'guest' ? undefined : row.qty" step="any" density="compact" hide-details :aria-label="`${__('Quantity')} ${index + 1}`" /></td>
+							<td class="text-no-wrap">{{ money(row.rate) }}</td>
+						</tr></tbody>
+					</v-table>
+					<v-btn v-if="rows.some(r => r.batch_no || r.serial_no || r.has_batch_no || r.has_serial_no)" class="mt-3" variant="text" @click="openDetailedReturn">{{ __("Уточнить партии / серийные номера") }}</v-btn>
+					<div v-if="rows.length" class="return-options mt-3">
+						<v-select v-model="refundType" :items="refundMethods" item-title="label" item-value="value" :label="__('Вернуть')" hide-details density="compact" variant="outlined" />
+						<v-select v-model="mode" :items="receiptModes" item-title="label" item-value="value" :label="__('Чек')" hide-details density="compact" variant="outlined" />
 					</div>
-					<v-btn
-						icon="mdi-close"
-						variant="text"
-						color="medium-emphasis"
-						class="returns-card__close"
-						:aria-label="__('Close returns dialog')"
-						@click="close_dialog"
-					/>
-				</v-card-title>
-				<v-container class="returns-card__content">
-					<!-- Invoice ID and Date Range search -->
-					<v-row class="mb-2">
-						<v-col cols="12">
-							<v-alert
-								density="compact"
-								type="info"
-								variant="outlined"
-								v-if="!from_date && !to_date"
-							>
-								<small>{{ __("Use date range to search for older invoices") }}</small>
-							</v-alert>
-						</v-col>
-					</v-row>
-					<v-row class="mb-3">
-						<v-col cols="12" sm="6">
-							<v-text-field
-								color="primary"
-								:label="frappe._('Invoice ID')"
-								class="pos-themed-input"
-								hide-details
-								v-model="invoice_name"
-								density="compact"
-								clearable
-							></v-text-field>
-						</v-col>
-						<v-col cols="12" sm="3">
-							<VueDatePicker
-								v-model="from_date"
-								model-type="format"
-								format="dd-MM-yyyy"
-								:enable-time-picker="false"
-								auto-apply
-								class="pos-themed-input"
-								@update:model-value="formatFromDate()"
-							/>
-						</v-col>
-						<v-col cols="12" sm="3">
-							<VueDatePicker
-								v-model="to_date"
-								model-type="format"
-								format="dd-MM-yyyy"
-								:enable-time-picker="false"
-								auto-apply
-								class="pos-themed-input"
-								@update:model-value="formatToDate()"
-							/>
-						</v-col>
-					</v-row>
-
-					<!-- Customer search fields -->
-					<v-row class="mb-2">
-						<v-col cols="12" sm="6">
-							<v-text-field
-								color="primary"
-								:label="frappe._('Customer Name')"
-								class="pos-themed-input"
-								hide-details
-								v-model="customer_name"
-								density="compact"
-								clearable
-							></v-text-field>
-						</v-col>
-						<v-col cols="12" sm="6">
-							<v-text-field
-								color="primary"
-								:label="frappe._('Customer ID')"
-								class="pos-themed-input"
-								hide-details
-								v-model="customer_id"
-								density="compact"
-								clearable
-							></v-text-field>
-						</v-col>
-					</v-row>
-					<v-row class="mb-3">
-						<v-col cols="12" sm="6">
-							<v-text-field
-								color="primary"
-								:label="frappe._('Mobile Number')"
-								class="pos-themed-input"
-								hide-details
-								v-model="mobile_no"
-								density="compact"
-								clearable
-							></v-text-field>
-						</v-col>
-						<v-col cols="12" sm="6">
-							<v-text-field
-								color="primary"
-								:label="frappe._('Tax ID')"
-								class="pos-themed-input"
-								hide-details
-								v-model="tax_id"
-								density="compact"
-								clearable
-							></v-text-field>
-						</v-col>
-					</v-row>
-
-					<!-- Amount Filter -->
-					<v-row class="mb-3">
-						<v-col cols="12" sm="6">
-							<v-text-field
-								color="primary"
-								:label="frappe._('Minimum Amount')"
-								class="pos-themed-input"
-								hide-details
-								v-model="min_amount"
-								density="compact"
-								clearable
-								type="number"
-								min="0"
-								placeholder="0"
-							></v-text-field>
-						</v-col>
-						<v-col cols="12" sm="6">
-							<v-text-field
-								color="primary"
-								:label="frappe._('Maximum Amount')"
-								class="pos-themed-input"
-								hide-details
-								v-model="max_amount"
-								density="compact"
-								clearable
-								type="number"
-								min="0"
-								:placeholder="__('No limit')"
-							></v-text-field>
-						</v-col>
-					</v-row>
-
-					<v-row>
-						<v-col cols="12" class="pt-0 pb-0">
-							<v-divider></v-divider>
-						</v-col>
-					</v-row>
-
-					<!-- Action buttons -->
-					<v-row class="mt-2 mb-2 returns-actions">
-						<v-col cols="12" sm="4" md="auto">
-							<v-btn block variant="text" color="primary" @click="search_invoices">
-								<v-icon start>mdi-magnify</v-icon>
-								{{ __("Search") }}
-							</v-btn>
-						</v-col>
-						<v-col cols="12" sm="4" md="auto">
-							<v-btn block variant="text" color="warning" @click="clear_search">
-								<v-icon start>mdi-refresh</v-icon>
-								{{ __("Clear") }}
-							</v-btn>
-						</v-col>
-						<v-col
-							cols="12"
-							sm="4"
-							md="auto"
-							v-if="pos_profile.posa_allow_return_without_invoice == 1"
-						>
-							<v-btn block variant="text" color="secondary" @click="return_without_invoice">
-								{{ __("Return without Invoice") }}
-							</v-btn>
-						</v-col>
-					</v-row>
-
-					<!-- Results -->
-					<v-row>
-						<v-col cols="12" class="pa-0 mt-1" v-if="dialog_data && dialog_data.length > 0">
-							<div v-if="isCompactReturns" class="returns-results-list">
-								<button
-									v-for="item in dialog_data"
-									:key="item.name"
-									type="button"
-									class="returns-result-card"
-									:class="{
-										'returns-result-card--selected': isSelectedInvoice(item),
-										'returns-result-card--expired': item.posa_return_expired,
-									}"
-									@click="selectInvoice(item)"
-								>
-									<div class="returns-result-card__top">
-										<div class="returns-result-card__identity">
-											<strong>{{ item.customer }}</strong>
-											<span>{{ item.name }}</span>
-										</div>
-										<div class="returns-result-card__amount">
-											{{ currencySymbol(item.currency)
-											}}{{ formatCurrency(item.grand_total) }}
-										</div>
-									</div>
-									<div class="returns-result-card__meta">
-										<span
-											>{{ __("Date") }}:
-											{{ formatDateDisplay(item.posting_date) }}</span
-										>
-										<span v-if="item.posa_return_valid_upto">
-											{{ __("Valid until") }}:
-											{{ formatDateDisplay(item.posa_return_valid_upto) }}
-										</span>
-									</div>
-									<div class="returns-result-card__chips">
-										<v-chip
-											v-if="item.posa_return_expired"
-											color="error"
-											size="small"
-											label
-										>
-											{{ __("Return window passed") }}
-										</v-chip>
-										<v-chip
-											v-else-if="isSelectedInvoice(item)"
-											color="primary"
-											size="small"
-											label
-										>
-											{{ __("Selected") }}
-										</v-chip>
-									</div>
-								</button>
-							</div>
-							<v-data-table
-								v-else
-								:headers="headers"
-								:items="dialog_data"
-								item-key="name"
-								class="elevation-1 returns-table"
-								show-select
-								v-model="selected"
-								select-strategy="single"
-								return-object
-								:row-props="returnRowProps"
-								:footer-props="{
-									'items-per-page-options': [10, 25, 50, 100],
-									'items-per-page-text': 'Invoices per page',
-								}"
-								:items-per-page="25"
-							>
-								<template v-slot:item.posting_date="{ item }">
-									{{ formatDateDisplay(item.posting_date) }}
-								</template>
-								<template v-slot:item.posa_return_valid_upto="{ item }">
-									<div class="d-flex align-center">
-										<span v-if="item.posa_return_valid_upto">
-											{{ formatDateDisplay(item.posa_return_valid_upto) }}
-										</span>
-										<v-chip
-											v-if="item.posa_return_expired"
-											color="error"
-											size="small"
-											class="ml-2"
-											label
-										>
-											{{ __("Return window passed") }}
-										</v-chip>
-									</div>
-								</template>
-								<template v-slot:item.grand_total="{ item }">
-									{{ currencySymbol(item.currency) }}
-									{{ formatCurrency(item.grand_total) }}
-								</template>
-							</v-data-table>
-
-							<!-- Load More button at the bottom of results -->
-							<div class="text-center mt-3" v-if="has_more_invoices">
-								<v-btn
-									color="primary"
-									variant="outlined"
-									:loading="loading_more"
-									@click="load_more_invoices"
-								>
-									{{ __("Load More Invoices") }}
-								</v-btn>
-							</div>
-						</v-col>
-						<v-col
-							cols="12"
-							class="text-center"
-							v-else-if="searched_once && (!dialog_data || dialog_data.length === 0)"
-						>
-							<v-alert type="warning" text>
-								{{ __("No invoices found. Try different search criteria.") }}
-							</v-alert>
-						</v-col>
-					</v-row>
-				</v-container>
-				<v-card-actions class="mt-1 returns-card__footer">
-					<v-btn color="error" variant="tonal" @click="close_dialog">
-						{{ __("Close") }}
-					</v-btn>
-					<v-btn v-if="selected.length" color="success" @click="submit_dialog">
-						{{ __("Select") }}
-					</v-btn>
-				</v-card-actions>
-			</v-card>
-		</v-dialog>
-	</v-row>
+				</template>
+				<template v-if="completed"><p>{{ __("Возврат сохранён") }}: <b>{{ completed.name }}</b></p><v-btn class="mt-3" prepend-icon="mdi-printer" @click="printSale(completed)">{{ __("Товарный чек") }}</v-btn></template>
+			</v-card-text>
+			<v-card-actions><v-btn :disabled="busy" @click="open = false">{{ __("Закрыть") }}</v-btn><v-spacer />
+				<v-btn v-if="!completed" color="primary" variant="flat" :loading="busy" :disabled="isOffline() || (!pending && !rows.some(r => r.selected))" @click="refund">{{ __(pending ? "Восстановить возврат" : "Вернуть деньги") }}</v-btn>
+			</v-card-actions>
+		</v-card>
+	</v-dialog>
 </template>
-
 <script>
-import format, { formatUtils } from "../../../format";
-import { useInvoiceStore } from "../../../stores/invoiceStore";
+import PurchaseHistory from "./PurchaseHistory.vue";
 import { useUIStore } from "../../../stores/uiStore";
-import { copySalesTeam } from "../../../utils/salesTeam";
-import { computed } from "vue";
-import { useResponsive } from "../../../composables/core/useResponsive";
-import { useTheme } from "../../../composables/core/useTheme";
+import { printMarketReceipt } from "../../../services/marketReceipt";
+import { useFiscalPrinter } from "../../../composables/pos/payments/useFiscalPrinter";
+import stockCoordinator from "../../../utils/stockCoordinator";
+import { isOffline, updateLocalStock } from "../../../../offline/index";
 
 export default {
-	mixins: [format],
-	setup() {
-		const invoiceStore = useInvoiceStore();
-		const uiStore = useUIStore();
-		const responsive = useResponsive();
-		const theme = useTheme();
-		const isCompactReturns = computed(() => responsive.windowWidth.value < 1100);
-		const returnsDialogWidth = computed(() =>
-			responsive.windowWidth.value < 600 ? "100vw" : "min(1120px, 96vw)",
-		);
-		const returnsDialogMaxWidth = computed(() =>
-			responsive.windowWidth.value < 1100 ? "100vw" : "1120px",
-		);
-		return {
-			invoiceStore,
-			uiStore,
-			isCompactReturns,
-			returnsDialogWidth,
-			returnsDialogMaxWidth,
-			isDarkTheme: theme.isDark,
-		};
+	components: { PurchaseHistory },
+	setup() { return { uiStore: useUIStore(), fiscal: useFiscalPrinter(), isOffline }; },
+	data: () => ({ open: false, busy: false, query: "", scenario: "receipt", source: null, rows: [], refundType: "cash", mode: "none", error: "", completed: null, pending: null, generation: 0 }),
+	computed: {
+		profile() { return this.uiStore.posProfile || {}; },
+		refundMethods() { return [{ value: "cash", label: __("Наличными") }, ...(this.source?.customer && this.source.customer !== this.profile.customer ? [{ value: "credit", label: __("На баланс клиента") }] : [])]; },
+		receiptModes() { return [{ value: "none", label: __("Без чека") }, { value: "receipt", label: __("Товарный чек") }, ...(this.refundType !== "credit" ? [{ value: "fiscal", label: __("Фискальный чек") }] : [])]; },
+		pendingKey() { return `posa-quick-return:${this.profile.name}`; },
 	},
-	data: () => ({
-		invoicesDialog: false,
-		singleSelect: true,
-		selected: [],
-		dialog_data: [],
-		company: "",
-		invoice_name: "",
-		customer_name: "",
-		customer_id: "",
-		mobile_no: "",
-		tax_id: "",
-		from_date: null,
-		to_date: null,
-		from_date_formatted: null,
-		to_date_formatted: null,
-		min_amount: "",
-		max_amount: "",
-		pos_profile: "",
-		page: 1,
-		has_more_invoices: false,
-		loading_more: false,
-		searched_once: false,
-		current_search_params: null,
-		headers: [
-			{
-				title: __("Customer"),
-				value: "customer",
-				align: "start",
-				sortable: true,
-			},
-			{
-				title: __("Date"),
-				align: "start",
-				sortable: true,
-				value: "posting_date",
-			},
-			{
-				title: __("Invoice"),
-				value: "name",
-				align: "start",
-				sortable: true,
-			},
-			{
-				title: __("Return Valid Until"),
-				value: "posa_return_valid_upto",
-				align: "start",
-				sortable: false,
-			},
-			{
-				title: __("Amount"),
-				value: "grand_total",
-				align: "end",
-				sortable: false,
-			},
-		],
-	}),
-	computed: {},
 	watch: {
-		from_date() {
-			this.formatFromDate();
-		},
-		to_date() {
-			this.formatToDate();
-		},
+		scenario() { this.generation++; this.query = ""; this.source = null; this.rows = []; this.refundType = "cash"; this.error = ""; },
+		refundType(value) { if (value === "credit" && this.mode === "fiscal") this.mode = "none"; },
 	},
 	methods: {
-		isSelectedInvoice(item) {
-			return Array.isArray(this.selected) && this.selected.some((entry) => entry?.name === item?.name);
-		},
-		selectInvoice(item) {
-			this.selected = item ? [item] : [];
-		},
-		returnRowProps({ item }) {
-			const rowClass = this.returnRowClass(item);
-			return rowClass ? { class: rowClass } : {};
-		},
-		returnRowClass(item) {
-			if (!item || typeof item !== "object") {
-				return "";
-			}
-			return item.posa_return_expired ? "return-expired-row" : "";
-		},
-		formatDateDisplay(dateStr) {
-			if (!dateStr) return "";
+		money(value) { return Math.abs(Number(value || 0)).toFixed(2); },
+		async call(method, args) { return (await frappe.call(`posawesome.posawesome.api.market_checkout.${method}`, args)).message; },
+		async search() {
+			if (this.busy || this.scenario !== "guest" || !this.query?.trim()) return;
+			const generation = ++this.generation;
+			this.busy = true; this.error = "";
 			try {
-				const western = formatUtils.fromArabicNumerals(String(dateStr));
-				const parts = western.split("-");
-				if (parts.length === 3) {
-					const formatted = `${parts[2]}-${parts[1]}-${parts[0]}`;
-					return formatUtils.toArabicNumerals(formatted);
+				const row = await this.call("guest_item", { pos_profile: this.profile.name, code: this.query });
+				if (generation !== this.generation) return;
+				const existing = this.rows.find(r => r.item_code === row.item_code);
+				if (existing) existing.returnQty++;
+				else this.rows.push({ ...row, rate: row.rate || row.price_list_rate, selected: true, returnQty: 1 });
+				this.query = "";
+			} catch (error) { this.error = error.message; }
+			finally { this.busy = false; }
+		},
+		async loadSale(sale) {
+			const generation = ++this.generation;
+			this.busy = true; this.error = "";
+			try {
+				const result = await this.call("return_items", { invoice_name: sale.name, doctype: sale.doctype, pos_profile: this.profile.name });
+				if (generation !== this.generation || !this.open) return;
+				this.source = { ...result, doctype: sale.doctype };
+				this.rows = result.items.map(row => ({ ...row, selected: false, returnQty: row.qty }));
+				if (!this.rows.length) this.error = __("Все товары уже возвращены");
+			} catch (error) { this.error = error.message; }
+			finally { this.busy = false; }
+		},
+		openDetailedReturn() {
+			const selected = this.rows.filter(row => row.selected);
+			if (!selected.length) { this.error = __("Select returned items"); return; }
+			const invoice_doc = {
+				is_return: 1, customer: this.source?.customer || this.profile.customer,
+				return_against: this.source?.name, company: this.profile.company, pos_profile: this.profile.name,
+				update_stock: 1, discount_amount: this.source?.discount_amount || 0,
+				additional_discount_percentage: this.source?.additional_discount_percentage || 0,
+				items: selected.map(row => {
+					const item = { ...row, qty: -Math.abs(Number(row.returnQty)), amount: -Math.abs(Number(row.returnQty) * Number(row.rate)), warehouse: this.profile.warehouse };
+					if (this.source) item[this.source.doctype === "POS Invoice" ? "pos_invoice_item" : "sales_invoice_item"] = row.name;
+					delete item.name; delete item.selected; delete item.returnQty;
+					return item;
+				}),
+			};
+			this.eventBus.emit("load_return_invoice", { invoice_doc, return_doc: this.source });
+			this.open = false;
+		},
+		async printSale(sale) { try { await printMarketReceipt(sale, this.profile); } catch (error) { this.error = error.message; } },
+		async refund() {
+			if (this.busy || isOffline()) return;
+			this.busy = true; this.error = "";
+			try {
+				const selected = this.rows.filter(r => r.selected);
+				if (!this.pending && selected.some(r => !Number.isFinite(Number(r.returnQty)) || r.returnQty <= 0 || (this.scenario !== "guest" && r.returnQty > r.qty))) throw new Error(__("Проверьте количество возвращаемых товаров"));
+				const request = this.pending || { pos_profile: this.profile.name, opening_shift: this.uiStore.posOpeningShift?.name,
+					selected_items: selected.map(r => ({ name: r.name, item_code: r.item_code, qty: r.returnQty })), request_id: crypto.randomUUID(),
+					invoice_name: this.source?.name, doctype: this.source?.doctype || "Sales Invoice", as_credit: this.refundType === "credit" ? 1 : 0 };
+				const finishingMode = this.pending?.finishingMode || this.mode;
+				this.pending = { ...request, finishingMode };
+				localStorage.setItem(this.pendingKey, JSON.stringify(this.pending));
+				const { finishingMode: _ignored, ...args } = this.pending;
+				const result = await this.call("refund", args);
+				if (Number(result.docstatus) !== 1) throw new Error(__("Возврат ещё не проведён. Восстановите результат."));
+				this.completed = result;
+				localStorage.removeItem(this.pendingKey); this.pending = null;
+				this.uiStore.setLastInvoice(result.name, result.doctype);
+				if (result.update_stock) {
+					updateLocalStock(result.items || []);
+					stockCoordinator.applyInvoiceConsumption(result.items || [], { source: "invoice" });
+					this.uiStore.setLastStockAdjustment({ items: result.items, item_codes: (result.items || []).map(r => r.item_code), timestamp: Date.now() });
+				}
+				if (finishingMode === "receipt") await this.printSale(result);
+				if (finishingMode === "fiscal") {
+					const fiscal = await this.fiscal.printFiscalReceipt(result);
+					if (!fiscal.success) this.error = fiscal.error + " · " + __("Восстановите ФД из списка счетов.");
 				}
 			} catch (error) {
-				console.error("Error formatting date:", error);
-			}
-			return formatUtils.toArabicNumerals(String(dateStr));
-		},
-		formatFromDate() {
-			if (this.from_date) {
-				try {
-					let dateString = "";
-
-					// Handle Date object
-					if (typeof this.from_date === "object" && this.from_date instanceof Date) {
-						const day = String(this.from_date.getDate()).padStart(2, "0");
-						const month = String(this.from_date.getMonth() + 1).padStart(2, "0");
-						const year = this.from_date.getFullYear();
-						dateString = `${day}-${month}-${year}`;
-					}
-					// Handle string in YYYY-MM-DD format
-					else if (typeof this.from_date === "string" && this.from_date.includes("-")) {
-						const parts = formatUtils.fromArabicNumerals(this.from_date).split("-");
-						if (parts.length === 3) {
-							dateString = `${parts[2]}-${parts[1]}-${parts[0]}`;
-						} else {
-							dateString = formatUtils.fromArabicNumerals(this.from_date);
-						}
-					}
-					// Handle any other format - just display as is
-					else {
-						dateString = formatUtils.fromArabicNumerals(String(this.from_date));
-					}
-
-					this.from_date_formatted = formatUtils.toArabicNumerals(dateString);
-				} catch (error) {
-					console.error("Error formatting from_date:", error);
-					this.from_date_formatted = formatUtils.toArabicNumerals(String(this.from_date));
-				}
-			} else {
-				this.from_date_formatted = null;
-			}
-		},
-		formatToDate() {
-			if (this.to_date) {
-				try {
-					let dateString = "";
-
-					// Handle Date object
-					if (typeof this.to_date === "object" && this.to_date instanceof Date) {
-						const day = String(this.to_date.getDate()).padStart(2, "0");
-						const month = String(this.to_date.getMonth() + 1).padStart(2, "0");
-						const year = this.to_date.getFullYear();
-						dateString = `${day}-${month}-${year}`;
-					}
-					// Handle string in YYYY-MM-DD format
-					else if (typeof this.to_date === "string" && this.to_date.includes("-")) {
-						const parts = formatUtils.fromArabicNumerals(this.to_date).split("-");
-						if (parts.length === 3) {
-							dateString = `${parts[2]}-${parts[1]}-${parts[0]}`;
-						} else {
-							dateString = formatUtils.fromArabicNumerals(this.to_date);
-						}
-					}
-					// Handle any other format - just display as is
-					else {
-						dateString = formatUtils.fromArabicNumerals(String(this.to_date));
-					}
-
-					this.to_date_formatted = formatUtils.toArabicNumerals(dateString);
-				} catch (error) {
-					console.error("Error formatting to_date:", error);
-					this.to_date_formatted = formatUtils.toArabicNumerals(String(this.to_date));
-				}
-			} else {
-				this.to_date_formatted = null;
-			}
-		},
-		clearFromDate() {
-			this.from_date = null;
-			this.from_date_formatted = null;
-		},
-		clearToDate() {
-			this.to_date = null;
-			this.to_date_formatted = null;
-		},
-		close_dialog() {
-			this.invoicesDialog = false;
-		},
-		clear_search() {
-			this.invoice_name = "";
-			this.customer_name = "";
-			this.customer_id = "";
-			this.mobile_no = "";
-			this.tax_id = "";
-			this.from_date = null;
-			this.to_date = null;
-			this.from_date_formatted = null;
-			this.to_date_formatted = null;
-			this.min_amount = "";
-			this.max_amount = "";
-			this.dialog_data = [];
-			this.page = 1;
-			this.has_more_invoices = false;
-			this.searched_once = false;
-		},
-		search_invoices_by_enter(e) {
-			if (e.keyCode === 13) {
-				this.search_invoices();
-			}
-		},
-		search_invoices() {
-			this.page = 1;
-			this.dialog_data = [];
-			this.perform_search();
-		},
-		perform_search() {
-			const vm = this;
-			vm.loading_more = true;
-
-			// Format dates for API call in YYYY-MM-DD format
-			let formattedFromDate = null;
-			let formattedToDate = null;
-
-			if (vm.from_date) {
-				if (typeof vm.from_date === "object" && vm.from_date instanceof Date) {
-					// Format Date object to YYYY-MM-DD
-					formattedFromDate = [
-						vm.from_date.getFullYear(),
-						String(vm.from_date.getMonth() + 1).padStart(2, "0"),
-						String(vm.from_date.getDate()).padStart(2, "0"),
-					].join("-");
-				} else if (typeof vm.from_date === "string") {
-					const fromStr = formatUtils.fromArabicNumerals(vm.from_date);
-					if (fromStr.includes("/")) {
-						// Convert DD/MM/YYYY to YYYY-MM-DD
-						const parts = fromStr.split("/");
-						if (parts.length === 3) {
-							formattedFromDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-						}
-					} else if (fromStr.includes("-")) {
-						const parts = fromStr.split("-");
-						if (parts.length === 3) {
-							if (parts[0].length === 4) {
-								formattedFromDate = fromStr; // Already YYYY-MM-DD
-							} else {
-								formattedFromDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-							}
-						}
-					} else {
-						// Invalid format, skip date filter
-						formattedFromDate = null;
-					}
+				this.error = error.message;
+				if (error.status >= 400 && error.status < 500) {
+					localStorage.removeItem(this.pendingKey); this.pending = null;
 				}
 			}
-
-			if (vm.to_date) {
-				if (typeof vm.to_date === "object" && vm.to_date instanceof Date) {
-					// Format Date object to YYYY-MM-DD
-					formattedToDate = [
-						vm.to_date.getFullYear(),
-						String(vm.to_date.getMonth() + 1).padStart(2, "0"),
-						String(vm.to_date.getDate()).padStart(2, "0"),
-					].join("-");
-				} else if (typeof vm.to_date === "string") {
-					const toStr = formatUtils.fromArabicNumerals(vm.to_date);
-					if (toStr.includes("/")) {
-						// Convert DD/MM/YYYY to YYYY-MM-DD
-						const parts = toStr.split("/");
-						if (parts.length === 3) {
-							formattedToDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-						}
-					} else if (toStr.includes("-")) {
-						const parts = toStr.split("-");
-						if (parts.length === 3) {
-							if (parts[0].length === 4) {
-								formattedToDate = toStr; // Already YYYY-MM-DD
-							} else {
-								formattedToDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-							}
-						}
-					} else {
-						// Invalid format, skip date filter
-						formattedToDate = null;
-					}
-				}
-			}
-
-			// Process amount filters
-			let minAmount = vm.min_amount ? parseFloat(formatUtils.fromArabicNumerals(vm.min_amount)) : null;
-			let maxAmount = vm.max_amount ? parseFloat(formatUtils.fromArabicNumerals(vm.max_amount)) : null;
-
-			// Save current search parameters for "load more" functionality
-			this.current_search_params = {
-				invoice_name: vm.invoice_name,
-				customer_name: vm.customer_name,
-				customer_id: vm.customer_id,
-				mobile_no: vm.mobile_no,
-				tax_id: vm.tax_id,
-				from_date: formattedFromDate,
-				to_date: formattedToDate,
-				min_amount: minAmount,
-				max_amount: maxAmount,
-				company: vm.company,
-				page: vm.page,
-				pos_profile: vm.pos_profile?.name,
-				doctype:
-					vm.pos_profile && vm.pos_profile.create_pos_invoice_instead_of_sales_invoice
-						? "POS Invoice"
-						: "Sales Invoice",
-			};
-
-			frappe.call({
-				method: "posawesome.posawesome.api.invoices.search_invoices_for_return",
-				args: this.current_search_params,
-				callback: function (r) {
-					vm.loading_more = false;
-					vm.searched_once = true;
-
-					if (r.message) {
-						// If this is page 1, replace data, otherwise append
-						if (vm.page === 1) {
-							vm.dialog_data = r.message.invoices;
-						} else {
-							vm.dialog_data = [...vm.dialog_data, ...r.message.invoices];
-						}
-
-						// Set flag if there are more invoices to load
-						vm.has_more_invoices = r.message.has_more;
-					} else {
-						vm.dialog_data = [];
-						vm.has_more_invoices = false;
-						vm.toastStore.show({
-							title: __("No invoices found"),
-							color: "warning",
-						});
-					}
-				},
-				error: function (err) {
-					vm.loading_more = false;
-					console.error("Error searching invoices:", err);
-					vm.toastStore.show({
-						title: __("Error searching invoices"),
-						color: "error",
-					});
-				},
-			});
+			finally { this.busy = false; }
 		},
-		load_more_invoices() {
-			this.page += 1;
-			this.perform_search();
-		},
-		return_without_invoice() {
-			const invoice_doc = {};
-			invoice_doc.items = [];
-			invoice_doc.is_return = 1;
-			const data = { invoice_doc };
-			this.eventBus.emit("load_return_invoice", data);
-			this.invoicesDialog = false;
-		},
-		async submit_dialog() {
-			if (this.selected.length > 0) {
-				const selectedInvoice = this.selected[0];
-				const doctype =
-					this.pos_profile && this.pos_profile.create_pos_invoice_instead_of_sales_invoice
-						? "POS Invoice"
-						: "Sales Invoice";
-
-				let return_doc = null;
-				try {
-					const { message } = await frappe.call({
-						method: "posawesome.posawesome.api.invoices.get_invoice_for_return",
-						args: {
-							invoice_name: selectedInvoice.name,
-							pos_profile: this.pos_profile?.name,
-							doctype,
-						},
-					});
-					return_doc = message;
-				} catch (error) {
-					console.error("Error loading invoice for return:", error);
-					this.toastStore.show({
-						title: __("Error loading invoice details"),
-						color: "error",
-					});
-					return;
-				}
-
-				if (!return_doc || !Array.isArray(return_doc.items) || return_doc.items.length === 0) {
-					this.toastStore.show({
-						title: __("No returnable items found for this invoice"),
-						color: "warning",
-					});
-					return;
-				}
-
-				const invoice_doc = {};
-				const items = [];
-
-				return_doc.items.forEach((item) => {
-					const new_item = { ...item };
-					// reference original invoice row for backend validation
-					if (return_doc.doctype === "POS Invoice") {
-						new_item.pos_invoice_item = item.name;
-					} else {
-						new_item.sales_invoice_item = item.name;
-					}
-					delete new_item.name;
-
-					// Preserve original pricing and discounts
-					new_item.rate = item.rate;
-					new_item.price_list_rate = item.price_list_rate;
-					new_item.discount_percentage = item.discount_percentage;
-					new_item.discount_amount = item.discount_amount;
-					new_item.is_free_item = item.is_free_item;
-					new_item.net_rate = item.net_rate;
-					new_item.net_amount = item.net_amount > 0 ? item.net_amount * -1 : item.net_amount;
-					new_item.locked_price = true;
-
-					// Make sure quantities are negative for returns
-					new_item.qty = item.qty > 0 ? item.qty * -1 : item.qty;
-					new_item.stock_qty = item.stock_qty > 0 ? item.stock_qty * -1 : item.stock_qty;
-					new_item.amount = item.amount > 0 ? item.amount * -1 : item.amount;
-					items.push(new_item);
-				});
-
-				invoice_doc.items = items;
-				invoice_doc.is_return = 1;
-				invoice_doc.return_against = return_doc.name;
-				invoice_doc.customer = return_doc.customer;
-				invoice_doc.discount_amount = return_doc.discount_amount;
-				invoice_doc.additional_discount_percentage = return_doc.additional_discount_percentage;
-				const normalizeRefundAmount = (value) => {
-					const amount = this.flt(value || 0, this.currency_precision);
-					return amount ? -Math.abs(amount) : 0;
-				};
-				invoice_doc.payments = Array.isArray(return_doc.payments)
-					? return_doc.payments.map((payment) => ({
-							mode_of_payment: payment.mode_of_payment,
-							amount: normalizeRefundAmount(payment.amount),
-							base_amount:
-								payment.base_amount !== undefined
-									? normalizeRefundAmount(payment.base_amount)
-									: payment.base_amount,
-							default: payment.default,
-							account: payment.account,
-							type: payment.type,
-							currency: payment.currency,
-							conversion_rate: payment.conversion_rate,
-						}))
-					: [];
-
-				// Make sure grand_total is negative for returns
-				if (return_doc.grand_total > 0) {
-					invoice_doc.grand_total = return_doc.grand_total * -1;
-				} else {
-					invoice_doc.grand_total = return_doc.grand_total;
-				}
-
-				// Cap on how much of this return may be refunded as cash: only what
-				// the customer actually paid on the original invoice. For an unpaid
-				// (credit) invoice this is 0, so the return defaults to a credit note
-				// that reduces the customer's balance instead of paying out cash.
-				const originalPaid = this.flt(
-					return_doc.paid_amount != null
-						? return_doc.paid_amount
-						: (return_doc.grand_total || 0) - (return_doc.outstanding_amount || 0),
-					this.currency_precision,
-				);
-				invoice_doc.posa_refundable_amount = originalPaid > 0 ? originalPaid : 0;
-
-				// These fields ensure proper return handling
-				invoice_doc.update_stock = 1;
-				invoice_doc.pos_profile = this.pos_profile.name;
-				invoice_doc.company = this.company;
-				invoice_doc.sales_team = copySalesTeam(return_doc.sales_team);
-				const resolvedSalesPerson =
-					return_doc.custom_sales_person ||
-					return_doc.sales_person ||
-					(invoice_doc.sales_team.length > 0 ? invoice_doc.sales_team[0].sales_person : "");
-				if (resolvedSalesPerson) {
-					invoice_doc.custom_sales_person = resolvedSalesPerson;
-					invoice_doc.sales_person = resolvedSalesPerson;
-					if (invoice_doc.sales_team.length === 0) {
-						invoice_doc.sales_team = [
-							{
-								sales_person: resolvedSalesPerson,
-								allocated_percentage: 100,
-							},
-						];
-					}
-				}
-
-				const data = { invoice_doc, return_doc };
-
-				this.eventBus.emit("load_return_invoice", data);
-				this.invoicesDialog = false;
-			}
+		openReturns() {
+			this.generation++; this.scenario = "receipt"; this.query = ""; this.source = null; this.rows = []; this.completed = null; this.error = ""; this.mode = "none"; this.refundType = "cash";
+			try { this.pending = JSON.parse(localStorage.getItem(this.pendingKey) || "null"); } catch { this.pending = null; }
+			this.open = true;
+			if (isOffline()) this.error = __("Для возврата требуется соединение с ERPNext");
 		},
 	},
-	created: function () {
-		this.eventBus.on("open_returns", (data) => {
-			this.invoicesDialog = true;
-			this.company = data;
-			this.invoice_name = "";
-			this.customer_name = "";
-			this.customer_id = "";
-			this.mobile_no = "";
-			this.tax_id = "";
-			this.from_date = null;
-			this.to_date = null;
-			this.from_date_formatted = null;
-			this.to_date_formatted = null;
-			this.min_amount = "";
-			this.max_amount = "";
-			this.dialog_data = [];
-			this.selected = [];
-			this.page = 1;
-			this.has_more_invoices = false;
-			this.searched_once = false;
-		});
-
-		this.$watch(
-			() => this.uiStore.posProfile,
-			(profile) => {
-				if (profile) this.pos_profile = profile;
-			},
-			{ deep: false, immediate: true },
-		);
-	},
-	beforeUnmount() {
-		this.eventBus.off("open_returns");
-	},
+	created() { this.eventBus.on("open_returns", this.openReturns); },
+	beforeUnmount() { this.eventBus.off("open_returns", this.openReturns); },
 };
 </script>
-
 <style scoped>
-.return-expired-row {
-	background-color: color-mix(in srgb, var(--pos-error) 14%, var(--pos-surface)) !important;
-}
-
-.returns-card {
-	display: flex;
-	flex-direction: column;
-	max-height: min(92vh, 100%);
-	background: var(--pos-surface-raised) !important;
-	color: var(--pos-text-primary) !important;
-	border: 1px solid var(--pos-border);
-}
-
-.returns-card__title {
-	display: flex;
-	align-items: flex-start;
-	justify-content: space-between;
-	gap: 12px;
-	padding: 20px 20px 12px;
-	border-bottom: 1px solid var(--pos-border);
-}
-
-.returns-card__title-copy {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-	min-width: 0;
-}
-
-.returns-card__subtitle {
-	font-size: 0.88rem;
-	line-height: 1.4;
-	color: var(--pos-text-secondary);
-}
-
-.returns-card__content {
-	flex: 1 1 auto;
-	overflow: auto;
-	padding-top: 4px;
-}
-
-.returns-actions {
-	align-items: stretch;
-}
-
-.returns-results-list {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	padding: 4px 0;
-}
-
-.returns-result-card {
-	width: 100%;
-	border: 1px solid var(--pos-border);
-	border-radius: 18px;
-	background: var(--pos-card-bg);
-	padding: 14px;
-	text-align: left;
-	cursor: pointer;
-	transition:
-		border-color 0.18s ease,
-		box-shadow 0.18s ease,
-		transform 0.18s ease;
-}
-
-.returns-result-card:hover {
-	border-color: color-mix(in srgb, var(--pos-primary) 28%, var(--pos-border));
-	box-shadow: 0 10px 24px var(--pos-shadow);
-	transform: translateY(-1px);
-}
-
-.returns-result-card--selected {
-	border-color: var(--pos-primary);
-	box-shadow: 0 0 0 2px color-mix(in srgb, var(--pos-primary) 14%, transparent);
-}
-
-.returns-result-card--expired {
-	background: color-mix(in srgb, var(--pos-error) 6%, var(--pos-surface));
-}
-
-.returns-result-card__top {
-	display: flex;
-	align-items: flex-start;
-	justify-content: space-between;
-	gap: 12px;
-}
-
-.returns-result-card__identity {
-	display: flex;
-	flex-direction: column;
-	gap: 3px;
-	min-width: 0;
-}
-
-.returns-result-card__identity strong,
-.returns-result-card__amount {
-	color: var(--pos-text-primary);
-}
-
-.returns-result-card__identity span,
-.returns-result-card__meta {
-	color: var(--pos-text-secondary);
-	font-size: 0.86rem;
-}
-
-.returns-result-card__amount {
-	font-weight: 700;
-	white-space: nowrap;
-}
-
-.returns-result-card__meta {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-	margin-top: 10px;
-}
-
-.returns-result-card__chips {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	margin-top: 10px;
-}
-
-.returns-card__footer {
-	position: sticky;
-	bottom: 0;
-	display: flex;
-	justify-content: flex-end;
-	gap: 12px;
-	padding: 14px 20px 18px;
-	background: linear-gradient(180deg, transparent, var(--pos-surface) 30%);
-	border-top: 1px solid var(--pos-border);
-}
-
-.returns-table :deep(.v-table),
-.returns-table :deep(.v-table__wrapper),
-.returns-table :deep(table),
-.returns-table :deep(thead),
-.returns-table :deep(tbody),
-.returns-table :deep(tr),
-.returns-table :deep(td),
-.returns-table :deep(th) {
-	background: var(--pos-surface) !important;
-	color: var(--pos-text-primary) !important;
-}
-
-.returns-table :deep(th) {
-	background: var(--pos-table-header-bg) !important;
-}
-
-.returns-table :deep(tbody tr:hover) {
-	background: var(--pos-table-row-hover) !important;
-}
-
-@media (max-width: 1279px) {
-	.returns-card {
-		max-height: 100vh;
-		height: 100vh;
-		border-radius: 0;
-	}
-
-	.returns-card__title {
-		position: sticky;
-		top: 0;
-		z-index: 2;
-		padding: 16px 16px 10px;
-		background: var(--pos-surface);
-		border-bottom: 1px solid var(--pos-border);
-	}
-
-	.returns-card__content {
-		padding-left: 12px;
-		padding-right: 12px;
-		padding-bottom: 12px;
-	}
-
-	.returns-card__footer {
-		padding: 12px;
-	}
-
-	.returns-card__footer .v-btn {
-		flex: 1 1 0;
-		min-height: 46px;
-	}
-}
-
-@media (max-width: 767px) {
-	.returns-result-card {
-		padding: 12px;
-	}
-
-	.returns-result-card__top {
-		flex-direction: column;
-	}
-
-	.returns-result-card__amount {
-		white-space: normal;
-	}
-
-	.returns-card__subtitle {
-		font-size: 0.82rem;
-	}
-}
+.return-scenarios{display:flex;flex-wrap:wrap;height:auto;gap:4px}.return-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}.return-items td{padding-top:6px!important;padding-bottom:6px!important}.return-items :deep(.v-input){min-width:80px;max-width:110px}.quick-returns :deep(.v-card-title){white-space:normal}@media(max-width:600px){.return-options{grid-template-columns:1fr}.quick-returns :deep(.v-card-text){padding:12px}.return-scenarios :deep(.v-btn){font-size:12px}}
 </style>

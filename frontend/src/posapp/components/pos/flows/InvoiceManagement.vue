@@ -1887,6 +1887,9 @@ import { useUIStore } from "../../../stores/uiStore";
 import { useInvoiceStore } from "../../../stores/invoiceStore";
 import { useCustomersStore } from "../../../stores/customersStore";
 import { useEmployeeStore } from "../../../stores/employeeStore";
+import { printMarketReceipt } from "../../../services/marketReceipt";
+import { useFiscalPrinter } from "../../../composables/pos/payments/useFiscalPrinter";
+import { fiscalContext, reprintFiscalReceipt } from "../../../services/fiscalTransport";
 import {
 	appendDebugPrintParam,
 	isDebugPrintEnabled,
@@ -3816,7 +3819,37 @@ export default {
 			this.uiStore.closeInvoiceManagement();
 			this.router.push("/payments");
 		},
+		async fiscalInvoice(invoice) {
+			const doc = { ...invoice, doctype: invoice.doctype || this.currentInvoiceDoctype };
+			const fiscal = useFiscalPrinter();
+			try {
+				const context = await fiscalContext(doc);
+				if (context.fdNumber) { await reprintFiscalReceipt(doc); return; }
+				if (context.status === "Неизвестно") {
+					const fd = window.prompt(__("ФД № из журнала принтера. Если документ не создан, введите 0."));
+					if (fd === null || !fd.trim()) return;
+					if (Number(fd) === 0) {
+						if (!window.confirm(__("Журнал принтера проверен: дата, сумма и товары этой продажи отсутствуют. Разрешить новую попытку?"))) return;
+						await fiscal.confirmNoFiscalDocument(doc);
+						const result = await fiscal.printFiscalReceipt(doc);
+						if (!result.success) throw new Error(result.error);
+					} else {
+						if (!window.confirm(__("Проверены дата, сумма и товары: ФД относится к этой продаже"))) return;
+						await fiscal.reconcileFiscalReceipt(doc, fd);
+					}
+				} else {
+					const result = await fiscal.printFiscalReceipt(doc);
+					if (!result.success) throw new Error(result.error);
+				}
+				this.toastStore.show({ title: __("Фискальный документ сохранён"), color: "success" });
+			} catch (error) { this.toastStore.show({ title: error.message, color: "warning" }); }
+		},
 		async printInvoice(invoice) {
+			if (invoice?.name && Number(invoice.docstatus ?? 1) === 1 && ["Sales Invoice", "POS Invoice"].includes(invoice.doctype || this.currentInvoiceDoctype)) {
+				try { await printMarketReceipt({ ...invoice, doctype: invoice.doctype || this.currentInvoiceDoctype }, this.posProfile); }
+				catch (error) { this.toastStore.show({ title: error.message, color: "error" }); }
+				return;
+			}
 			const profile = this.posProfile;
 			if (!invoice?.name || !profile) return;
 			const doctype = invoice.doctype || this.currentInvoiceDoctype;

@@ -224,7 +224,10 @@ def get_invoice_for_return(invoice_name, pos_profile=None, doctype="Sales Invoic
     started_at = time.perf_counter()
     enforce_return_validity, _ = _get_return_validity_settings(pos_profile)
 
-    invoice_doc = frappe.get_cached_doc(doctype, invoice_name)
+    from posawesome.posawesome.api.fiscal import scoped_invoice
+    invoice_doc, _source_profile = scoped_invoice(invoice_name, doctype)
+    if invoice_doc.is_return:
+        frappe.throw(_("Select an original sale"))
     invoice = {
         "name": invoice_doc.name,
         "doctype": doctype,
@@ -309,23 +312,31 @@ def get_invoice_for_return(invoice_name, pos_profile=None, doctype="Sales Invoic
     )
 
     returned_qty_by_code = defaultdict(float)
+    returned_qty_by_row = defaultdict(float)
     returned_names = [row.name for row in returned_items]
     if returned_names:
         returned_rows = frappe.get_all(
             item_doctype,
             filters={"parent": ["in", returned_names], "parenttype": doctype},
-            fields=["item_code", "qty"],
+            fields=["item_code", "qty", "pos_invoice_item" if doctype == "POS Invoice" else "sales_invoice_item"],
         )
         for row in returned_rows:
             item_code = row.get("item_code")
             if not item_code:
                 continue
-            returned_qty_by_code[item_code] += abs(flt(row.get("qty") or 0))
+            reference = row.get("pos_invoice_item" if doctype == "POS Invoice" else "sales_invoice_item")
+            if reference:
+                returned_qty_by_row[reference] += abs(flt(row.get("qty") or 0))
+            else:
+                returned_qty_by_code[item_code] += abs(flt(row.get("qty") or 0))
 
     filtered_items = []
     for item in invoice_doc.get("items") or []:
         item_code = item.get("item_code")
-        remaining_qty = flt(item.get("qty") or 0) - flt(returned_qty_by_code.get(item_code, 0))
+        original_qty = flt(item.get("qty") or 0)
+        legacy_used = min(max(0, original_qty - returned_qty_by_row[item.name]), returned_qty_by_code[item_code])
+        returned_qty_by_code[item_code] -= legacy_used
+        remaining_qty = original_qty - returned_qty_by_row[item.name] - legacy_used
         if remaining_qty > 0:
             filtered_items.append(
                 {
@@ -414,10 +425,12 @@ def validate_return_items(original_invoice_name, return_items, doctype="Sales In
             if item.item_code in original_item_qty:
                 original_item_qty[item.item_code] -= abs(flt(item.qty or 0))
 
+    requested = defaultdict(float)
     for item in return_items:
         item_code = item.get("item_code")
-        return_qty = abs(item.get("qty", 0))
-        if item_code in original_item_qty and return_qty > original_item_qty[item_code]:
+        requested[item_code] += abs(flt(item.get("qty", 0)))
+    for item_code, return_qty in requested.items():
+        if item_code not in original_item_qty or return_qty > original_item_qty[item_code]:
             return {
                 "valid": False,
                 "message": _("You are trying to return more quantity for item {0} than was sold.").format(

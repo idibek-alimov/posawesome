@@ -180,7 +180,9 @@ export const useUIStore = defineStore("ui", () => {
   }
 
   const lastInvoiceId = ref<string | null>(null);
-  function setLastInvoice(id: string | null) {
+  const lastInvoiceDoctype = ref<string | null>(null);
+  function setLastInvoice(id: string | null, doctype?: string) {
+    lastInvoiceDoctype.value = doctype || null;
     lastInvoiceId.value = id;
   }
 
@@ -321,6 +323,7 @@ export const useUIStore = defineStore("ui", () => {
     posOpeningShift,
     lastClosedShift,
     lastInvoiceId,
+    lastInvoiceDoctype,
     offers,
     applicableOffers,
     currency,

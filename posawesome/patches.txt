@@ -37,3 +37,5 @@ posawesome.patches.secure_mpesa_callback_transactions
 posawesome.patches.add_below_cost_sale_policy
 posawesome.patches.update_barcode_label_templates
 posawesome.patches.repair_expense_source_settings
+
+posawesome.patches.add_market_checkout_fields

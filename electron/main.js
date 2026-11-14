@@ -1,5 +1,7 @@
 const path = require("path");
 const { app, BrowserWindow, ipcMain, net, shell, Menu } = require("electron");
+const { fiscalRequest } = require("./fiscal");
+const { printReceipt } = require("./receipt");
 
 const DEFAULT_PATH = "/app/posapp";
 
@@ -248,6 +250,24 @@ ipcMain.handle("open-settings", () => {
 });
 
 ipcMain.handle("probe-server", async () => probeServer());
+
+ipcMain.handle("tp809-request", async (event, request) => {
+	await ensureStoreReady();
+	const sender = new URL(event.senderFrame.url);
+	if (!getStoredUrl() || sender.origin !== new URL(getStoredUrl()).origin || event.senderFrame !== event.sender.mainFrame) {
+		throw new Error("Fiscal requests require the configured POS server");
+	}
+	return fiscalRequest(store, request);
+});
+
+ipcMain.handle("print-store-receipt", async (event, request) => {
+	await ensureStoreReady();
+	const sender = new URL(event.senderFrame.url);
+	if (!getStoredUrl() || sender.origin !== new URL(getStoredUrl()).origin || event.senderFrame !== event.sender.mainFrame) {
+		throw new Error("Receipt printing requires the configured POS server");
+	}
+	return printReceipt(BrowserWindow, request);
+});
 
 ipcMain.handle("reset-server", async () => {
 	await ensureStoreReady();

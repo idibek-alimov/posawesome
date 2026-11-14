@@ -306,7 +306,7 @@ const FALLBACK_LANGUAGES = [
 	{ code: "pt", name: "Português", native_name: "Português" },
 ];
 
-import { useLastInvoicePrinting } from "../../composables/core/useLastInvoicePrinting";
+import { bus } from "../../bus";
 import { useUpdateStore } from "../../stores/updateStore";
 import { useEmployeeStore } from "../../stores/employeeStore";
 import { storeToRefs } from "pinia";
@@ -325,11 +325,10 @@ export default {
 		serverOnline: Boolean,
 	},
 	setup() {
-		const { printLastInvoice } = useLastInvoicePrinting();
 		const updateStore = useUpdateStore();
 		const employeeStore = useEmployeeStore();
 		const { currentCashier, currentCashierDisplay } = storeToRefs(employeeStore);
-		return { printLastInvoice, updateStore, employeeStore, currentCashier, currentCashierDisplay };
+		return { updateStore, employeeStore, currentCashier, currentCashierDisplay };
 	},
 	data() {
 		return {
@@ -415,8 +414,8 @@ export default {
 				this.isEnabledSetting(this.posProfile?.posa_allow_print_last_invoice)
 					? {
 							id: "print-last-invoice",
-							label: __("Print Last Invoice"),
-							subtitle: __("Reprint previous transaction"),
+							label: __("Чеки"),
+							subtitle: __("Найти покупку и распечатать товарный чек"),
 							icon: "mdi-printer",
 							tone: "secondary",
 							handler: "printLastInvoiceAction",
@@ -639,7 +638,7 @@ export default {
 					break;
 				case "printLastInvoiceAction":
 					this.closeMenu();
-					this.printLastInvoice();
+					bus.emit("open_receipts");
 					break;
 				case "shareLastInvoiceAction":
 					this.closeMenu();

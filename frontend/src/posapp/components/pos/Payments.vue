@@ -106,8 +106,11 @@
 				:highlightSubmit="highlightSubmit"
 				:compact="dialogMode"
 				:show-keyboard-shortcuts="true"
+				:checkout-modes="invoiceType === 'Invoice'"
+				:fiscal-disabled="isOffline()"
 				@submit="submit"
 				@submit-and-print="submit(undefined, false, true)"
+				@submit-fiscal="submitInvoiceWrapper(true, {}, { mode: 'fiscal' })"
 				@cancel="back_to_invoice"
 			/>
 		</div>
@@ -156,8 +159,10 @@
 			:model-value="fiscalFallbackOpen"
 			:error-message="fiscalError"
 			:loading="fiscalLoading"
+			:unknown-outcome="fiscalAttemptUnknown"
 			@retry="handleFiscalRetry"
-			@skip-fiscal="handleFiscalSkip"
+			@reconcile="handleFiscalReconcile"
+			@no-document="handleFiscalNoDocument"
 			@cancel="fiscalFallbackOpen = false"
 		/>
 
@@ -223,6 +228,7 @@ import { useRedemptionLogic } from "../../composables/pos/payments/useRedemption
 import { usePaymentPrinting } from "../../composables/pos/payments/usePaymentPrinting";
 import { usePaymentMethods } from "../../composables/pos/payments/usePaymentMethods";
 import { useInvoiceDetails } from "../../composables/pos/invoice/useInvoiceDetails";
+import { printMarketReceipt } from "../../services/marketReceipt";
 import { useFiscalPrinter } from "../../composables/pos/payments/useFiscalPrinter";
 import { useManagerAuthorization } from "../../composables/pos/invoice/useManagerAuthorization";
 import { useFormat } from "../../format";
@@ -571,26 +577,6 @@ const {
 	eventBus: eventBus,
 	onSubmit: (args, submitPrint) => {
 		submitInvoiceWrapper(submitPrint, {
-			onPrint: (doc, printOptions = {}) => {
-				if (submitPrint) {
-					if (printOptions.waitForPostSubmitPayments || printOptions.waitForInvoiceProcessing) {
-						void runDeferredPrintWorkflow({
-							name: printOptions.name || doc?.name,
-							doctype: printOptions.doctype,
-							waitForPostSubmitPayments: Boolean(printOptions.waitForPostSubmitPayments),
-							waitForInvoiceProcessing: Boolean(printOptions.waitForInvoiceProcessing),
-						});
-					} else if (isOffline()) {
-						printOfflineInvoice(doc);
-					} else {
-						loadPrintPage({
-							doc,
-							doctype: printOptions.doctype,
-							name: printOptions.name,
-						});
-					}
-				}
-			},
 			onSuccess: () => {
 				eventBus.emit("focus_item_search");
 			},
@@ -1576,6 +1562,7 @@ const runDeferredPrintWorkflow = async ({
 	doctype,
 	waitForPostSubmitPayments = false,
 	waitForInvoiceProcessing = false,
+	mode = "receipt",
 }) => {
 	if (!name) return;
 
@@ -1598,7 +1585,7 @@ const runDeferredPrintWorkflow = async ({
 			return;
 		}
 
-		await loadPrintPage({ doc: freshDoc, doctype: resolvedDoctype });
+		await finishReceipt({ ...freshDoc, doctype: resolvedDoctype }, mode);
 	} catch (error) {
 		console.error("Deferred print failed", error);
 		toastStore.show({
@@ -1613,6 +1600,7 @@ const scheduleBackgroundStatusCheck = ({
 	name,
 	doctype,
 	print = false,
+	mode = "receipt",
 	waitForPostSubmitPayments = false,
 	waitForInvoiceProcessing = false,
 } = {}) => {
@@ -1624,6 +1612,7 @@ const scheduleBackgroundStatusCheck = ({
 
 	if (print && (waitForInvoiceProcessing || waitForPostSubmitPayments)) {
 		void runDeferredPrintWorkflow({
+			mode,
 			name,
 			doctype,
 			waitForPostSubmitPayments,
@@ -1673,8 +1662,11 @@ const scheduleBackgroundStatusCheck = ({
 const {
 	fiscalLoading,
 	fiscalError,
+	fiscalAttemptUnknown,
 	fiscalFallbackOpen,
 	printFiscalReceipt,
+	reconcileFiscalReceipt,
+	confirmNoFiscalDocument,
 	recordNonFiscal,
 } = useFiscalPrinter();
 
@@ -1686,22 +1678,51 @@ const handleFiscalRetry = async () => {
 		if (res.success) {
 			fiscalFallbackOpen.value = false;
 			toastStore.show({
-				title: `🧾 ${__("Чек зарегистрирован в ОФД (ФД № {0})", [res.fdNumber])}`,
+				title: __("Фискальный документ сохранён: ФД № {0}", [res.fdNumber]),
 				color: "success",
 			});
 		}
 	}
 };
 
-const handleFiscalSkip = async () => {
-	if (lastFiscalInvoiceDoc.value) {
-		await recordNonFiscal(lastFiscalInvoiceDoc.value, "Пробито без чека (принтер недоступен)");
-	}
-	fiscalFallbackOpen.value = false;
-	toastStore.show({
-		title: __("⚡ Продажа оформлена без фискального чека"),
-		color: "info",
+const handleFiscalNoDocument = () => {
+	if (!lastFiscalInvoiceDoc.value) return;
+	frappe.confirm(__("Журнал принтера проверен: дата, сумма и товары этой продажи отсутствуют. Разрешить новую попытку?"), async () => {
+		try {
+			await confirmNoFiscalDocument(lastFiscalInvoiceDoc.value);
+			await handleFiscalRetry();
+		} catch (error) { fiscalError.value = error.message; }
 	});
+};
+
+const handleFiscalReconcile = () => {
+	if (!lastFiscalInvoiceDoc.value) return;
+	frappe.prompt([
+		{ fieldname: "fd", label: __("ФД № из журнала принтера"), fieldtype: "Int", reqd: 1 },
+		{ fieldname: "confirmed", label: __("Проверены дата, сумма и товары: ФД относится к этой продаже"), fieldtype: "Check", reqd: 1 },
+	], async ({ fd, confirmed }) => {
+		if (!confirmed) return;
+		try {
+			await reconcileFiscalReceipt(lastFiscalInvoiceDoc.value, String(fd));
+			fiscalFallbackOpen.value = false;
+			toastStore.show({ title: __("Фискальный документ сохранён"), color: "success" });
+		} catch (error) { fiscalError.value = error.message; }
+	});
+};
+
+const finishReceipt = async (doc, mode) => {
+	if (mode === "fiscal") {
+		const result = await printFiscalReceipt(doc);
+		if (!result.success) {
+			lastFiscalInvoiceDoc.value = { ...doc };
+			fiscalFallbackOpen.value = true;
+		} else {
+			toastStore.show({ title: __("Фискальный документ сохранён: ФД № {0}", [result.fdNumber]), color: "success" });
+		}
+	} else {
+		try { await printMarketReceipt(doc, pos_profile.value); }
+		catch (error) { toastStore.show({ title: __("Продажа сохранена. Чек можно напечатать из списка счетов."), detail: error.message, color: "warning" }); }
+	}
 };
 
 // Checkout Validation Modal State
@@ -1796,6 +1817,11 @@ const submit = async (_event, payment_received = false, print = false) => {
 };
 
 const submitInvoiceWrapper = async (print, callbackOverrides = {}, options = {}) => {
+	const mode = options.mode || (print ? "receipt" : "none");
+	if (mode === "fiscal" && isOffline()) {
+		toastStore.show({ title: __("Фискальный чек требует соединения с ERPNext"), color: "warning" });
+		return;
+	}
 	if (submissionInFlight.value) {
 		return;
 	}
@@ -1810,32 +1836,18 @@ const submitInvoiceWrapper = async (print, callbackOverrides = {}, options = {})
 		await validateSubmission(options.paymentReceived || false);
 		await submitInvoice(print, {
 			onPrint: async (doc, printOptions = {}) => {
-				if (print) {
-					const submittedDoc = {
-						...(doc || {}),
-						name: printOptions.name || doc?.name,
-						doctype: printOptions.doctype || doc?.doctype,
-					};
-					try {
-						const fiscalRes = await printFiscalReceipt(submittedDoc);
-						if (fiscalRes.success) {
-							toastStore.show({
-								title: `🧾 ${__("Чек зарегистрирован в ОФД (ФД № {0})", [fiscalRes.fdNumber])}`,
-								color: "success",
-							});
-						} else {
-							lastFiscalInvoiceDoc.value = submittedDoc;
-							fiscalFallbackOpen.value = true;
-						}
-					} catch (e) {
-						lastFiscalInvoiceDoc.value = submittedDoc;
-						fiscalFallbackOpen.value = true;
-					}
+				const submittedDoc = { ...doc, name: printOptions.name || doc?.name, doctype: printOptions.doctype || doc?.doctype };
+				if (submittedDoc.doctype !== "POS Invoice" && submittedDoc.doctype !== "Sales Invoice") {
+					await loadPrintPage({ doc: submittedDoc, doctype: submittedDoc.doctype });
+				} else if (isOffline()) {
+					await printOfflineInvoice(submittedDoc);
+				} else {
+					await finishReceipt(submittedDoc, mode);
 				}
 			},
-			onSuccess: () => {
-				if (!print && invoice_doc.value?.name) {
-					recordNonFiscal(invoice_doc.value, "Обычная продажа без чека");
+			onSuccess: (result) => {
+				if (!print && result?.name && Number(result.docstatus) === 1) {
+					void recordNonFiscal(result).catch((error) => console.error("Receipt status save failed", error));
 				}
 				customer_credit_dict.value = [];
 				redeem_customer_credit.value = false;
@@ -1847,7 +1859,7 @@ const submitInvoiceWrapper = async (print, callbackOverrides = {}, options = {})
 				finishSubmissionNavigation(clearInvoice);
 			},
 			onScheduleBackgroundCheck: (payload) => {
-				scheduleBackgroundStatusCheck(payload);
+				scheduleBackgroundStatusCheck({ ...payload, mode });
 			},
 			...callbackOverrides,
 		});
@@ -1929,7 +1941,7 @@ const handlePaymentShortcut = (event) => {
 		return;
 	}
 
-	// 3. Fiscal Sale (Print receipt / TP809): F11 or Shift+Enter or Ctrl+Shift+Enter
+	// 3. Store receipt: F11 or Shift+Enter or Ctrl+Shift+Enter
 	const isF11 = event.key === "F11" || event.code === "F11";
 	const isEnter = event.key === "Enter" || event.code === "Enter" || event.code === "NumpadEnter";
 	const isShiftEnter = isEnter && event.shiftKey;
@@ -1946,6 +1958,11 @@ const handlePaymentShortcut = (event) => {
 
 	// 4. Simple Sale (No receipt): Enter (without Shift) or Ctrl+Enter
 	if (isEnter && !event.shiftKey) {
+		if (document.activeElement?.closest?.(".payment-fiscal-btn")) {
+			event.preventDefault();
+			void submitInvoiceWrapper(true, {}, { mode: "fiscal" });
+			return;
+		}
 		if (document.activeElement?.closest?.(".payment-cancel-btn")) {
 			event.preventDefault();
 			event.stopPropagation();

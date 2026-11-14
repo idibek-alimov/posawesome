@@ -45,6 +45,10 @@
 		>
 			{{ __("Return") }}
 		</v-btn>
+
+		<v-btn variant="tonal" prepend-icon="mdi-printer"
+			class="counter-grid-action" data-testid="invoice-action-receipts" data-pos-keyboard-target="invoice-action"
+			@click="bus.emit('open_receipts')">{{ __("Чеки") }}</v-btn>
 		<v-menu v-if="showMoreActions" location="top end">
 			<template #activator="{ props: menuProps }">
 				<v-btn
@@ -140,6 +144,10 @@
 
 	<div v-else class="classic-actions" data-testid="classic-actions">
 		<div class="classic-secondary-actions">
+		<v-btn variant="tonal" prepend-icon="mdi-printer"
+			class="counter-grid-action" data-testid="invoice-action-receipts" data-pos-keyboard-target="invoice-action"
+			@click="bus.emit('open_receipts')">{{ __("Чеки") }}</v-btn>
+
 			<v-btn
 				variant="tonal"
 				density="compact"
@@ -276,6 +284,7 @@
 </template>
 
 <script setup>
+import { bus } from "../../../bus";
 import { computed } from "vue";
 import { parseBooleanSetting } from "../../../utils/stock";
 

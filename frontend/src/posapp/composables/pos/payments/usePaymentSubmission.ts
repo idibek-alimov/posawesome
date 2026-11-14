@@ -1260,7 +1260,7 @@ export function usePaymentSubmission(options: PaymentSubmissionOptions) {
 				!waitForInvoiceProcessing &&
 				!hasPostSubmitPaymentWork
 			) {
-				onPrint(submittedDocument, {
+				await onPrint(submittedDocument, {
 					name: responseInvoiceName,
 					doctype: submittedDoctype,
 					waitForPostSubmitPayments: hasPostSubmitPaymentWork,
@@ -1278,7 +1278,7 @@ export function usePaymentSubmission(options: PaymentSubmissionOptions) {
 			});
 
 			if (stores?.uiStore) {
-				stores.uiStore.setLastInvoice(responseInvoiceName);
+				stores.uiStore.setLastInvoice(responseInvoiceName, submittedDoctype);
 			}
 
 			if (!waitForInvoiceProcessing) {

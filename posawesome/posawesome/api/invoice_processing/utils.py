@@ -30,6 +30,8 @@ def _get_return_validity_settings(pos_profile: str | None = None):
         except frappe.DoesNotExistError:
             profile = None
         if profile:
+            if cint(profile.get("posa_unlimited_cashier_returns")):
+                return 0, 0
             enable_validity = cint(getattr(profile, "posa_enable_return_validity", 0))
             if enable_validity:
                 default_days = cint(getattr(profile, "posa_return_validity_days", 0))

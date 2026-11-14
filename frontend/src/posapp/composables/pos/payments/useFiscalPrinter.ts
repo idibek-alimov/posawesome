@@ -1,235 +1,100 @@
 import { ref } from "vue";
+import { fiscalContext, fiscalRequest } from "../../../services/fiscalTransport";
+import { ensureFiscalShift, readFiscalStatus } from "../../../services/fiscalShift";
 
 declare const frappe: any;
-declare const __: (_str: string, _args?: any[]) => string;
-
 export interface FiscalResult {
-	success: boolean;
-	fdNumber?: string | number;
-	fpd?: string;
-	shiftNumber?: number;
-	receiptNumber?: number;
-	onlineStatus?: string;
-	error?: string;
-	raw?: any;
+	success: boolean; fdNumber?: string | number; fpd?: string; error?: string; raw?: any;
 }
-
-const DEFAULT_BRIDGE_URL = "http://localhost:5000";
 
 export function useFiscalPrinter() {
 	const fiscalLoading = ref(false);
 	const fiscalError = ref("");
+	const fiscalAttemptUnknown = ref(false);
 	const fiscalFallbackOpen = ref(false);
 	const pendingFiscalInvoice = ref<any>(null);
+	const method = (name: string, args: any) => frappe.call(`posawesome.posawesome.api.fiscal.${name}`, args);
+	const identity = (doc: any) => ({ invoice_name: doc.name, doctype: doc.doctype || "POS Invoice" });
+	const resultKey = (doc: any) => `posa-fiscal-result:${doc.doctype}:${doc.name}`;
 
-	const getBridgeUrl = (): string => {
-		return DEFAULT_BRIDGE_URL;
-	};
-
-	const isSimplifiedRegimeInvoice = (invoiceDoc: any): boolean => {
-		if (!invoiceDoc) return true;
-		if (invoiceDoc.hide_tax_from_customer === true) return true;
-		if (invoiceDoc.hide_tax_from_customer === false) return false;
-		if (typeof invoiceDoc.tax_regime === "string") {
-			return invoiceDoc.tax_regime !== "General (VAT)";
-		}
-		const tmpl = String(invoiceDoc.taxes_and_charges || "").toLowerCase();
-		if (tmpl.includes("vat") || tmpl.includes("ндс") || tmpl.includes("аб")) {
-			return false;
-		}
-		const taxes = Array.isArray(invoiceDoc.taxes) ? invoiceDoc.taxes : [];
-		if (
-			taxes.some((t: any) => {
-				const desc = String(t.description || t.account_head || "").toLowerCase();
-				return desc.includes("vat") || desc.includes("ндс") || desc.includes("аб");
-			})
-		) {
-			return false;
-		}
-		return true;
-	};
-
-	/**
-	 * Convert POS invoice doc into TP809 bridge JSON payload
-	 */
-	const buildFiscalPayload = (invoiceDoc: any) => {
-		const isSimplified = isSimplifiedRegimeInvoice(invoiceDoc);
-		const items = (invoiceDoc.items || []).map((item: any) => ({
-			item_code: item.item_code,
-			item_name: item.item_name || item.item_code || "Товар",
-			qty: Number(item.qty) || 1,
-			rate: Number(item.rate) || 0,
-			amount: Number(item.amount) || (Number(item.qty || 1) * Number(item.rate || 0)),
-			code: item.custom_marking_code || "",
-			is_stock_item: item.is_stock_item !== 0,
-		}));
-
-		let cashAmount = 0;
-		let cardAmount = 0;
-
-		if (Array.isArray(invoiceDoc.payments) && invoiceDoc.payments.length > 0) {
-			invoiceDoc.payments.forEach((p: any) => {
-				const mode = (p.mode_of_payment || "").toLowerCase();
-				const amt = Number(p.amount) || 0;
-				if (mode.includes("card") || mode.includes("карт") || mode.includes("bank") || mode.includes("korti")) {
-					cardAmount += amt;
-				} else {
-					cashAmount += amt;
-				}
-			});
-		} else {
-			cashAmount = Number(invoiceDoc.paid_amount || invoiceDoc.grand_total || 0);
-		}
-
-		return {
-			invoice_name: invoiceDoc.name,
-			customer: invoiceDoc.customer || "Клиент",
-			customer_email: invoiceDoc.contact_email || invoiceDoc.customer_email || "",
-			contact_mobile: invoiceDoc.contact_mobile || "",
-			is_return: Boolean(invoiceDoc.is_return),
-			items,
-			payments: invoiceDoc.payments || [],
-			paid_amount_cash: cashAmount,
-			paid_amount_card: cardAmount,
-			change_amount: Number(invoiceDoc.change_amount) || 0,
-			total_taxes_and_charges: isSimplified ? 0 : (Number(invoiceDoc.total_taxes_and_charges) || 0),
-			tax_type: isSimplified ? "SIMPLIFIED" : "GENERAL",
-			vat_code: isSimplified ? "NONE" : "STANDARD",
-			custom_message: "Ташаккур барои харид! Спасибо за покупку!",
-		};
-	};
-
-	/**
-	 * Send fiscal receipt to TP809 bridge
-	 */
-	const printFiscalReceipt = async (invoiceDoc: any): Promise<FiscalResult> => {
+	const printFiscalReceipt = async (doc: any): Promise<FiscalResult> => {
+		if (fiscalLoading.value) return { success: false, error: "Fiscal request in progress" };
 		fiscalLoading.value = true;
-		fiscalError.value = "";
-		pendingFiscalInvoice.value = invoiceDoc;
-
-		const payload = buildFiscalPayload(invoiceDoc);
-		const bridgeUrl = getBridgeUrl();
-
-		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), 12000);
-
+		pendingFiscalInvoice.value = { ...doc };
+		fiscalAttemptUnknown.value = false;
 		try {
-			const res = await fetch(`${bridgeUrl}/fiscal/print-receipt`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(payload),
-				signal: controller.signal,
-			});
-
-			clearTimeout(timeoutId);
-
-			if (!res.ok) {
-				const errorData = await res.json().catch(() => ({}));
-				const msg = errorData.message || errorData.error || `HTTP error ${res.status}`;
-				throw new Error(msg);
+			// Save failures recover from the durable result, never by resending a receipt.
+			const saved = localStorage.getItem(resultKey(doc));
+			let prepared: any;
+			let result: any;
+			if (saved) {
+				fiscalAttemptUnknown.value = true;
+				({ prepared, result } = JSON.parse(saved));
+			} else {
+				const context = (await method("fiscal_checkout_context", identity(doc))).message;
+				if (context.completed) return { success: true, fdNumber: context.fdNumber, fpd: context.fpd };
+				if (context.status === "Неизвестно") {
+					fiscalAttemptUnknown.value = true;
+					throw new Error((globalThis as any).__?.("Fiscal result unknown. Check the printer journal and reconcile the existing FD before retrying.") || "Fiscal result unknown. Check the printer journal and reconcile the existing FD before retrying.");
+				}
+				await ensureFiscalShift(context);
+				fiscalAttemptUnknown.value = true;
+				prepared = (await method("prepare_fiscal_receipt", identity(doc))).message;
+				if (prepared.completed) return { success: true, fdNumber: prepared.fdNumber, fpd: prepared.fpd };
+				fiscalAttemptUnknown.value = true;
+				result = await fiscalRequest(prepared, "formReceipt", prepared.payload);
+				if (result.rc === "SUCCESS") {
+					localStorage.setItem(resultKey(doc), JSON.stringify({ prepared, result }));
+				}
 			}
-
-			const data = await res.json();
-			if (!data.success) {
-				throw new Error(data.message || data.error || "Неизвестная ошибка фискализации");
+			if (result.rc !== "SUCCESS") {
+				const rejection = await method("record_fiscal_rejection", { ...identity(doc), attempt: prepared.attempt, rc: result.rc || "UNKNOWN" });
+				fiscalAttemptUnknown.value = rejection.message?.status !== "Ошибка";
+				throw new Error(result.rc || "Fiscal result unknown");
 			}
-
-			// Save to backend
-			if (typeof frappe !== "undefined" && frappe.call && invoiceDoc.name) {
-				await frappe.call("posawesome.posawesome.api.fiscal.save_fiscal_data", {
-					invoice_name: invoiceDoc.name,
-					doctype: invoiceDoc.doctype || "POS Invoice",
-					fiscal_data: data,
-				});
-			}
-
-			return {
-				success: true,
-				fdNumber: data.fdNumber,
-				fpd: data.fpd,
-				shiftNumber: data.shiftNumber,
-				receiptNumber: data.receiptNumber,
-				onlineStatus: data.onlineStatus,
-				raw: data,
-			};
-		} catch (err: any) {
-			clearTimeout(timeoutId);
-			const errMsg = err.name === "AbortError" 
-				? "Таймаут соединения с фискальным принтером (12 сек)" 
-				: (err.message || "Ошибка подключения к принтеру TP809");
-			fiscalError.value = errMsg;
-			return {
-				success: false,
-				error: errMsg,
-			};
-		} finally {
-			fiscalLoading.value = false;
-		}
+			await method("save_fiscal_data", { ...identity(doc), attempt: prepared.attempt, fiscal_data: result });
+			localStorage.removeItem(resultKey(doc));
+			fiscalAttemptUnknown.value = false;
+			fiscalError.value = "";
+			return { success: true, ...result.data, raw: result };
+		} catch (error: any) {
+			fiscalError.value = error.message || "Fiscal result unknown";
+			return { success: false, error: fiscalError.value };
+		} finally { fiscalLoading.value = false; }
 	};
 
-	/**
-	 * Record invoice as completed without fiscal print (Cashier Fallback)
-	 */
-	const recordNonFiscal = async (invoiceDoc: any, reason = "Пробито без чека по решению кассира") => {
-		if (typeof frappe !== "undefined" && frappe.call && invoiceDoc?.name) {
-			await frappe.call("posawesome.posawesome.api.fiscal.record_non_fiscal_sale", {
-				invoice_name: invoiceDoc.name,
-				doctype: invoiceDoc.doctype || "POS Invoice",
-				reason,
-			});
+	const reconcileFiscalReceipt = async (doc: any, fd: string) => {
+		if (!/^\d+$/.test(fd) || Number(fd) <= 0) throw new Error("Enter a positive fiscal document number");
+		const context = await fiscalContext(doc);
+		const result = await fiscalRequest(context, "getFDByNumber", {
+			formCode: "PRINT_FD_BY_NUMBER", ffdVersion: "VER_1", shouldPrintSlip: false, fdNumber: Number(fd),
+		});
+		if (result.rc !== "SUCCESS" || String(result.data?.fdNumber) !== String(Number(fd))) {
+			throw new Error("Printer did not confirm the requested fiscal document");
 		}
+		await method("save_fiscal_data", { ...identity(doc), attempt: context.attempt, fiscal_data: result });
+		return result;
 	};
-
-	/**
-	 * Print Z-Report upon cashier shift closing
-	 */
-	const printZReport = async (cashierName = "Кассир"): Promise<boolean> => {
-		const bridgeUrl = getBridgeUrl();
-		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), 12000);
+	const recordNonFiscal = (doc: any, reason?: string) => method("record_non_fiscal_sale", { ...identity(doc), reason });
+	const confirmNoFiscalDocument = async (doc: any) => {
+		if (localStorage.getItem(resultKey(doc))) throw new Error("Printer success is already recorded locally. Restore the existing fiscal result.");
+		const context = await fiscalContext(doc);
+		return method("confirm_unissued_fiscal_attempt", { ...identity(doc), attempt: context.attempt, journal_checked: 1 });
+	};
+	const printZReport = async (cashier = "Кассир") => {
 		try {
-			const res = await fetch(`${bridgeUrl}/fiscal/close-shift`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ cashier: cashierName }),
-				signal: controller.signal,
-			});
-			const data = await res.json().catch(() => ({}));
-			return Boolean(data.success);
-		} catch (e) {
-			console.warn("Failed to print Z-Report on TP809 bridge:", e);
-			return false;
-		} finally {
-			clearTimeout(timeoutId);
-		}
+			const context = (await method("profile_fiscal_context", {})).message;
+			const result = await fiscalRequest(context, "closeShift", { formCode: "CLOSE_SHIFT", ffdVersion: "VER_1", shouldPrintSlip: true, cashier, kktVersion: "1" });
+			return result.rc === "SUCCESS";
+		} catch { return false; }
 	};
-
-	/**
-	 * Check printer hardware status
-	 */
-	const checkPrinterStatus = async (): Promise<{ online: boolean; message?: string }> => {
-		const bridgeUrl = getBridgeUrl();
+	const checkPrinterStatus = async () => {
 		try {
-			const controller = new AbortController();
-			const timeoutId = setTimeout(() => controller.abort(), 3000);
-			const res = await fetch(`${bridgeUrl}/status`, { signal: controller.signal });
-			clearTimeout(timeoutId);
-			return { online: res.ok };
-		} catch (e) {
-			return { online: false, message: "Принтер недоступен" };
-		}
+			const context = (await method("profile_fiscal_context", {})).message;
+			const data = await readFiscalStatus(context);
+			return { online: true, ...data };
+		} catch (error: any) { return { online: false, message: error.message }; }
 	};
-
-	return {
-		fiscalLoading,
-		fiscalError,
-		fiscalFallbackOpen,
-		pendingFiscalInvoice,
-		printFiscalReceipt,
-		recordNonFiscal,
-		printZReport,
-		checkPrinterStatus,
-	};
+	return { fiscalLoading, fiscalError, fiscalAttemptUnknown, fiscalFallbackOpen, pendingFiscalInvoice, printFiscalReceipt,
+		reconcileFiscalReceipt, confirmNoFiscalDocument, recordNonFiscal, printZReport, checkPrinterStatus };
 }

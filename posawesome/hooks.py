@@ -115,12 +115,16 @@ doc_events = {
         "on_trash": "posawesome.posawesome.api.item_processing.alternates.clear_alternate_item_caches",
     },
     "Sales Invoice": {
+        "before_validate": "posawesome.posawesome.api.fiscal.validate_fiscal_metadata",
+        "before_update_after_submit": "posawesome.posawesome.api.fiscal.validate_fiscal_metadata",
         "validate": "posawesome.posawesome.api.invoice.validate",
         "before_submit": "posawesome.posawesome.api.invoice.before_submit",
         "before_cancel": "posawesome.posawesome.api.invoice.before_cancel",
         "on_cancel": "posawesome.posawesome.api.invoice.on_cancel",
     },
     "POS Invoice": {
+        "before_validate": "posawesome.posawesome.api.fiscal.validate_fiscal_metadata",
+        "before_update_after_submit": "posawesome.posawesome.api.fiscal.validate_fiscal_metadata",
         "validate": "posawesome.posawesome.api.invoice.validate",
         "before_submit": "posawesome.posawesome.api.invoice.before_submit",
         "before_cancel": "posawesome.posawesome.api.invoice.before_cancel",

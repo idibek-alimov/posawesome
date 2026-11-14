@@ -1,7 +1,7 @@
 <template>
 	<v-card flat :class="['cards mb-0 mt-3 pa-0', { compact }]">
 		<v-row align="start" no-gutters>
-			<v-col cols="12" sm="6">
+			<v-col cols="12" :sm="checkoutModes ? 12 : 6" :md="checkoutModes ? 4 : 6">
 				<v-btn
 					ref="submitButton"
 					block
@@ -18,13 +18,13 @@
 					:class="{ 'submit-highlight': highlightSubmit }"
 				>
 					<v-icon start icon="mdi-cart-check" class="mr-1" />
-					<span>{{ __("1. Обычная продажа") }}</span>
+					<span>{{ __(checkoutModes ? "Завершить без чека" : "Submit") }}</span>
 					<kbd v-if="showKeyboardShortcuts" class="payment-footer-btn__shortcut">
 						Enter
 					</kbd>
 				</v-btn>
 			</v-col>
-			<v-col cols="12" sm="6" class="payment-action-col">
+			<v-col cols="12" :sm="checkoutModes ? 12 : 6" :md="checkoutModes ? 4 : 6" class="payment-action-col">
 				<v-btn
 					block
 					size="large"
@@ -41,10 +41,18 @@
 					:disabled="loading || validatePayment"
 				>
 					<v-icon start icon="mdi-receipt-text-check" class="mr-1" />
-					<span>{{ __("2. Продажа с чеком (Фискальная)") }}</span>
+					<span>{{ __(checkoutModes ? "С чеком / Товарный чек" : "Submit & Print") }}</span>
 					<kbd v-if="showKeyboardShortcuts" class="payment-footer-btn__shortcut">
 						F11 / Shift+Enter
 					</kbd>
+				</v-btn>
+			</v-col>
+			<v-col v-if="checkoutModes" cols="12" md="4" class="payment-action-col">
+				<v-btn block size="large" color="primary" variant="flat"
+					class="payment-footer-btn payment-fiscal-btn font-weight-bold"
+					data-testid="payment-submit-fiscal" :loading="loading"
+					:disabled="loading || validatePayment || fiscalDisabled" @click="$emit('submit-fiscal')">
+					<v-icon start icon="mdi-receipt-text-check" />{{ __("С фиск. чеком") }}
 				</v-btn>
 			</v-col>
 			<v-col cols="12">
@@ -73,6 +81,8 @@
 <script setup>
 defineProps({
 	loading: Boolean,
+	checkoutModes: Boolean,
+	fiscalDisabled: Boolean,
 	validatePayment: Boolean,
 	highlightSubmit: Boolean,
 	compact: Boolean,
@@ -82,7 +92,7 @@ defineProps({
 	},
 });
 
-defineEmits(["submit", "submit-and-print", "cancel"]);
+defineEmits(["submit", "submit-and-print", "submit-fiscal", "cancel"]);
 
 const __ = window.__;
 </script>
@@ -217,4 +227,8 @@ const __ = window.__;
 		font-size: 0.76rem !important;
 	}
 }
+</style>
+
+<style scoped>
+@media (max-width: 1199px) { .payment-footer-btn__shortcut { display: none; } }
 </style>
