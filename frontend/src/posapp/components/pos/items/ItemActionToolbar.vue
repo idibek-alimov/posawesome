@@ -7,8 +7,10 @@
 			<!-- Row 1: Items Group selection -->
 			<div class="toolbar-row toolbar-row--select">
 				<v-select
-					:items="itemsGroup"
-					:label="frappe._('Items Group')"
+					:items="formattedGroups"
+					item-title="title"
+					item-value="value"
+					:label="frappe?._ ? frappe._('Категория и подкатегории') : 'Категория и подкатегории'"
 					density="compact"
 					variant="solo"
 					hide-details
@@ -62,10 +64,11 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 const __ = window.__;
 const frappe = window.frappe;
 
-defineProps({
+const props = defineProps({
 	modelValue: { type: String, default: "ALL" }, // item_group
 	itemsGroup: { type: Array, default: () => [] },
 	itemsView: { type: String, default: "card" },
@@ -74,6 +77,28 @@ defineProps({
 	offersCount: { type: Number, default: 0 },
 	couponsCount: { type: Number, default: 0 },
 	reserveBottomDockSpace: { type: Boolean, default: false },
+});
+
+const formattedGroups = computed(() => {
+	return (props.itemsGroup || []).map((entry) => {
+		if (typeof entry === "string") {
+			if (entry === "ALL") {
+				return { title: frappe?._ ? frappe._("All Categories") : "Все категории", value: "ALL" };
+			}
+			return { title: entry, value: entry };
+		}
+		const val = entry.value || entry.name;
+		const text =
+			val === "ALL"
+				? frappe?._
+					? frappe._("All Categories")
+					: "Все категории"
+				: entry.title || entry.label || entry.name || val;
+		return {
+			title: text,
+			value: val,
+		};
+	});
 });
 
 defineEmits(["update:modelValue", "update:itemsView", "open-offers", "open-coupons"]);

@@ -1,6 +1,33 @@
 import { ref } from "vue";
 import type { Item, POSProfile } from "../../../../types/models";
 
+export const categoryDescendantsMap = new Map<string, Set<string>>();
+
+export const updateCategoryDescendants = (groupNodes: any[]) => {
+	if (!Array.isArray(groupNodes)) return;
+	categoryDescendantsMap.clear();
+	const validNodes = groupNodes.filter((g) => g && (g.name || g.value));
+	validNodes.forEach((parent) => {
+		const pName = parent.name || parent.value;
+		const set = new Set<string>([pName]);
+		if (parent.lft !== undefined && parent.rgt !== undefined) {
+			validNodes.forEach((child) => {
+				const cName = child.name || child.value;
+				if (child.lft >= parent.lft && child.rgt <= parent.rgt) {
+					set.add(cName);
+				}
+			});
+		} else {
+			validNodes.forEach((child) => {
+				if ((child.parent || child.parent_item_group) === pName) {
+					set.add(child.name || child.value);
+				}
+			});
+		}
+		categoryDescendantsMap.set(pName, set);
+	});
+};
+
 export function useItemsSearch() {
 	const itemsMap = ref(new Map<string, Item>()); // O(1) lookup by item_code
 	const barcodeIndex = ref(new Map<string, Item>()); // O(1) barcode lookup
@@ -334,6 +361,12 @@ export function useItemsSearch() {
 			typeof group === "string" && group.length > 0 ? group : "ALL";
 		if (normalizedGroup === "ALL") {
 			return itemList;
+		}
+		const descendants = categoryDescendantsMap.get(normalizedGroup);
+		if (descendants && descendants.size > 0) {
+			return itemList.filter(
+				(item) => item.item_group === normalizedGroup || descendants.has(item.item_group)
+			);
 		}
 		return itemList.filter((item) => item.item_group === normalizedGroup);
 	};

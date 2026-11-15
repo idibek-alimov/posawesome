@@ -141,6 +141,8 @@
 										data-quick-edit-keytarget
 										data-quick-edit-key="item-group"
 										:items="options.item_groups"
+										item-title="title"
+										item-value="value"
 										:label="__('Item Group')"
 										density="compact"
 										variant="outlined"

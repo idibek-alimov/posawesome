@@ -1144,9 +1144,16 @@ def get_hot_items(
 
 @frappe.whitelist()
 def get_items_groups():
+    try:
+        from erpnext.setup.retail_item_groups import get_item_group_tree
+        tree = get_item_group_tree()
+        if tree:
+            return tree
+    except Exception:
+        pass
     return frappe.db.sql(
-        """select name from `tabItem Group`
-		where is_group = 0 order by name limit 500""",
+        """select name, parent_item_group, is_group, lft, rgt from `tabItem Group`
+		order by lft asc limit 500""",
         as_dict=1,
     )
 

@@ -1,6 +1,7 @@
 import { ref } from "vue";
 import type { Item, POSProfile } from "../../../../types/models";
 import itemService from "../../../../services/itemService";
+import { updateCategoryDescendants } from "./useItemsSearch";
 // @ts-ignore
 import {
 	beginItemCatalogGeneration,
@@ -61,7 +62,7 @@ export function useItemsSync() {
 		token: 0,
 	});
 
-	const itemGroups = ref<string[]>(["ALL"]);
+	const itemGroups = ref<any[]>(["ALL"]);
 
 	const loadItemGroups = async (posProfile: POSProfile | null) => {
 		try {
@@ -69,10 +70,14 @@ export function useItemsSync() {
 				posProfile?.item_groups?.length &&
 				posProfile.item_groups.length > 0
 			) {
-				const groups = ["ALL"];
+				const groups: any[] = [{ title: "Все категории", value: "ALL", name: "ALL" }];
 				posProfile.item_groups.forEach((element: any) => {
 					if (element.item_group !== "All Item Groups") {
-						groups.push(element.item_group);
+						groups.push({
+							title: element.label || element.item_group,
+							value: element.item_group,
+							name: element.item_group,
+						});
 					}
 				});
 				itemGroups.value = groups;
@@ -82,10 +87,22 @@ export function useItemsSync() {
 				const response = await itemService.getItemGroupsData();
 
 				if (response) {
-					const groups = ["ALL"];
-					response.forEach((element) => {
-						groups.push(element.name);
+					const groups: any[] = [{ title: "Все категории", value: "ALL", name: "ALL" }];
+					response.forEach((element: any) => {
+						if (element.name !== "Все группы продуктов" && element.name !== "All Item Groups") {
+							groups.push({
+								title: element.label || element.name,
+								value: element.name,
+								name: element.name,
+								path: element.path || element.name,
+								parent: element.parent || element.parent_item_group,
+								is_group: element.is_group,
+								lft: element.lft,
+								rgt: element.rgt,
+							});
+						}
 					});
+					updateCategoryDescendants(response);
 					itemGroups.value = groups;
 					saveItemGroups(groups);
 				}
@@ -94,8 +111,9 @@ export function useItemsSync() {
 			console.error("Failed to load item groups:", error);
 			const cachedGroups = getCachedItemGroups();
 			if (Array.isArray(cachedGroups) && cachedGroups.length > 0) {
-				itemGroups.value = cachedGroups as string[];
-				saveItemGroups(cachedGroups as string[]);
+				itemGroups.value = cachedGroups as any[];
+				updateCategoryDescendants(cachedGroups);
+				saveItemGroups(cachedGroups as any[]);
 			}
 		}
 	};

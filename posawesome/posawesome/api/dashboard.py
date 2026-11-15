@@ -28,6 +28,16 @@ SCOPE_SPECIFIC = "specific"
 DEFAULT_DASHBOARD_SCOPE = SCOPE_ALL
 DEFAULT_LOW_STOCK_THRESHOLD = 10
 
+def _format_category_path(category_name: str) -> str:
+    if not category_name:
+        return ""
+    try:
+        from erpnext.setup.retail_item_groups import get_item_group_path
+        return get_item_group_path(category_name) or category_name
+    except Exception:
+        return category_name
+
+
 def _pick_first_column(doctype: str, candidates: list[str]) -> str | None:
     for fieldname in candidates:
         if frappe.db.has_column(doctype, fieldname):
@@ -2041,7 +2051,7 @@ def _collect_profitability_report(
 
         category_row = category_buckets[category]
         category_row["category"] = category
-        category_row["label"] = category
+        category_row["label"] = _format_category_path(category)
         category_row["revenue"] += revenue
         category_row["cogs"] += cogs
         category_row["gross_profit"] += gross_profit
@@ -3471,7 +3481,7 @@ def _collect_category_brand_variant_report(
             continue
 
         category_row = category_buckets[category_label]
-        category_row["label"] = category_label
+        category_row["label"] = _format_category_path(category_label)
         category_row["sold_qty"] += sold_qty
         category_row["sales_amount"] += sales_amount
         category_row["discount_amount"] += discount_amount

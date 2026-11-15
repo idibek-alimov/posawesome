@@ -228,14 +228,29 @@ def _assert_can_save(profile):
 
 
 def _get_options():
-    return {
-        "item_groups": frappe.get_all(
+    item_groups = []
+    try:
+        from erpnext.setup.retail_item_groups import get_item_group_tree
+        tree = get_item_group_tree()
+        item_groups = [
+            {"title": node["path"], "value": node["name"]}
+            for node in tree
+            if not node.get("is_group")
+        ]
+    except Exception:
+        pass
+    if not item_groups:
+        raw_groups = frappe.get_all(
             "Item Group",
             filters={"is_group": 0},
             pluck="name",
             order_by="name asc",
             limit_page_length=500,
-        ),
+        )
+        item_groups = [{"title": name, "value": name} for name in raw_groups]
+
+    return {
+        "item_groups": item_groups,
         "brands": frappe.get_all(
             "Brand",
             pluck="name",

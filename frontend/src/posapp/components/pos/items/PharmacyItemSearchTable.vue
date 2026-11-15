@@ -41,7 +41,9 @@
 				v-if="mode !== 'alternates'"
 				:model-value="itemGroup"
 				:items="itemGroups"
-				:label="__('Item group')"
+				item-title="title"
+				item-value="value"
+				:label="__('Категория и подкатегории')"
 				density="compact"
 				variant="outlined"
 				hide-details

@@ -59,7 +59,9 @@
 							<v-select
 								v-model="form.item_group"
 								data-test="new-item-group"
-								:items="itemsGroup.filter((g) => g !== 'ALL')"
+								:items="selectableGroups"
+								item-title="title"
+								item-value="value"
 								:label="frappe._('Item Group')"
 								density="compact"
 								variant="outlined"
@@ -113,7 +115,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted } from "vue";
+import { ref, reactive, computed, watch, onMounted } from "vue";
 import itemService from "../../../services/itemService";
 
 const props = defineProps({
@@ -141,6 +143,23 @@ const loading = ref(false);
 const formRef = ref(null);
 const uomList = ref([]);
 
+const selectableGroups = computed(() => {
+	const result = [];
+	for (const g of props.itemsGroup || []) {
+		if (!g) continue;
+		if (typeof g === "string") {
+			if (g === "ALL") continue;
+			result.push({ title: g, value: g });
+		} else {
+			const val = g.value || g.name;
+			if (val === "ALL" || g.is_group === 1) continue;
+			const title = g.path || g.title || g.label || val;
+			result.push({ title, value: val });
+		}
+	}
+	return result;
+});
+
 const form = reactive({
 	item_code: "",
 	item_name: "",
@@ -154,13 +173,8 @@ const resetForm = () => {
 	form.item_code = "";
 	form.item_name = "";
 	form.barcode = (props.scannedBarcode || "").trim();
-	// Auto-select a sensible item group
-	form.item_group =
-		props.itemsGroup.length > 1 && props.itemsGroup[1] !== "ALL"
-			? props.itemsGroup[1]
-			: props.itemsGroup[0] !== "ALL"
-				? props.itemsGroup[0]
-				: "";
+	// Auto-select a sensible leaf item group
+	form.item_group = selectableGroups.value[0]?.value || "";
 	form.stock_uom = "Nos";
 	form.standard_rate = 0;
 };
