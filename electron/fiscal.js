@@ -1,5 +1,6 @@
 const http = require("node:http");
 const https = require("node:https");
+const { createHash } = require("node:crypto");
 
 const ENDPOINTS = new Set(["formReceipt", "getFDByNumber", "deviceStatus", "openShift", "closeShift"]);
 
@@ -22,6 +23,8 @@ function send(url, payload) {
 		const req = (url.protocol === "https:" ? https : http).request(url, {
 			method: "POST", headers: { "Content-Type": "application/json; charset=utf-8", "Content-Length": Buffer.byteLength(body) },
 		}, (response) => {
+			response.on("error", reject);
+			response.on("aborted", () => reject(new Error("Fiscal result unknown: response interrupted")));
 			let data = "";
 			response.on("data", (chunk) => {
 				data += chunk;
@@ -47,13 +50,15 @@ async function fiscalRequest(store, { printer_url, endpoint, payload, attempt })
 	if (isReceipt) {
 		if (!/^[a-zA-Z0-9]{16,64}$/.test(attempt || "")) throw new Error("Prepared fiscal attempt required");
 		const prior = store.get(key);
+		const fingerprint = createHash("sha256").update(JSON.stringify(payload)).digest("hex");
+		if (prior?.fingerprint && prior.fingerprint !== fingerprint) throw new Error("Fiscal attempt payload changed. Reconcile the original receipt.");
 		if (prior?.result) return prior.result;
 		if (prior) throw new Error("Fiscal result unknown. Reconcile the printer journal.");
 		// Persist before network I/O: process crashes cannot trigger automatic resend.
-		store.set(key, { state: "unknown", invoice: payload?.receiptSum });
+		store.set(key, { state: "unknown", invoice: payload?.receiptSum, fingerprint, printer: url.origin });
 	}
 	const result = await send(url, payload);
-	if (isReceipt) store.set(key, { result });
+	if (isReceipt) store.set(key, { ...store.get(key), result });
 	return result;
 }
 

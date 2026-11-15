@@ -288,8 +288,12 @@ are in [MARKET checkout and returns](market-checkout-returns.md).
   Native form/import/API saves cannot forge fiscal identifiers or copy them to new records.
   Fiscal amounts come from the submitted server invoice, in integer tiyins. Never derive
   fiscal totals from the open cart or copy reference code's float/tax-name heuristics.
-- POS Profile supplies printer/bridge configuration. Electron main process owns direct
-  device HTTP; browsers use the local bridge. Both retain attempt results across retries.
+- POS Profile supplies printer/bridge defaults. The Windows desktop can persist a
+  cashier-editable local printer address per ERPNext site; it takes precedence on
+  that computer without replacing the server fiscal payload or attempt identity.
+  Electron main process owns direct device HTTP; browsers use the local bridge.
+  Both retain attempt results across retries. Changing address never resends an
+  unknown receipt attempt. Desktop connection testing only reads device status.
 - A timeout/paper error retains an unknown result. Recover the existing FD, acknowledge
   the saved success, or explicitly audit a cashier's check that the journal has no FD.
   Never automatically resend or turn an unknown result into a non-fiscal sale.

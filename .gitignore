@@ -19,6 +19,8 @@ bench.log
 bench_start.log
 frontend/build_log_*.txt
 dist-electron/
+.desktop-cache/
+!electron/package-lock.json
 nul
 .env
 .env.local

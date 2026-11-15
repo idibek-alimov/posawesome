@@ -1,5 +1,12 @@
 # Electron Packaging Audit
 
+Update, 2026-11-15: the dedicated app-directory option described below is now
+implemented with `electron/package.json`, its npm lockfile, and root
+`build.directories.app = "electron"`. The earlier findings are retained as the
+baseline. See [desktop build progress](desktop-build-progress.md) for current
+commands, checks, and remaining release requirements. The old clear-URL workflow
+has been replaced by installation-PIN-protected server setup.
+
 ## Scope
 
 This audit covers the root `package.json` Electron Builder configuration for the desktop shell. It does not change packaging behavior.

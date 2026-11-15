@@ -53,6 +53,17 @@ export async function verifyElectronPackage({
 	await requireFile(path.resolve(rootDir, mainPath), "Electron main entry");
 
 	const buildConfig = packageJson.build || {};
+	const appDir = path.resolve(rootDir, buildConfig.directories?.app || ".");
+	const runtimePackage = JSON.parse(await readFile(path.join(appDir, "package.json"), "utf8"));
+	await requireFile(path.join(appDir, runtimePackage.main), "packaged Electron main entry");
+	if (runtimePackage.version !== packageJson.version) throw new Error("Desktop and root versions must match");
+	if (Object.keys(runtimePackage.dependencies || {}).some((name) => name !== "electron-store")) {
+		throw new Error("Unexpected desktop runtime dependency; review installer contents");
+	}
+	if (buildConfig.files?.includes("node_modules/**/*")) throw new Error("Do not package the root frontend/tooling dependency tree");
+	for (const file of ["preload.js", "settings.js", "fiscal.js", "renderer/setup.html", "renderer/printer.html", "renderer/offline.html"]) {
+		await requireFile(path.join(appDir, file), `desktop runtime file ${file}`);
+	}
 	if (buildConfig.appId !== "com.posawesome.desktop") {
 		throw new Error(
 			"package.json build.appId must remain com.posawesome.desktop",

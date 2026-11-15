@@ -1,0 +1,22 @@
+:root { color-scheme: light; font-family: "Segoe UI", sans-serif; color: #182230; background: #f4f6f8; }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 28px; }
+main { max-width: 640px; margin: 0 auto; background: white; border: 1px solid #d9e0e7; border-radius: 12px; padding: 28px; }
+h1 { font-size: 24px; margin: 0 0 12px; }
+p { line-height: 1.55; color: #475467; }
+label { display: block; font-weight: 600; margin: 20px 0 8px; }
+input { display: block; width: 100%; border: 1px solid #98a2b3; border-radius: 6px; padding: 12px; font: inherit; }
+input:focus, button:focus-visible { outline: 3px solid #a6c8ff; outline-offset: 2px; }
+input[readonly] { background: #f2f4f7; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+button { padding: 11px 16px; border: 1px solid #98a2b3; border-radius: 6px; background: white; color: #182230; font: inherit; cursor: pointer; }
+button.primary { background: #175cd3; border-color: #175cd3; color: white; }
+button:disabled { opacity: .55; cursor: wait; }
+.status { margin-top: 20px; min-height: 24px; line-height: 1.5; white-space: pre-line; }
+.status[data-tone="error"] { color: #b42318; }
+.status[data-tone="success"] { color: #067647; }
+.hint { font-size: 14px; color: #667085; }
+.language { display: flex; justify-content: end; gap: 8px; margin-bottom: 20px; }
+.language button { padding: 5px 9px; font-size: 13px; }
+[hidden] { display: none !important; }
+@media (max-width: 540px) { body { padding: 14px; } main { padding: 20px; } }

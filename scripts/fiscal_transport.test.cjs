@@ -35,3 +35,27 @@ test('desktop allows the verified fiscal shift opening operation', async () => {
   assert.equal(result.data.shiftNumber,419);assert.equal(received.path,'/api/openShift');assert.equal(received.payload.cashier,'Моҳира');
  } finally {server.close();}
 });
+
+test('changing printer address never resends an unknown fiscal attempt', async () => {
+ const data = new Map();
+ const store = { get: key => data.get(key), set: (key, value) => data.set(key, value) };
+ const server = http.createServer((_req, res) => res.destroy());
+ await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+ try {
+  const request = { printer_url: `http://127.0.0.1:${server.address().port}`, endpoint: 'formReceipt', attempt: 'c'.repeat(32), payload: { receiptSum: 1000 } };
+  await assert.rejects(fiscalRequest(store, request));
+  await assert.rejects(fiscalRequest(store, { ...request, printer_url: 'http://192.168.1.101:8002' }), /unknown/);
+ } finally { server.close(); }
+});
+
+test('a saved fiscal attempt cannot be reused with changed totals', async () => {
+ const data = new Map();
+ const store = { get: key => data.get(key), set: (key, value) => data.set(key, value) };
+ const server = http.createServer((_req, res) => res.end(JSON.stringify({ rc: 'SUCCESS', data: { fdNumber: 1 } })));
+ await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+ try {
+  const request = { printer_url: `http://127.0.0.1:${server.address().port}`, endpoint: 'formReceipt', attempt: 'd'.repeat(32), payload: { receiptSum: 1000 } };
+  await fiscalRequest(store, request);
+  await assert.rejects(fiscalRequest(store, { ...request, payload: { receiptSum: 2000 } }), /payload changed/);
+ } finally { server.close(); }
+});

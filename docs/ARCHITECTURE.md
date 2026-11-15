@@ -93,3 +93,20 @@ Normalized repositories currently cover:
 
 The IndexedDB schema and persistence worker must always declare the same latest
 Dexie version.
+
+## Windows desktop client
+
+`electron/` is a dedicated Electron application with its own locked dependency
+manifest. Root build commands package that app directory rather than the root
+frontend/tooling dependencies. ERPNext remains the business authority.
+
+Server settings require an installation PIN. Cashiers can edit the site's local
+printer override in a separate window without navigating away from checkout.
+The main process resolves the override before issuing fiscal HTTP; it preserves
+the existing attempt identity and canonical server payload. POS Profile remains
+the source for business settings and the printer default. Overrides are currently
+site-scoped, assuming a dedicated printer per terminal, not register binding.
+
+The preview still loads the hosted POS. Do not treat its fallback page as proof
+of offline cold-start readiness. See `electron/desktop-build-progress.md` for the
+implemented milestone and remaining offline/review work.

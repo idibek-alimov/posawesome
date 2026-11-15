@@ -1,0 +1,16 @@
+{
+  "name": "posawesome",
+  "version": "15.33.0",
+  "description": "POS Awesome Windows desktop client",
+  "private": true,
+  "main": "main.js",
+  "author": "POS Awesome",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "electron-store": "10.0.1"
+  },
+  "devDependencies": {
+    "electron": "33.4.11",
+    "electron-builder": "25.1.8"
+  }
+}

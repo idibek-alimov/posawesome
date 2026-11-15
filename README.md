@@ -318,17 +318,33 @@ For deployment details, see `CASH_MOVEMENT_ROLLOUT.md`.
 
 ### Electron Desktop App
 
-Use the bundled Electron shell when you need an offline-friendly desktop build that remembers the ERPNext server URL.
+The Windows desktop preview opens your configured ERPNext POS site and includes
+local fiscal printer connection settings. It is not yet the completed offline
+desktop product: offline cold-start/restart and selective deferred fiscalization
+remain implementation and verification work.
 
-1. **Install dependencies** (root): `yarn install`
-2. **Run the desktop shell**: `yarn electron:dev`
-3. **Build installers**: `yarn electron:build`
+1. **Install desktop dependencies**: `npm --prefix electron ci`
+2. **Run the desktop shell**: `npm run electron:dev`
+3. **Run desktop tests**: `npm run test:desktop`
+4. **Build the Windows x64 installer**: `npm run electron:build:win`
+5. **Check the artifact**: `npm run electron:smoke -- --require-artifact`
 
 Notes:
 
-- The app prompts for the server URL on first launch (the `/app/posapp` path is added automatically) and saves it locally so you do not need to re-enter it.
-- If connectivity drops, an offline screen appears with options to retry or change the saved server.
-- Windows (`.exe`) builds require Wine/Mono when running `electron-builder` on Linux. By default, `yarn electron:build` targets the current platform and writes artifacts into `dist-electron/`.
+- First launch requests the shop's ERPNext URL and an installation PIN of at least
+  six characters. Keep that PIN for later server changes. HTTPS is required for
+  public servers; HTTP is accepted for local development/network addresses.
+- **Radolfa > Подключение принтера** (`Ctrl+Shift+P`) opens printer settings without
+  replacing checkout. These screens include Russian and Tajik language choices.
+- A locally saved printer address overrides POS Profile on this computer and is
+  scoped to the ERPNext site. Connection testing only requests device status;
+  it does not print or open/close a fiscal shift.
+- Ordinary exit leaves the shift open. Use the POS closing workflow to end a shift.
+- Windows artifacts are written to `dist-electron/`. Build on Windows for the
+  Windows preview. Only the dedicated `electron/` app and production dependencies
+  enter the app archive, not the frontend/build dependency tree.
+- See [desktop build progress](docs/electron/desktop-build-progress.md) for actual
+  verification, remaining work, and the Windows packaging-tool extraction workaround.
 
 ### Main Features
 

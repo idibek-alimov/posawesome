@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self';">
+		<title>Radolfa — подключение принтера</title>
+		<link rel="stylesheet" href="desktop.css">
+		<script src="ui.js" defer></script>
+		<script src="printer.js" defer></script>
+	</head>
+	<body>
+		<main>
+			<div class="language"><button data-language="ru">Русский</button><button data-language="tg">Тоҷикӣ</button></div>
+			<h1 data-text="printer"></h1>
+			<p data-text="printerHint"></p>
+			<form id="printer-form">
+				<label for="printer-url" data-text="address"></label>
+				<input id="printer-url" type="text" placeholder="http://192.168.1.102:8002/" autocomplete="off" required>
+				<div class="actions">
+					<button id="test" type="button" data-text="test"></button>
+					<button class="primary" type="submit" data-text="save"></button>
+				</div>
+			</form>
+			<p id="override-hint" class="hint" data-text="overrideHint" hidden></p>
+			<p id="status" class="status" role="status" aria-live="polite"></p>
+			<div class="actions"><button id="use-default" data-text="defaults"></button><button id="close" data-text="close"></button></div>
+		</main>
+	</body>
+</html>
