@@ -108,3 +108,22 @@ test("ordinary exit leaves shift operations alone and remembers the dismissed ex
 	assert.equal(app.windows[0].isDestroyed(), true);
 	assert.equal(app.store.get("serverUrl"), "https://shop.example.com/app/posapp");
 });
+
+test("exit when shift is closed exits immediately without warning dialog", async () => {
+	const app = runtime();
+	await app.invoke("set-shift-active", app.windows[0], false);
+	let explanations = 0;
+	app.electron.dialog.showMessageBox = async () => { explanations += 1; return { response: 0 }; };
+	let prevented = false;
+	await app.windows[0].listeners("close")[0]({ preventDefault() { prevented = true; } });
+	assert.equal(prevented, true);
+	assert.equal(explanations, 0);
+	assert.equal(app.windows[0].isDestroyed(), true);
+});
+
+test("close-app closes main window immediately", async () => {
+	const app = runtime();
+	const res = await app.invoke("close-app", app.windows[0]);
+	assert.equal(res.closed, true);
+	assert.equal(app.windows[0].isDestroyed(), true);
+});

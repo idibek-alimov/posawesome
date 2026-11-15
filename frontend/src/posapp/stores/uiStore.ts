@@ -31,7 +31,7 @@
  * - `triggerTopItemSelection` (via `selectTopItem()`) — selects the first item in the list.
  */
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import type { POSProfile } from "../types/models";
 
 export const useUIStore = defineStore("ui", () => {
@@ -156,6 +156,16 @@ export const useUIStore = defineStore("ui", () => {
   const companyDoc = ref<any>(null);
   const posOpeningShift = ref<any>(null);
   const lastClosedShift = ref<{ user: string; name: string; print_state: string } | null>(null);
+
+  watch(
+    () => Boolean(posOpeningShift.value?.name),
+    (active) => {
+      if (typeof window !== "undefined" && (window as any).electronAPI?.setShiftActive) {
+        (window as any).electronAPI.setShiftActive(active);
+      }
+    },
+    { immediate: true }
+  );
 
   const currency = computed(() => posProfile.value?.currency || "");
   const company = computed(() => posProfile.value?.company || "");

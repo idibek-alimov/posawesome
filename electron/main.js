@@ -11,6 +11,7 @@ let settingsWindow;
 let printerWindow;
 let exitConfirmed = false;
 let exitDialogOpen = false;
+let shiftActive = true;
 
 const localPage = (name) => path.join(__dirname, "renderer", name);
 const localUrl = (name) => pathToFileURL(localPage(name)).href;
@@ -94,6 +95,23 @@ function createWindow() {
 		if (exitDialogOpen) return;
 		exitDialogOpen = true;
 		try {
+			let isShiftOpen = shiftActive;
+			if (mainWindow && !mainWindow.isDestroyed() && mainWindow.webContents && typeof mainWindow.webContents.executeJavaScript === "function") {
+				try {
+					const hasOpeningDialog = await mainWindow.webContents.executeJavaScript(
+						`Boolean(document.querySelector(".opening-dialog-card"))`
+					);
+					if (hasOpeningDialog) {
+						isShiftOpen = false;
+						shiftActive = false;
+					}
+				} catch {}
+			}
+			if (!isShiftOpen) {
+				exitConfirmed = true;
+				mainWindow.close();
+				return;
+			}
 			const result = await dialog.showMessageBox(mainWindow, {
 				type: "info", title: "Выход из кассы", message: "Смена останется открытой.",
 				detail: "Чтобы завершить рабочий день, используйте «Закрыть смену» в кассе.",
@@ -126,6 +144,15 @@ function registerHandlers() {
 		return callback(...args);
 	});
 	handle("get-server-url", { pages: localPages, pos: true }, () => getStoredUrl());
+	handle("close-app", { pages: localPages, pos: true }, () => {
+		exitConfirmed = true;
+		if (mainWindow && !mainWindow.isDestroyed()) mainWindow.close();
+		return { closed: true };
+	});
+	handle("set-shift-active", { pos: true }, (active) => {
+		shiftActive = Boolean(active);
+		return { shiftActive };
+	});
 	handle("get-installation-settings", { pages: ["setup.html"] }, () => ({ serverUrl: getStoredUrl(), protected: Boolean(store.get("installationPin")) }));
 	handle("normalize-server-url", { pages: ["setup.html"] }, ensureUrl);
 	handle("set-server-url", { pages: ["setup.html"] }, (settings) => {

@@ -308,6 +308,10 @@ function submit_dialog() {
 }
 
 function go_desk() {
+	if (typeof window !== "undefined" && window.electronAPI?.closeApp) {
+		window.electronAPI.closeApp();
+		return;
+	}
 	frappe.set_route("/");
 	location.reload();
 }
