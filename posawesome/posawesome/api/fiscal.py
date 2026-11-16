@@ -7,7 +7,7 @@ import json
 import frappe
 from frappe import _
 from frappe.utils import nowdate, now_datetime
-from frappe.custom.doctype.custom_field.custom_field import create_custom_field
+from frappe.custom.doctype.custom_field.custom_field import create_custom_field, create_custom_fields
 
 
 FISCAL_FIELDS = [
@@ -17,6 +17,8 @@ FISCAL_FIELDS = [
 		"fieldtype": "Data",
 		"insert_after": "naming_series",
 		"read_only": 1,
+		"allow_on_submit": 1,
+		"no_copy": 1,
 		"in_standard_filter": 1,
 		"description": "Government Fiscal Document Number (TP809)",
 	},
@@ -26,6 +28,8 @@ FISCAL_FIELDS = [
 		"fieldtype": "Data",
 		"insert_after": "custom_fiscal_fd_number",
 		"read_only": 1,
+		"allow_on_submit": 1,
+		"no_copy": 1,
 		"description": "Cryptographic signature of the receipt",
 	},
 	{
@@ -34,18 +38,42 @@ FISCAL_FIELDS = [
 		"fieldtype": "Int",
 		"insert_after": "custom_fiscal_fpd",
 		"read_only": 1,
+		"allow_on_submit": 1,
+		"no_copy": 1,
 		"description": "TP809 Cashier shift number",
 	},
 	{
 		"fieldname": "custom_fiscal_status",
 		"label": "Статус фискализации",
 		"fieldtype": "Select",
-		"options": "Черновик\nФискализирован\nОшибка\nБез чека",
+		"options": "Черновик\nФискализирован\nОшибка\nБез чека\nНеизвестно",
 		"default": "Черновик",
 		"insert_after": "custom_fiscal_shift_number",
 		"read_only": 1,
+		"allow_on_submit": 1,
+		"no_copy": 1,
 		"in_standard_filter": 1,
 		"description": "Fiscal status of this sale",
+	},
+	{
+		"fieldname": "custom_fiscal_attempt",
+		"label": "Fiscal attempt",
+		"fieldtype": "Data",
+		"insert_after": "custom_fiscal_status",
+		"read_only": 1,
+		"hidden": 1,
+		"allow_on_submit": 1,
+		"no_copy": 1,
+	},
+	{
+		"fieldname": "custom_fiscal_payload",
+		"label": "Fiscal payload",
+		"fieldtype": "Long Text",
+		"insert_after": "custom_fiscal_attempt",
+		"read_only": 1,
+		"hidden": 1,
+		"allow_on_submit": 1,
+		"no_copy": 1,
 	},
 	{
 		"fieldname": "custom_sales_person",
@@ -53,8 +81,39 @@ FISCAL_FIELDS = [
 		"fieldtype": "Link",
 		"options": "Sales Person",
 		"insert_after": "customer",
+		"allow_on_submit": 1,
+		"no_copy": 1,
 		"in_standard_filter": 1,
 		"description": "Sales person tagged for commission calculations",
+	},
+]
+
+PROFILE_FISCAL_FIELDS = [
+	{
+		"fieldname": "posa_fiscal_section",
+		"label": "TP809 Fiscal Printer",
+		"fieldtype": "Section Break",
+		"insert_after": "print_format",
+	},
+	{
+		"fieldname": "posa_fiscal_printer_url",
+		"label": "TP809 printer URL (desktop)",
+		"fieldtype": "Data",
+		"insert_after": "posa_fiscal_section",
+	},
+	{
+		"fieldname": "posa_fiscal_bridge_url",
+		"label": "Local fiscal bridge URL (browser)",
+		"fieldtype": "Data",
+		"default": "http://localhost:5000",
+		"insert_after": "posa_fiscal_printer_url",
+	},
+	{
+		"fieldname": "posa_unlimited_cashier_returns",
+		"label": "Cashier returns without time limit",
+		"fieldtype": "Check",
+		"default": "1",
+		"insert_after": "posa_fiscal_bridge_url",
 	},
 ]
 
@@ -71,18 +130,18 @@ USER_FIELDS = [
 
 def ensure_fiscal_fields():
 	"""Ensure custom fiscal and authorization fields exist on target doctypes."""
-	for doctype in ("POS Invoice", "Sales Invoice"):
-		for fld in FISCAL_FIELDS:
-			custom_name = f"{doctype}-{fld['fieldname']}"
-			if not frappe.db.exists("Custom Field", custom_name):
-				create_custom_field(doctype, fld)
+	create_custom_fields(
+		{
+			"Sales Invoice": [dict(f) for f in FISCAL_FIELDS],
+			"POS Invoice": [dict(f) for f in FISCAL_FIELDS],
+			"POS Profile": [dict(f) for f in PROFILE_FISCAL_FIELDS],
+			"User": [dict(f) for f in USER_FIELDS],
+		},
+		update=True,
+	)
+	for doctype in ("Sales Invoice", "POS Invoice", "POS Profile", "User"):
 		frappe.clear_cache(doctype=doctype)
-
-	for fld in USER_FIELDS:
-		custom_name = f"User-{fld['fieldname']}"
-		if not frappe.db.exists("Custom Field", custom_name):
-			create_custom_field("User", fld)
-	frappe.clear_cache(doctype="User")
+		frappe.db.updatedb(doctype)
 
 
 def validate_fiscal_metadata(doc, method=None):

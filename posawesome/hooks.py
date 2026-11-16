@@ -74,16 +74,10 @@ doctype_js = {
 # ------------
 
 # before_install = "posawesome.install.before_install"
-after_install = "posawesome.patches.repair_expense_source_settings.execute"
+after_install = "posawesome.setup.install.after_install"
 # before_uninstall = "posawesome.uninstall.before_uninstall"
 after_uninstall = "posawesome.uninstall.after_uninstall"
-# NOTE: these migrations are registered one-shot in patches.txt and must NOT
-# also run on every `bench migrate`. Running them via after_migrate re-rewrote
-# the POS Awesome workspace and POS Profile section ordering on every migrate,
-# destroying any user customization. The three that previously lived only here
-# (add_gift_card_pos_profile_settings, migrate_pos_supervisor_to_role,
-# remove_item_barcode_posa_uom) have been moved into patches.txt.
-after_migrate = []
+after_migrate = ["posawesome.setup.install.after_migrate"]
 
 # Desk Notifications
 # ------------------
@@ -410,6 +404,61 @@ fixtures = [
                     "POS Invoice-posa_below_cost_override_reason",
                     "POS Invoice-posa_below_cost_override_details",
                     "User-posa_pos_pin",
+                    "User-custom_manager_badge",
+                    "Sales Invoice-custom_fiscal_fd_number",
+                    "Sales Invoice-custom_fiscal_fpd",
+                    "Sales Invoice-custom_fiscal_shift_number",
+                    "Sales Invoice-custom_fiscal_status",
+                    "Sales Invoice-custom_fiscal_attempt",
+                    "Sales Invoice-custom_fiscal_payload",
+                    "Sales Invoice-custom_sales_person",
+                    "POS Invoice-custom_fiscal_fd_number",
+                    "POS Invoice-custom_fiscal_fpd",
+                    "POS Invoice-custom_fiscal_shift_number",
+                    "POS Invoice-custom_fiscal_status",
+                    "POS Invoice-custom_fiscal_attempt",
+                    "POS Invoice-custom_fiscal_payload",
+                    "POS Invoice-custom_sales_person",
+                    "POS Profile-posa_fiscal_section",
+                    "POS Profile-posa_fiscal_printer_url",
+                    "POS Profile-posa_fiscal_bridge_url",
+                    "POS Profile-posa_unlimited_cashier_returns",
+                    "POS Profile-posa_section_customer_display",
+                    "POS Profile-posa_enable_customer_display",
+                    "POS Profile-posa_auto_open_customer_display",
+                    "POS Invoice-posa_client_request_id",
+                    "POS Invoice-posa_redeemed_customer_credit",
+                    "POS Invoice-posa_remaining_customer_credit_balance",
+                    "POS Profile-custom_allow_create_quotation",
+                    "POS Profile-posa_allow_delete_offline_invoice",
+                    "POS Profile-posa_allow_line_item_name_override",
+                    "POS Profile-posa_allow_offline_sale_without_stock_verification",
+                    "POS Profile-posa_allow_price_list_rate_change",
+                    "POS Profile-posa_block_sale_beyond_available_qty",
+                    "POS Profile-posa_brand_logo",
+                    "POS Profile-posa_brand_name",
+                    "POS Profile-posa_brand_short_name",
+                    "POS Profile-posa_branding_section",
+                    "POS Profile-posa_default_country",
+                    "POS Profile-posa_enable_custom_branding",
+                    "POS Profile-posa_force_price_from_customer_price_list",
+                    "POS Profile-posa_force_reload_items",
+                    "POS Profile-posa_gift_card_liability_account",
+                    "POS Profile-posa_open_print_in_new_tab",
+                    "POS Profile-posa_print_format_rules",
+                    "POS Profile-posa_raw_print_width",
+                    "POS Profile-posa_raw_printing",
+                    "POS Profile-posa_sales_persons",
+                    "POS Profile-posa_search_limit",
+                    "POS Profile-posa_show_custom_name_marker_on_print",
+                    "POS Profile-posa_show_customer_balance",
+                    "POS Profile-posa_silent_print",
+                    "POS Profile-posa_smart_reload_mode",
+                    "Payment Entry-posa_client_request_id",
+                    "Sales Invoice Item-name_overridden",
+                    "Sales Invoice-posa_client_request_id",
+                    "Sales Invoice-posa_redeemed_customer_credit",
+                    "Sales Invoice-posa_remaining_customer_credit_balance",
                 ),
             ]
         ],

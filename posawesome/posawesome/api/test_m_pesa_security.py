@@ -378,14 +378,14 @@ class TestMpesaAuthorization(unittest.TestCase):
         self.addCleanup(setattr, self.mpesa.frappe, "db", original_db)
         self.addCleanup(setattr, self.mpesa.frappe, "get_all", original_get_all)
 
-        module_name = "posawesome.patches.secure_mpesa_callback_transactions"
+        module_name = "posawesome.setup.install"
         spec = importlib.util.spec_from_file_location(
             module_name,
-            REPO_ROOT / "posawesome" / "patches" / "secure_mpesa_callback_transactions.py",
+            REPO_ROOT / "posawesome" / "setup" / "install.py",
         )
-        patch_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(patch_module)
-        patch_module.execute()
+        install_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(install_module)
+        install_module.secure_mpesa_callback_transactions()
 
         self.assertIn(("MPRE-MISSING", "legacy-missing-MPRE-MISSING"), updates)
         self.assertIn(

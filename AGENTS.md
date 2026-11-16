@@ -122,6 +122,7 @@ If duplicated logic exists, refactor it carefully instead of adding another copy
 
 ## Code Quality Rules
 
+- **Development stage — NO patches (`patches/` or `patches.txt`)**: Do not create migration patches in `posawesome/patches/` or register entries in `posawesome/patches.txt`. Put all custom fields, property setters, roles, workspace changes, indexes, and bug fixes directly into the source code (`posawesome/fixtures/*.json`, `posawesome/hooks.py`, `posawesome/setup/install.py`, DocType `.json` files, and core modules).
 - Keep changes minimal only when minimal is correct.
 - Full refactoring is allowed when required for correctness and long-term maintainability.
 - Do not add new dependencies unless necessary.

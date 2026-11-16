@@ -5,7 +5,7 @@ import unittest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[3]
 FIXTURES_PATH = REPO_ROOT / "posawesome" / "fixtures" / "custom_field.json"
-PATCH_PATH = REPO_ROOT / "posawesome" / "patches" / "add_below_cost_sale_policy.py"
+HOOKS_PATH = REPO_ROOT / "posawesome" / "hooks.py"
 
 
 def _load_custom_field(name):
@@ -40,11 +40,11 @@ class TestSaleFloorProfileSettings(unittest.TestCase):
                     1,
                 )
 
-    def test_migration_patch_uses_pos_supervisor_policy(self):
-        source = PATCH_PATH.read_text()
+    def test_hooks_register_pos_supervisor_policy_fields(self):
+        source = HOOKS_PATH.read_text()
 
-        self.assertIn("POS Supervisor Override", source)
-        self.assertIn('"default": "1"', source)
+        self.assertIn("POS Profile-posa_enable_below_cost_guard", source)
+        self.assertIn("POS Profile-posa_below_cost_action", source)
 
 
 if __name__ == "__main__":

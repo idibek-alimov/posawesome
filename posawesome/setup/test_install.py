@@ -1,8 +1,7 @@
 import unittest
 from unittest.mock import Mock, patch
 
-from posawesome.patches import add_pos_cash_movement_settings as fields
-from posawesome.patches import repair_expense_source_settings as repair
+from posawesome.setup import install
 
 
 class TestExpenseSourceRepair(unittest.TestCase):
@@ -11,13 +10,16 @@ class TestExpenseSourceRepair(unittest.TestCase):
         fake = Mock()
         fake.db.exists.side_effect = lambda dt, name: name in existing
         created = []
+
         def create(doctype, field):
             created.append(field["fieldname"])
             existing.add(f"{doctype}-{field['fieldname']}")
-        with patch.object(fields, "frappe", fake), patch.object(fields, "create_custom_field", side_effect=create), patch.object(repair, "frappe", fake):
-            repair.execute()
+
+        with patch.object(install, "frappe", fake), patch.object(install, "create_custom_field", side_effect=create):
+            install.ensure_expense_source_settings()
             count = len(created)
-            repair.execute()
+            install.ensure_expense_source_settings()
+
         self.assertEqual(len(created), count)
         self.assertIn("posa_default_source_account", created)
         self.assertIn("posa_allow_source_account_override", created)

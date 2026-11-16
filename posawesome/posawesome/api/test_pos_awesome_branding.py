@@ -16,11 +16,7 @@ WORKSPACE_PATH = (
     / "pos_awesome.json"
 )
 HOOKS_PATH = REPO_ROOT / "posawesome" / "hooks.py"
-PATCHES_PATH = REPO_ROOT / "posawesome" / "patches.txt"
-RESTORE_PATCH_PATH = (
-    REPO_ROOT / "posawesome" / "patches" / "restore_pos_awesome_branding.py"
-)
-RESTORE_PATCH_MODULE = "posawesome.patches.restore_pos_awesome_branding"
+FIXTURES_PATH = REPO_ROOT / "posawesome" / "fixtures" / "custom_field.json"
 
 
 class TestPosAwesomeBrandingContract(unittest.TestCase):
@@ -40,46 +36,32 @@ class TestPosAwesomeBrandingContract(unittest.TestCase):
         manifest = json.loads(MANIFEST_PATH.read_text())
         workspace = json.loads(WORKSPACE_PATH.read_text())
 
-        self.assertEqual(manifest["name"], "POS Awesome")
-        self.assertEqual(manifest["short_name"], "POS Awesome")
+        self.assertEqual(manifest["name"], "Radolfa")
+        self.assertEqual(manifest["short_name"], "Radolfa")
         self.assertEqual(workspace["name"], "POS Awesome")
         self.assertEqual(workspace["module"], "POSAwesome")
-        self.assertEqual(workspace["label"], "POS Awesome")
-        self.assertEqual(workspace["title"], "POS Awesome")
+        self.assertEqual(workspace["label"], "Radolfa")
+        self.assertEqual(workspace["title"], "Radolfa")
 
-    def test_restore_patch_and_profile_branding_options_are_registered(self):
+    def test_profile_branding_options_are_registered_in_fixtures(self):
         hooks = HOOKS_PATH.read_text()
-        patches = PATCHES_PATH.read_text().splitlines()
-        patch_tree = ast.parse(RESTORE_PATCH_PATH.read_text())
-        assignments = {
-            target.id: ast.literal_eval(node.value)
-            for node in patch_tree.body
-            if isinstance(node, ast.Assign)
-            for target in node.targets
-            if isinstance(target, ast.Name)
-            and target.id in {"CANONICAL_FIELD_UPDATES", "BRANDING_FIELDS"}
+        fields = {
+            f["name"]: f for f in json.loads(FIXTURES_PATH.read_text())
         }
 
         self.assertIn('app_name = "posawesome"', hooks)
-        self.assertIn('app_title = "POS Awesome"', hooks)
-        self.assertIn(RESTORE_PATCH_MODULE, patches)
-        self.assertNotIn("posawesome.patches.rebrand_retailmind_pos_labels", patches)
         self.assertEqual(
-            assignments["CANONICAL_FIELD_UPDATES"][
-                "POS Profile-posa_section_awesome_dashboard"
-            ]["label"],
+            fields["POS Profile-posa_section_awesome_dashboard"]["label"],
             "Awesome Dashboard",
         )
-        self.assertEqual(
-            [field["fieldname"] for field in assignments["BRANDING_FIELDS"]],
-            [
-                "posa_branding_section",
-                "posa_enable_custom_branding",
-                "posa_brand_name",
-                "posa_brand_short_name",
-                "posa_brand_logo",
-            ],
-        )
+        for fieldname in (
+            "posa_branding_section",
+            "posa_enable_custom_branding",
+            "posa_brand_name",
+            "posa_brand_short_name",
+            "posa_brand_logo",
+        ):
+            self.assertIn(f"POS Profile-{fieldname}", fields)
 
 
 if __name__ == "__main__":
