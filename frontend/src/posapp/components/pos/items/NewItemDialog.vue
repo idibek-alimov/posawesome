@@ -152,7 +152,7 @@ const selectableGroups = computed(() => {
 			result.push({ title: g, value: g });
 		} else {
 			const val = g.value || g.name;
-			if (val === "ALL" || g.is_group === 1) continue;
+			if (val === "ALL") continue;
 			const title = g.path || g.title || g.label || val;
 			result.push({ title, value: val });
 		}
