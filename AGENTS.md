@@ -147,6 +147,13 @@ A task is complete only when:
 
 ## Owner-Approved UI Direction
 
+Use the shared bench skills when relevant:
+[retail-simple-ui](../../.agents/skills/retail-simple-ui/SKILL.md) for task-focused
+screens and [retail-safe-workflows](../../.agents/skills/retail-safe-workflows/SKILL.md)
+for configuration, checkout, permissions, retries, sync, and printer recovery.
+Read them by these paths when a session launched inside this app does not discover
+bench-level skills. The mandatory POS contracts and verification rules still apply.
+
 The owner approved the simplified ERPNext Product Catalog and Product Detail and wants
 the same clear, professional intent carried into other apps. For POS, adapt that intent
 to fast, accurate checkout; do not copy an owner dashboard into the cashier workflow.
