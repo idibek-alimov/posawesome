@@ -299,6 +299,14 @@ def fetch_sales_person_names(pos_profile=None):
 
     try:
         profile = _resolve_pos_profile_input(pos_profile) or get_active_pos_profile()
+        if profile and cint(profile.get("posa_enforce_attendance")):
+            try:
+                from hrms.hr.retail_attendance import eligibility
+                return eligibility.get_eligible_salespersons(profile)
+            except ImportError:
+                logger.warning("HRMS retail_attendance eligibility module not available.")
+                return []
+
         allowed = []
         if profile:
             allowed = [

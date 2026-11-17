@@ -1515,6 +1515,11 @@ def update_invoice(data):
     # amendments preserve the source doctype even when the active profile has
     # since switched between Sales Invoice and POS Invoice mode.
     profile_doc = _resolve_authorized_invoice_profile(data)
+    try:
+        from hrms.hr.retail_attendance import eligibility
+        eligibility.validate_invoice_attendance(data)
+    except ImportError:
+        pass
     pos_profile = profile_doc.get("name")
     company = profile_doc.get("company")
     ignore_pricing_rule = _profile_ignore_pricing_rule(profile_doc)
@@ -1769,6 +1774,13 @@ def submit_invoice(invoice, data, submit_in_background=False):
     submit_in_background = cint(submit_in_background)
     _strip_client_freebies_from_payload(invoice)
     profile_doc = _resolve_authorized_invoice_profile(invoice, data)
+    try:
+        from hrms.hr.retail_attendance import eligibility
+        eligibility.validate_invoice_attendance(invoice)
+        if submit_in_background:
+            invoice["posa_attendance_sealed"] = 1
+    except ImportError:
+        pass
     pos_profile = profile_doc.get("name")
     company = profile_doc.get("company")
     forced_doctype = invoice.pop("_force_invoice_doctype", None) or data.pop("_force_invoice_doctype", None)

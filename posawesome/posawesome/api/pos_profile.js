@@ -61,6 +61,14 @@ const set_pos_profile_queries = (frm) => {
 		};
 	});
 
+	set_field_query("posa_attendance_site", function (doc) {
+		return {
+			filters: {
+				company: doc.company,
+			},
+		};
+	});
+
 	set_child_query("account", "posa_allowed_expense_accounts", function (doc) {
 		return {
 			filters: {

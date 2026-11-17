@@ -377,6 +377,27 @@ def get_sales_person_names(pos_profile=None):
 
 
 @frappe.whitelist()
+def get_salesperson_admission_context(pos_profile=None):
+    """Return typed salesperson admission context with day state and captured_at."""
+    from posawesome.posawesome.api.utils import _resolve_pos_profile_input, get_active_pos_profile
+    profile = _resolve_pos_profile_input(pos_profile) or get_active_pos_profile()
+    if not profile:
+        return {"status": "unavailable", "enforced": False, "sales_persons": []}
+    if not cint(profile.get("posa_enforce_attendance")):
+        from posawesome.posawesome.api.utils import fetch_sales_person_names
+        return {
+            "status": "disabled",
+            "enforced": False,
+            "sales_persons": fetch_sales_person_names(pos_profile=profile),
+        }
+    try:
+        from hrms.hr.retail_attendance import eligibility
+        return eligibility.get_eligible_salespersons(profile, return_meta=True)
+    except ImportError:
+        return {"status": "unavailable", "enforced": True, "sales_persons": []}
+
+
+@frappe.whitelist()
 def get_language_options():
     """Return newline separated language codes from translations directories of all apps.
 

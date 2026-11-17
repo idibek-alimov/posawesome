@@ -255,21 +255,35 @@ export function useInvoiceDetails(options: InvoiceDetailsOptions) {
 	const get_sales_person_names = () => {
 		const profile = unref(posProfile);
 		const profileSalesPersons = buildSalesPersonOptionsFromProfile(profile);
-		if (profile?.posa_local_storage && getSalesPersonsStorage().length) {
-			try {
-				sales_persons.value = getSalesPersonsStorage();
-			} catch (e) {
-				console.error(e);
+		const enforceAttendance = Boolean(profile?.posa_enforce_attendance);
+
+		if (!enforceAttendance) {
+			if (profile?.posa_local_storage && getSalesPersonsStorage().length) {
+				try {
+					sales_persons.value = getSalesPersonsStorage();
+				} catch (e) {
+					console.error(e);
+				}
+			} else if (profileSalesPersons.length) {
+				sales_persons.value = profileSalesPersons;
 			}
-		} else if (profileSalesPersons.length) {
-			sales_persons.value = profileSalesPersons;
 		}
 
 		frappe.call({
 			method: "posawesome.posawesome.api.utilities.get_sales_person_names",
+			args: { pos_profile: profile ? (profile.name || profile) : undefined },
 			callback: function (r: any) {
-				if (r.message && r.message.length > 0) {
-					sales_persons.value = r.message.map((sp: any) => ({
+				let list: any[] | null = null;
+				if (r.message && typeof r.message === "object" && !Array.isArray(r.message)) {
+					if (r.message.status === "confirmed" || r.message.status === "disabled") {
+						list = r.message.sales_persons || [];
+					}
+				} else if (Array.isArray(r.message)) {
+					list = r.message;
+				}
+
+				if (list !== null) {
+					sales_persons.value = list.map((sp: any) => ({
 						value: sp.name,
 						title: sp.sales_person_name,
 						sales_person_name: sp.sales_person_name,
@@ -278,13 +292,29 @@ export function useInvoiceDetails(options: InvoiceDetailsOptions) {
 					if (profile?.posa_local_storage) {
 						setSalesPersonsStorage(sales_persons.value);
 					}
+					const currentDoc = unref(invoiceDoc);
+					if (enforceAttendance && currentDoc && currentDoc.custom_sales_person) {
+						const isStillEligible = sales_persons.value.some(
+							(sp: any) => sp.value === currentDoc.custom_sales_person
+						);
+						if (!isStillEligible) {
+							currentDoc.custom_sales_person = null;
+							if (Array.isArray(currentDoc.sales_team)) {
+								currentDoc.sales_team = [];
+							}
+						}
+					}
 				} else {
-					sales_persons.value = profileSalesPersons;
+					if (!enforceAttendance) {
+						sales_persons.value = profileSalesPersons;
+					}
 				}
 			},
 			error: function (error: any) {
 				console.error("Failed to fetch sales persons", error);
-				sales_persons.value = profileSalesPersons;
+				if (!enforceAttendance) {
+					sales_persons.value = profileSalesPersons;
+				}
 			},
 		});
 	};

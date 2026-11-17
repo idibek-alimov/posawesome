@@ -102,6 +102,9 @@ after_migrate = ["posawesome.setup.install.after_migrate"]
 # Hook on document methods and events
 
 doc_events = {
+    "POS Profile": {
+        "validate": "posawesome.posawesome.api.pos_profile.validate",
+    },
     "Item": {
         "before_insert": "posawesome.posawesome.api.item_processing.item_codes.generate_short_code_and_barcode",
         "after_insert": "posawesome.posawesome.api.item_processing.alternates.clear_alternate_item_caches",
@@ -449,6 +452,8 @@ fixtures = [
                     "POS Profile-posa_raw_print_width",
                     "POS Profile-posa_raw_printing",
                     "POS Profile-posa_sales_persons",
+                    "POS Profile-posa_enforce_attendance",
+                    "POS Profile-posa_attendance_site",
                     "POS Profile-posa_search_limit",
                     "POS Profile-posa_show_custom_name_marker_on_print",
                     "POS Profile-posa_show_customer_balance",

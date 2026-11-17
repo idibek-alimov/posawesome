@@ -437,11 +437,40 @@ def secure_mpesa_callback_transactions():
             )
 
 
+ATTENDANCE_PROFILE_FIELDS = [
+    {
+        "fieldname": "posa_enforce_attendance",
+        "label": "Enforce Attendance for Sales Persons",
+        "fieldtype": "Check",
+        "default": "0",
+        "insert_after": "posa_sales_persons",
+        "description": "Restrict salesperson choices to staff checked in at the attendance site",
+    },
+    {
+        "fieldname": "posa_attendance_site",
+        "label": "Attendance Site",
+        "fieldtype": "Link",
+        "options": "Retail Attendance Site",
+        "depends_on": "eval:doc.posa_enforce_attendance==1",
+        "mandatory_depends_on": "eval:doc.posa_enforce_attendance==1",
+        "insert_after": "posa_enforce_attendance",
+        "description": "Retail Attendance Site for checking staff presence",
+    },
+]
+
+
+def ensure_attendance_profile_fields():
+    """Ensure attendance enforcement fields exist on POS Profile."""
+    for field in ATTENDANCE_PROFILE_FIELDS:
+        create_custom_field("POS Profile", field, ignore_validate=True)
+
+
 def setup_posawesome():
     """Run full idempotent POS Awesome setup on install and migrate."""
     from posawesome.posawesome.api.fiscal import ensure_fiscal_fields
     from posawesome.posawesome.api.label_templates import ensure_default_templates
 
+    ensure_attendance_profile_fields()
     ensure_expense_source_settings()
     ensure_fiscal_fields()
     ensure_supervisor_role_and_cleanup_legacy_fields()

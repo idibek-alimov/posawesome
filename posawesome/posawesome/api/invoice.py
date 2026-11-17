@@ -29,12 +29,26 @@ def validate(doc, method):
     calc_delivery_charges(doc)
     apply_tax_inclusive(doc)
     sync_sales_person(doc)
+    validate_sales_person_attendance(doc)
+
+
+def validate_sales_person_attendance(doc):
+    try:
+        from hrms.hr.retail_attendance import eligibility
+        eligibility.validate_invoice_attendance(doc)
+    except ImportError:
+        pass
 
 
 def sync_sales_person(doc):
     """Ensure custom_sales_person and sales_team are properly synchronized for commission calculation."""
     sales_person = doc.get("custom_sales_person")
     sales_team = doc.get("sales_team") or []
+
+    if sales_person and sales_team:
+        team_sp = [st.get("sales_person") for st in sales_team if st.get("sales_person")]
+        if sales_person not in team_sp:
+            frappe.throw(_("Sales Person {0} conflicts with sales team: {1}.").format(sales_person, ", ".join(team_sp)))
 
     if sales_person and not sales_team:
         doc.append("sales_team", {
@@ -56,6 +70,7 @@ def before_submit(doc, method):
     add_loyalty_point(doc)
     create_sales_order(doc)
     update_coupon(doc, "used")
+    validate_sales_person_attendance(doc)
 
 
 def before_cancel(doc, method):
