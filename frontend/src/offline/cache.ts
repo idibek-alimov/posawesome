@@ -1511,6 +1511,54 @@ export function setSalesPersonsStorage(data) {
 	}
 }
 
+export function saveAttendanceSnapshot(snapshot: any) {
+	if (!snapshot || typeof snapshot !== "object") return;
+	try {
+		memory.attendance_eligibility_snapshot = JSON.parse(JSON.stringify(snapshot));
+		persist("attendance_eligibility_snapshot");
+	} catch (e) {
+		console.error("Failed to save attendance snapshot", e);
+	}
+}
+
+export function isAttendanceSnapshotValid(snapshot: any, posProfile: any, currentDate?: string): boolean {
+	if (!snapshot || typeof snapshot !== "object") {
+		return false;
+	}
+	if (snapshot.status !== "confirmed" || !snapshot.enforced) {
+		return false;
+	}
+	const profileName = typeof posProfile === "string" ? posProfile : (posProfile?.name || "");
+	if (profileName && snapshot.pos_profile && snapshot.pos_profile !== profileName) {
+		return false;
+	}
+	const profileSite = posProfile?.posa_attendance_site;
+	if (profileSite && snapshot.site && snapshot.site !== profileSite) {
+		return false;
+	}
+	if (snapshot.day_status !== "Open") {
+		return false;
+	}
+	if (snapshot.business_date) {
+		const targetDate = currentDate || new Date().toISOString().split("T")[0];
+		if (snapshot.business_date !== targetDate) {
+			return false;
+		}
+	}
+	return true;
+}
+
+export function getAttendanceSnapshot(posProfile?: any, currentDate?: string): any | null {
+	const snapshot = memory.attendance_eligibility_snapshot;
+	if (!snapshot || typeof snapshot !== "object") {
+		return null;
+	}
+	if (posProfile && !isAttendanceSnapshotValid(snapshot, posProfile, currentDate)) {
+		return null;
+	}
+	return snapshot;
+}
+
 export function getOpeningStorage() {
 	return memory.pos_opening_storage || null;
 }

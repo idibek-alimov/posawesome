@@ -1779,6 +1779,9 @@ def submit_invoice(invoice, data, submit_in_background=False):
         eligibility.validate_invoice_attendance(invoice)
         if submit_in_background:
             invoice["posa_attendance_sealed"] = 1
+        for field in ("posa_attendance_admission_mode", "posa_attendance_evidence", "posa_attendance_sealed"):
+            if field in invoice and isinstance(data, dict):
+                data[field] = invoice[field]
     except ImportError:
         pass
     pos_profile = profile_doc.get("name")

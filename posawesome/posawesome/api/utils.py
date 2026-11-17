@@ -292,7 +292,7 @@ def _resolve_pos_profile_input(pos_profile=None):
     return None
 
 
-def fetch_sales_person_names(pos_profile=None):
+def fetch_sales_person_names(pos_profile=None, return_meta=False):
     """Return the list of enabled sales persons allowed for the active POS profile."""
 
     logger.info("Fetching sales persons...")
@@ -302,10 +302,10 @@ def fetch_sales_person_names(pos_profile=None):
         if profile and cint(profile.get("posa_enforce_attendance")):
             try:
                 from hrms.hr.retail_attendance import eligibility
-                return eligibility.get_eligible_salespersons(profile)
+                return eligibility.get_eligible_salespersons(profile, return_meta=return_meta)
             except ImportError:
                 logger.warning("HRMS retail_attendance eligibility module not available.")
-                return []
+                return {"status": "unavailable", "enforced": True, "sales_persons": []} if return_meta else []
 
         allowed = []
         if profile:

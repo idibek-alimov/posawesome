@@ -208,6 +208,25 @@ function prepareOfflineInvoiceEntry(entry: AnyRecord) {
 		};
 	}
 
+	if (cleanEntry?.invoice) {
+		if (!cleanEntry.invoice.posa_attendance_admission_mode) {
+			cleanEntry.invoice.posa_attendance_admission_mode =
+				cleanEntry.data?.posa_attendance_admission_mode ||
+				(memory.pos_opening_storage?.pos_profile?.posa_enforce_attendance
+					? "unverified_offline_fallback"
+					: "enforcement_disabled");
+		}
+		if (!cleanEntry.data) {
+			cleanEntry.data = {};
+		}
+		cleanEntry.data.posa_attendance_admission_mode =
+			cleanEntry.invoice.posa_attendance_admission_mode;
+		if (cleanEntry.invoice.posa_attendance_evidence) {
+			cleanEntry.data.posa_attendance_evidence =
+				cleanEntry.invoice.posa_attendance_evidence;
+		}
+	}
+
 	return cleanEntry;
 }
 

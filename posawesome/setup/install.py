@@ -459,10 +459,47 @@ ATTENDANCE_PROFILE_FIELDS = [
 ]
 
 
+ATTENDANCE_INVOICE_FIELDS = [
+    {
+        "fieldname": "posa_attendance_admission_mode",
+        "label": "Attendance Admission Mode",
+        "fieldtype": "Select",
+        "options": "\nconfirmed_at_checkout\nlast_confirmed_offline\nunverified_offline_fallback\nenforcement_disabled",
+        "insert_after": "custom_sales_person",
+        "read_only": 1,
+        "no_copy": 1,
+    },
+    {
+        "fieldname": "posa_attendance_evidence",
+        "label": "Attendance Admission Evidence",
+        "fieldtype": "Long Text",
+        "insert_after": "posa_attendance_admission_mode",
+        "read_only": 1,
+        "no_copy": 1,
+    },
+    {
+        "fieldname": "posa_attendance_sealed",
+        "label": "Attendance Sealed",
+        "fieldtype": "Check",
+        "default": "0",
+        "insert_after": "posa_attendance_evidence",
+        "read_only": 1,
+        "no_copy": 1,
+    },
+]
+
+
 def ensure_attendance_profile_fields():
     """Ensure attendance enforcement fields exist on POS Profile."""
     for field in ATTENDANCE_PROFILE_FIELDS:
         create_custom_field("POS Profile", field, ignore_validate=True)
+
+
+def ensure_attendance_invoice_fields():
+    """Ensure attendance admission fields exist on Sales Invoice and POS Invoice."""
+    for dt in ("Sales Invoice", "POS Invoice"):
+        for field in ATTENDANCE_INVOICE_FIELDS:
+            create_custom_field(dt, field, ignore_validate=True)
 
 
 def setup_posawesome():
@@ -471,6 +508,7 @@ def setup_posawesome():
     from posawesome.posawesome.api.label_templates import ensure_default_templates
 
     ensure_attendance_profile_fields()
+    ensure_attendance_invoice_fields()
     ensure_expense_source_settings()
     ensure_fiscal_fields()
     ensure_supervisor_role_and_cleanup_legacy_fields()

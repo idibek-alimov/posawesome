@@ -42,16 +42,54 @@ def submit_invoice_outbox_entry(client_request_id, invoice, data=None):
         client_request_id=client_request_id,
     )
 
-    with trusted_invoice_shift_reassignment(
-        invoice_payload,
-        data_payload,
-        "offline_sync",
-    ):
-        response = submit_invoice(
-            json.dumps(invoice_payload),
-            json.dumps(data_payload),
-            submit_in_background=0,
+    frappe.flags.in_offline_sync = True
+    save_point = "submit_outbox_" + str(client_request_id).replace("-", "_")[:20]
+    frappe.db.savepoint(save_point)
+    try:
+        with trusted_invoice_shift_reassignment(
+            invoice_payload,
+            data_payload,
+            "offline_sync",
+        ):
+            response = submit_invoice(
+                json.dumps(invoice_payload),
+                json.dumps(data_payload),
+                submit_in_background=0,
+            )
+        frappe.db.release_savepoint(save_point)
+    except Exception as exc:
+        frappe.db.rollback(save_point=save_point)
+        doctype = invoice_payload.get("doctype") or "Sales Invoice"
+        ledger = frappe.db.get_value(
+            "POS Invoice Submission Ledger",
+            {"client_request_id": client_request_id},
+            ["name", "state"],
+            as_dict=True,
         )
+        if not ledger:
+            try:
+                from posawesome.posawesome.api.invoice_processing.creation import (
+                    _get_or_create_submission_ledger,
+                    _get_submission_ledger_by_name,
+                    _mark_ledger_failed,
+                )
+                ledger_doc = _get_or_create_submission_ledger(
+                    client_request_id,
+                    invoice_payload,
+                    data_payload,
+                    doctype,
+                    return_created=False,
+                )
+                if ledger_doc:
+                    persisted_ledger = _get_submission_ledger_by_name(ledger_doc.name) or ledger_doc
+                    _mark_ledger_failed(persisted_ledger, exc)
+                    if not getattr(frappe.flags, "in_test", False):
+                        frappe.db.commit()
+            except Exception as inner_err:
+                frappe.log_error("failed to record failed ledger", str(inner_err))
+        raise
+    finally:
+        frappe.flags.in_offline_sync = False
 
     return {
         "acknowledged": True,

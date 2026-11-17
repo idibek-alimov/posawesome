@@ -27,8 +27,10 @@ import { formatUtils, normalizeDateForBackend } from "../../../format";
 import {
 	getSalesPersonsStorage,
 	getCachedCustomerAddresses,
+	getAttendanceSnapshot,
 	isOffline,
 	saveCustomerAddressesCache,
+	saveAttendanceSnapshot,
 	setSalesPersonsStorage,
 } from "../../../../offline/index";
 
@@ -257,24 +259,84 @@ export function useInvoiceDetails(options: InvoiceDetailsOptions) {
 		const profileSalesPersons = buildSalesPersonOptionsFromProfile(profile);
 		const enforceAttendance = Boolean(profile?.posa_enforce_attendance);
 
-		if (!enforceAttendance) {
-			if (profile?.posa_local_storage && getSalesPersonsStorage().length) {
-				try {
-					sales_persons.value = getSalesPersonsStorage();
-				} catch (e) {
-					console.error(e);
+		const applyOfflineAttendance = () => {
+			if (!enforceAttendance) {
+				if (profile?.posa_local_storage && getSalesPersonsStorage().length) {
+					try {
+						sales_persons.value = getSalesPersonsStorage();
+					} catch (e) {
+						console.error(e);
+					}
+				} else if (profileSalesPersons.length) {
+					sales_persons.value = profileSalesPersons;
 				}
-			} else if (profileSalesPersons.length) {
-				sales_persons.value = profileSalesPersons;
+				const doc = unref(invoiceDoc);
+				if (doc) {
+					doc.posa_attendance_admission_mode = "enforcement_disabled";
+				}
+				return;
 			}
+
+			const snapshot = getAttendanceSnapshot(profile);
+			const doc = unref(invoiceDoc);
+			if (snapshot && snapshot.status === "confirmed") {
+				const list = Array.isArray(snapshot.sales_persons) ? snapshot.sales_persons : [];
+				sales_persons.value = list.map((sp: any) => ({
+					value: sp.name,
+					title: sp.sales_person_name,
+					sales_person_name: sp.sales_person_name,
+					name: sp.name,
+				}));
+				if (doc) {
+					doc.posa_attendance_admission_mode = "last_confirmed_offline";
+					doc.posa_attendance_evidence = JSON.stringify({
+						pos_profile: snapshot.pos_profile,
+						company: snapshot.company,
+						site: snapshot.site,
+						day: snapshot.day,
+						day_status: snapshot.day_status,
+						day_version: snapshot.day_version,
+						business_date: snapshot.business_date,
+						captured_at: snapshot.captured_at,
+					});
+				}
+				if (doc && doc.custom_sales_person) {
+					const isStillEligible = sales_persons.value.some(
+						(sp: any) => sp.value === doc.custom_sales_person
+					);
+					if (!isStillEligible) {
+						doc.custom_sales_person = null;
+						if (Array.isArray(doc.sales_team)) {
+							doc.sales_team = [];
+						}
+					}
+				}
+			} else {
+				// No valid or fresh snapshot available — allow sale under marked fallback
+				sales_persons.value = profileSalesPersons;
+				if (doc) {
+					doc.posa_attendance_admission_mode = "unverified_offline_fallback";
+					doc.posa_attendance_evidence = JSON.stringify({
+						reason: "no_valid_snapshot",
+						captured_at: new Date().toISOString(),
+					});
+				}
+			}
+		};
+
+		if (isOffline()) {
+			applyOfflineAttendance();
+			return;
 		}
 
 		frappe.call({
-			method: "posawesome.posawesome.api.utilities.get_sales_person_names",
+			method: "posawesome.posawesome.api.utilities.get_salesperson_admission_context",
 			args: { pos_profile: profile ? (profile.name || profile) : undefined },
 			callback: function (r: any) {
 				let list: any[] | null = null;
+				let meta: any = null;
 				if (r.message && typeof r.message === "object" && !Array.isArray(r.message)) {
+					meta = r.message;
 					if (r.message.status === "confirmed" || r.message.status === "disabled") {
 						list = r.message.sales_persons || [];
 					}
@@ -292,7 +354,29 @@ export function useInvoiceDetails(options: InvoiceDetailsOptions) {
 					if (profile?.posa_local_storage) {
 						setSalesPersonsStorage(sales_persons.value);
 					}
+					if (meta && meta.status === "confirmed") {
+						saveAttendanceSnapshot(meta);
+					}
 					const currentDoc = unref(invoiceDoc);
+					if (currentDoc) {
+						if (enforceAttendance) {
+							currentDoc.posa_attendance_admission_mode = "confirmed_at_checkout";
+							if (meta) {
+								currentDoc.posa_attendance_evidence = JSON.stringify({
+									pos_profile: meta.pos_profile,
+									company: meta.company,
+									site: meta.site,
+									day: meta.day,
+									day_status: meta.day_status,
+									day_version: meta.day_version,
+									business_date: meta.business_date,
+									captured_at: meta.captured_at,
+								});
+							}
+						} else {
+							currentDoc.posa_attendance_admission_mode = "enforcement_disabled";
+						}
+					}
 					if (enforceAttendance && currentDoc && currentDoc.custom_sales_person) {
 						const isStillEligible = sales_persons.value.some(
 							(sp: any) => sp.value === currentDoc.custom_sales_person
@@ -305,16 +389,12 @@ export function useInvoiceDetails(options: InvoiceDetailsOptions) {
 						}
 					}
 				} else {
-					if (!enforceAttendance) {
-						sales_persons.value = profileSalesPersons;
-					}
+					applyOfflineAttendance();
 				}
 			},
 			error: function (error: any) {
 				console.error("Failed to fetch sales persons", error);
-				if (!enforceAttendance) {
-					sales_persons.value = profileSalesPersons;
-				}
+				applyOfflineAttendance();
 			},
 		});
 	};
