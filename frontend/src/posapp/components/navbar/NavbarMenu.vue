@@ -281,6 +281,12 @@
 	</v-dialog>
 
 	<QzTrayDialog v-model="showQzTrayDialog" />
+	<v-dialog v-model="showAttendanceKiosk" max-width="520">
+		<v-card>
+			<v-card-actions><v-spacer /><v-btn @click="showAttendanceKiosk = false">{{ __("Close") }}</v-btn></v-card-actions>
+			<iframe v-if="showAttendanceKiosk" :src="`/attendance-kiosk?lang=${currentLanguage === 'tg' ? 'tg' : 'ru'}`" title="Приход и уход / Омадан ва рафтан" style="width:100%;height:75vh;border:0" />
+		</v-card>
+	</v-dialog>
 
 	<!-- Notification Snackbars -->
 	<v-snackbar
@@ -336,6 +342,7 @@ export default {
 			activePanel: "main",
 			showLanguageDialog: false,
 			showQzTrayDialog: false,
+			showAttendanceKiosk: false,
 			selectedLanguage: "en",
 			currentLanguage: "en",
 			availableLanguages: FALLBACK_LANGUAGES,
@@ -395,6 +402,15 @@ export default {
 		},
 		quickActions() {
 			const actions = [
+				{
+					id: "attendance",
+					label: __("Приход и уход"),
+					subtitle: __("Отметиться по личному PIN"),
+					icon: "mdi-clock-check-outline",
+					tone: "neutral",
+					handler: "openAttendanceKiosk",
+					disabled: this.manualOffline || !this.networkOnline || !this.serverOnline,
+				},
 				{
 					id: "switch-cashier",
 					label: __("Switch Cashier"),
@@ -628,6 +644,10 @@ export default {
 			}
 
 			switch (action.handler) {
+				case "openAttendanceKiosk":
+					this.closeMenu();
+					this.showAttendanceKiosk = true;
+					break;
 				case "openEmployeeSwitch":
 					this.closeMenu();
 					this.$emit("open-employee-switch");
