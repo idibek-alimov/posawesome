@@ -365,7 +365,8 @@ export function useItemsSearch() {
 		const descendants = categoryDescendantsMap.get(normalizedGroup);
 		if (descendants && descendants.size > 0) {
 			return itemList.filter(
-				(item) => item.item_group === normalizedGroup || descendants.has(item.item_group)
+				(item) => item.item_group === normalizedGroup ||
+					(typeof item.item_group === "string" && descendants.has(item.item_group))
 			);
 		}
 		return itemList.filter((item) => item.item_group === normalizedGroup);
