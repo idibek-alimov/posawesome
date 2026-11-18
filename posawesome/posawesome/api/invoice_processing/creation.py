@@ -1106,8 +1106,20 @@ def _sanitize_delivery_dates(payload):
             item["posa_delivery_date"] = _safe_date_string(item.get("posa_delivery_date"))
 
 
-def _apply_manual_posting_controls(payload):
+def _apply_manual_posting_controls(payload, profile_doc=None):
     if not isinstance(payload, dict):
+        return
+
+    allow_change = False
+    if profile_doc and cint(profile_doc.get("posa_allow_change_posting_date")):
+        allow_change = True
+
+    is_offline = bool(payload.get("posa_is_offline_sync") or payload.get("is_offline_invoice"))
+    today = _safe_date_string(nowdate())
+
+    if profile_doc and not allow_change and not is_offline:
+        payload["posting_date"] = today
+        payload["set_posting_time"] = 0
         return
 
     posting_date = _safe_date_string(payload.get("posting_date"))
@@ -1118,7 +1130,6 @@ def _apply_manual_posting_controls(payload):
         payload["set_posting_time"] = 1
         return
 
-    today = _safe_date_string(nowdate())
     if posting_date and today and posting_date != today:
         payload["set_posting_time"] = 1
 
@@ -1509,12 +1520,12 @@ def update_invoice(data):
     if not doctype_supports_client_request_id(data.get("doctype") or "Sales Invoice"):
         strip_invoice_client_request_id(data)
     _sanitize_delivery_dates(data)
-    _apply_manual_posting_controls(data)
     _strip_client_freebies_from_payload(data)
     # Determine doctype based on POS Profile setting. Submitted-invoice
     # amendments preserve the source doctype even when the active profile has
     # since switched between Sales Invoice and POS Invoice mode.
     profile_doc = _resolve_authorized_invoice_profile(data)
+    _apply_manual_posting_controls(data, profile_doc)
     try:
         from hrms.hr.retail_attendance import eligibility
         eligibility.validate_invoice_attendance(data)
@@ -1770,10 +1781,10 @@ def submit_invoice(invoice, data, submit_in_background=False):
     _strip_client_cashier_identity(invoice, data)
     client_request_id = normalize_invoice_request_identity(invoice, data)
     _sanitize_delivery_dates(invoice)
-    _apply_manual_posting_controls(invoice)
     submit_in_background = cint(submit_in_background)
     _strip_client_freebies_from_payload(invoice)
     profile_doc = _resolve_authorized_invoice_profile(invoice, data)
+    _apply_manual_posting_controls(invoice, profile_doc)
     try:
         from hrms.hr.retail_attendance import eligibility
         eligibility.validate_invoice_attendance(invoice)
@@ -2033,6 +2044,9 @@ def submit_invoice(invoice, data, submit_in_background=False):
             "write",
         )
         invoice_doc.update(invoice)
+        if profile_doc and not cint(profile_doc.get("posa_allow_change_posting_date")) and not bool(invoice.get("posa_is_offline_sync") or invoice.get("is_offline_invoice")):
+            invoice_doc.posting_date = _safe_date_string(nowdate())
+            invoice_doc.set_posting_time = 0
 
     set_invoice_client_request_id(invoice_doc, client_request_id)
     _set_authoritative_cashier(invoice_doc, authoritative_cashier)

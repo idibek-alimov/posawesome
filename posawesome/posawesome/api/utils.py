@@ -7,6 +7,7 @@ from functools import cache
 from typing import Any
 
 import frappe
+from frappe.utils import cint
 
 # Reusable ORM filter to exclude template items
 HAS_VARIANTS_EXCLUSION = {"has_variants": 0}
