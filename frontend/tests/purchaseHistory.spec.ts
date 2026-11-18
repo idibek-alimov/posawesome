@@ -15,7 +15,7 @@ vi.mock("../src/offline/index", () => ({ isOffline: vi.fn(() => false), isManual
 vi.mock("../src/posapp/services/marketReceipt", () => ({ printMarketReceipt: vi.fn() }));
 const call = vi.fn();
 const selected = vi.fn();
-const sale = { name: "SI-MORNING", doctype: "Sales Invoice", posting_date: "2026-11-14", posting_time: "08:15:00", customer_name: "Моҳира", customer_phone: "+992900123456", grand_total: 100, currency: "TJS", pos_profile: "Till" };
+const sale = { name: "SI-MORNING", doctype: "Sales Invoice", posting_date: "2026-11-14", posting_time: "08:15:00", customer_name: "Моҳира", customer_phone: "+992900123456", grand_total: 100, currency: "TJS", pos_profile: "Till", sales_person: "Шоҳрух" };
 const box = (tag = "div") => defineComponent({ setup(_, { slots }) { return () => h(tag, slots.default?.()); } });
 const stubs = {
 	VTextField: defineComponent({ props: ["modelValue", "label", "disabled"], emits: ["update:modelValue"], setup(props, { emit }) {
@@ -44,24 +44,24 @@ beforeEach(() => {
 afterEach(() => { wrappers.forEach(w => w.unmount()); wrappers = []; bus.all.clear(); vi.useRealTimers(); });
 
 describe("purchase history for returns and ordinary receipts", () => {
-	it("loads today's purchases on opening, with time, customer phone and amount", async () => {
+	it("loads today's purchases on opening, with time, customer phone, salesperson and amount", async () => {
 		const wrapper = history(); await flushPromises();
 		expect(call).toHaveBeenCalledWith(expect.stringContaining("purchase_history"), expect.objectContaining({ query: "", from_date: "2026-11-14", to_date: "2026-11-14", start: 0 }));
 		expect(wrapper.text()).toContain("14.11.2026 08:15"); expect(wrapper.text()).toContain("Моҳира");
-		expect(wrapper.text()).toContain("+992900123456"); expect(wrapper.text()).toContain("100.00 TJS");
+		expect(wrapper.text()).toContain("+992900123456"); expect(wrapper.text()).toContain("Шоҳрух"); expect(wrapper.text()).toContain("100.00 TJS");
 		expect(selected).not.toHaveBeenCalled();
 	});
-	it("uses one search for phone or name and permits an older date range without auto-selecting", async () => {
+	it("uses one search for phone, name or salesperson and permits an older date range without auto-selecting", async () => {
 		vi.useFakeTimers(); const wrapper = history(); await flushPromises();
-		await wrapper.get('input[aria-label="Телефон, имя, чек или ФД №"]').setValue("900123456");
+		await wrapper.get('input[aria-label="Телефон, имя, продавец, чек или ФД №"]').setValue("900123456");
 		await wrapper.get('input[aria-label="Покупки с"]').setValue("2026-11-01");
 		await vi.advanceTimersByTimeAsync(300); await flushPromises();
 		expect(call).toHaveBeenLastCalledWith(expect.stringContaining("purchase_history"), expect.objectContaining({ query: "900123456", from_date: "2026-11-01", start: 0 }));
-		await wrapper.get('input[aria-label="Телефон, имя, чек или ФД №"]').setValue("Моҳира");
+		await wrapper.get('input[aria-label="Телефон, имя, продавец, чек или ФД №"]').setValue("Моҳира");
 		await vi.advanceTimersByTimeAsync(300); await flushPromises();
 		expect(call.mock.calls.at(-1)?.[1].query).toBe("Моҳира"); expect(selected).not.toHaveBeenCalled();
 		expect((wrapper.vm as any).loading).toBe(false);
-		await wrapper.findAll("button").find(b => b.text() === "Выбрать")!.trigger("click");
+		await wrapper.get('[data-testid="purchase-action-select"]').trigger("click");
 		expect(selected).toHaveBeenCalledWith(sale);
 	});
 	it("paginates and resets to the first page when search changes", async () => {
@@ -108,30 +108,29 @@ describe("purchase history for returns and ordinary receipts", () => {
 		const wrapper = history(); await flushPromises();
 		expect(call).toHaveBeenCalledTimes(1); expect(wrapper.text()).toContain("SI-MORNING");
 	});
-	it.each(["classic", "counter-grid"])("opens receipt history in %s without a remembered last sale", async presentation => {
-		const wrapper = mount(InvoiceActionButtons, { props: { pos_profile: {}, presentation }, global: { components: stubs } }); wrappers.push(wrapper);
-		const open = vi.fn(); bus.on("open_receipts", open);
-		await wrapper.get('[data-testid="invoice-action-receipts"]').trigger("click");
-		expect(open).toHaveBeenCalledTimes(1); expect(wrapper.text()).toContain("Чеки"); expect(printMarketReceipt).not.toHaveBeenCalled();
+	it.each(["classic", "counter-grid"])("opens unified returns & receipts in %s without standalone receipts button", async presentation => {
+		const wrapper = mount(InvoiceActionButtons, { props: { pos_profile: { posa_allow_return: 1 }, presentation }, global: { components: stubs } }); wrappers.push(wrapper);
+		const open = vi.fn(); bus.on("open_returns", open);
+		await wrapper.get('[data-testid="invoice-action-returns"]').trigger("click");
+		expect(open).toHaveBeenCalledTimes(1);
+		expect(wrapper.text()).toContain("Returns & Receipts");
+		expect(wrapper.find('[data-testid="invoice-action-receipts"]').exists()).toBe(false);
 	});
-	it("prints an earlier selected sale through the ordinary receipt service only", async () => {
+	it("prints an earlier selected sale through the ordinary receipt service directly from purchase history", async () => {
 		useUIStore().posProfile = { name: "Till" } as any;
-		const wrapper = mount(ReceiptHistory, { global: { components: stubs, config: { globalProperties: { eventBus: bus } } } }); wrappers.push(wrapper);
-		bus.emit("open_receipts"); await flushPromises();
-		expect(wrapper.findComponent(PurchaseHistory).exists()).toBe(true);
-		await wrapper.findAll("button").find(b => b.text() === "Печать чека")!.trigger("click"); await flushPromises();
+		const wrapper = history(); await flushPromises();
+		await wrapper.get('[data-testid="purchase-action-print"]').trigger("click"); await flushPromises();
 		expect(printMarketReceipt).toHaveBeenCalledWith(sale, expect.objectContaining({ name: "Till" }));
-		expect(call.mock.calls.every(args => args[0].endsWith("purchase_history"))).toBe(true);
-		expect(wrapper.text()).not.toContain("Фискальный чек"); expect(useUIStore().lastInvoiceId).toBeFalsy();
+		expect(wrapper.text()).not.toContain("Фискальный чек");
 	});
-	it("keeps receipt history open on print failure and prevents duplicate in-flight clicks", async () => {
+	it("keeps purchase history open on print failure and prevents duplicate in-flight clicks", async () => {
 		let reject: any; vi.mocked(printMarketReceipt).mockImplementationOnce(() => new Promise((_, fail) => { reject = fail; }));
-		const vm: any = { printing: false, error: "", profile: { name: "Till" } };
-		const print = (ReceiptHistory as any).methods.printSale;
-		const pending = print.call(vm, sale); await print.call(vm, sale);
+		const wrapper = history(); await flushPromises();
+		const vm = wrapper.vm as any;
+		const pending = vm.printReceipt(sale); await vm.printReceipt(sale);
 		expect(printMarketReceipt).toHaveBeenCalledTimes(1);
 		reject(new Error("Printer unavailable")); await pending;
-		expect(vm.printing).toBe(false); expect(vm.error).toBe("Printer unavailable");
+		expect(vm.printingSale).toBe(""); expect(vm.error).toBe("Printer unavailable");
 	});
 	it("loads native remaining return rows only after selecting a purchase", async () => {
 		const { default: Returns } = await import("../src/posapp/components/pos/flows/Returns.vue");
@@ -150,7 +149,7 @@ describe("purchase history for returns and ordinary receipts", () => {
 		expect(wrapper.findComponent(PurchaseHistory).exists()).toBe(true); expect(wrapper.text()).toContain("SI-MORNING");
 		call.mockResolvedValueOnce({ message: { name: sale.name, customer: "CUSTOMER", customer_name: sale.customer_name,
 			items: [{ name: "ROW", item_code: "A", item_name: "Курта", qty: 1, rate: 50 }] } });
-		await wrapper.findAll("button").find(b => b.text() === "Выбрать")!.trigger("click"); await flushPromises();
+		await wrapper.get('[data-testid="purchase-action-select"]').trigger("click"); await flushPromises();
 		expect((wrapper.vm as any).source.name).toBe(sale.name); expect((wrapper.vm as any).rows[0].selected).toBe(false);
 		await wrapper.findAll("button").find(b => b.text() === "Другой чек")!.trigger("click");
 		expect(wrapper.findComponent(PurchaseHistory).isVisible()).toBe(true);

@@ -2,7 +2,7 @@
 	<section class="purchase-history" :aria-label="__('История покупок')">
 		<div class="purchase-filters">
 			<v-text-field ref="searchInput" v-model="query" autofocus clearable hide-details variant="outlined" density="compact"
-				class="purchase-search" :label="__('Телефон, имя, чек или ФД №')" prepend-inner-icon="mdi-magnify"
+				class="purchase-search" :label="__('Телефон, имя, продавец, чек или ФД №')" prepend-inner-icon="mdi-magnify"
 				@keydown.enter.prevent="refresh" />
 			<v-text-field v-model="fromDate" type="date" :label="__('Покупки с')" hide-details variant="outlined" density="compact" />
 			<v-text-field v-model="toDate" type="date" :label="__('Покупки по')" hide-details variant="outlined" density="compact" />
@@ -17,10 +17,12 @@
 				<div class="purchase-summary">
 					<div class="purchase-identity"><strong>{{ dateTime(sale) }}</strong><div class="text-caption">{{ sale.name }}</div></div>
 					<div class="purchase-customer"><strong>{{ sale.customer_name || __('Покупатель без регистрации') }}</strong><div class="text-caption">{{ sale.customer_phone || '—' }}</div></div>
+					<div class="purchase-salesperson"><strong :title="sale.sales_person || ''">{{ sale.sales_person || '—' }}</strong><div class="text-caption">{{ __('Продавец') }}</div></div>
 					<div class="purchase-amount"><strong>{{ money(sale.rounded_total || sale.grand_total) }} {{ sale.currency }}</strong><div class="text-caption">{{ sale.pos_profile }}<span v-if="sale.custom_fiscal_fd_number"> · ФД № {{ sale.custom_fiscal_fd_number }}</span></div></div>
 					<div class="purchase-actions">
 						<v-btn size="small" variant="text" :disabled="disabled || loading" :aria-expanded="detailKey === key(sale)" @click="toggleDetails(sale)">{{ __('Товары') }}</v-btn>
-						<v-btn size="small" variant="tonal" :prepend-icon="actionIcon" :disabled="disabled || loading" @click="$emit('select', sale)">{{ actionLabel }}</v-btn>
+						<v-btn v-if="showPrint" size="small" variant="tonal" prepend-icon="mdi-printer" :disabled="disabled || loading || printingSale === key(sale)" :loading="printingSale === key(sale)" data-testid="purchase-action-print" @click="printReceipt(sale)">{{ __('Чек') }}</v-btn>
+						<v-btn v-if="showAction" size="small" color="primary" variant="tonal" :prepend-icon="actionIcon" :disabled="disabled || loading" data-testid="purchase-action-select" @click="$emit('select', sale)">{{ actionLabel }}</v-btn>
 					</div>
 				</div>
 				<div v-if="detailKey === key(sale)" class="purchase-details">
@@ -49,6 +51,7 @@
 
 <script>
 import { isManualOffline } from "../../../../offline/index";
+import { printMarketReceipt } from "../../../services/marketReceipt";
 
 const currentDate = () => {
 	const today = new Date();
@@ -58,13 +61,15 @@ const currentDate = () => {
 export default {
 	props: {
 		profile: { type: Object, required: true },
-		actionLabel: { type: String, required: true },
-		actionIcon: { type: String, default: "mdi-check" },
+		actionLabel: { type: String, default: () => __("Возврат") },
+		actionIcon: { type: String, default: "mdi-backup-restore" },
+		showPrint: { type: Boolean, default: true },
+		showAction: { type: Boolean, default: true },
 		disabled: Boolean,
 	},
-	emits: ["select"],
+	emits: ["select", "print"],
 	data: () => ({ query: "", fromDate: currentDate(), toDate: currentDate(), sales: [], loading: false, error: "",
-		start: 0, pageLength: 20, hasMore: false, generation: 0, timer: null, detailKey: "", detailLoading: false, details: null, detailError: "", detailGeneration: 0 }),
+		start: 0, pageLength: 20, hasMore: false, generation: 0, timer: null, detailKey: "", detailLoading: false, details: null, detailError: "", detailGeneration: 0, printingSale: "" }),
 	watch: {
 		query: "scheduleSearch", fromDate: "scheduleSearch", toDate: "scheduleSearch",
 		"profile.name"() { this.refresh(); },
@@ -84,6 +89,19 @@ export default {
 		},
 		refresh() { clearTimeout(this.timer); this.start = 0; return this.load(); },
 		page(direction) { this.start = Math.max(0, this.start + direction * this.pageLength); return this.load(); },
+		async printReceipt(sale) {
+			if (this.printingSale || this.disabled) return;
+			this.printingSale = this.key(sale);
+			this.error = "";
+			try {
+				await printMarketReceipt(sale, this.profile);
+				this.$emit("print", sale);
+			} catch (error) {
+				this.error = error?.message || String(error);
+			} finally {
+				this.printingSale = "";
+			}
+		},
 		async load() {
 			const generation = ++this.generation;
 			this.detailGeneration++; this.detailKey = ""; this.details = null;
@@ -117,7 +135,7 @@ export default {
 </script>
 
 <style scoped>
-.purchase-filters{display:grid;grid-template-columns:minmax(240px,1fr) 155px 155px auto;gap:10px;align-items:center}.purchase-list{display:grid;gap:8px}.purchase-row{border-color:rgba(var(--v-border-color),var(--v-border-opacity))}.purchase-summary{display:grid;grid-template-columns:minmax(140px,1fr) minmax(140px,1fr) minmax(140px,1fr) auto;gap:12px;padding:12px;align-items:center}.purchase-identity,.purchase-customer,.purchase-amount{min-width:0;overflow-wrap:anywhere}.purchase-actions{display:flex;gap:4px;align-items:center}.purchase-details{border-top:1px solid rgba(var(--v-border-color),var(--v-border-opacity));padding:8px 12px}.purchase-pagination{display:flex;align-items:center;justify-content:center;gap:12px}.purchase-mobile-items{display:none}.purchase-mobile-item{padding:8px;overflow-wrap:anywhere}.purchase-item-amounts{display:flex;justify-content:space-between;gap:10px;margin-top:6px;flex-wrap:wrap}.purchase-item-amounts strong{white-space:nowrap}
-@media(max-width:960px){.purchase-filters{grid-template-columns:1fr 1fr auto}.purchase-search{grid-column:1/-1}.purchase-summary{grid-template-columns:1fr 1fr}.purchase-actions{justify-content:flex-end}}@media(max-width:500px){.purchase-filters{grid-template-columns:1fr 1fr}.purchase-filters>.v-btn{grid-column:1/-1;justify-self:end}.purchase-summary{gap:8px;padding:10px}.purchase-amount{grid-column:1/-1}.purchase-actions{grid-column:1/-1}.purchase-details{padding:4px}}
+.purchase-filters{display:grid;grid-template-columns:minmax(240px,1fr) 155px 155px auto;gap:10px;align-items:center}.purchase-list{display:grid;gap:8px}.purchase-row{border-color:rgba(var(--v-border-color),var(--v-border-opacity))}.purchase-summary{display:grid;grid-template-columns:minmax(130px,1fr) minmax(140px,1.2fr) minmax(130px,1.1fr) minmax(120px,1fr) auto;gap:12px;padding:12px;align-items:center}.purchase-identity,.purchase-customer,.purchase-salesperson,.purchase-amount{min-width:0;overflow-wrap:anywhere}.purchase-actions{display:flex;gap:6px;align-items:center}.purchase-details{border-top:1px solid rgba(var(--v-border-color),var(--v-border-opacity));padding:8px 12px}.purchase-pagination{display:flex;align-items:center;justify-content:center;gap:12px}.purchase-mobile-items{display:none}.purchase-mobile-item{padding:8px;overflow-wrap:anywhere}.purchase-item-amounts{display:flex;justify-content:space-between;gap:10px;margin-top:6px;flex-wrap:wrap}.purchase-item-amounts strong{white-space:nowrap}
+@media(max-width:960px){.purchase-filters{grid-template-columns:1fr 1fr auto}.purchase-search{grid-column:1/-1}.purchase-summary{grid-template-columns:1fr 1fr}.purchase-actions{grid-column:1/-1;justify-content:flex-end}}@media(max-width:500px){.purchase-filters{grid-template-columns:1fr 1fr}.purchase-filters>.v-btn{grid-column:1/-1;justify-self:end}.purchase-summary{gap:8px;padding:10px}.purchase-salesperson{grid-column:1/-1}.purchase-amount{grid-column:1/-1}.purchase-actions{grid-column:1/-1;justify-content:flex-end;flex-wrap:wrap}.purchase-details{padding:4px}}
 @media(max-width:600px){.purchase-desktop-items{display:none}.purchase-mobile-items{display:grid}}
 </style>

@@ -204,16 +204,19 @@ class TestMarketCheckoutNative(unittest.TestCase):
         fd = "9" + phone + "01"
         # Projection-only fixture: no fiscal API/device is invoked, all writes roll back.
         frappe.db.set_value(source.doctype, source.name, "custom_fiscal_fd_number", fd)
+        frappe.db.set_value(source.doctype, source.name, "custom_sales_person", "Test Salesperson")
         self.customer.reload()
         self.customer.mobile_no = f"+992 ({phone[:2]}) {phone[2:5]}-{phone[5:]}"
         self.customer.save()
         for query in (self.customer.customer_name, phone, "+992" + phone, source.name, "ФД № " + fd,
+                      "Test Salesperson",
                       f"https://example.invalid/receipt?fdNumber={fd}",
                       f"https://example.invalid/receipt?invoice={source.name}", "POSA:" + source.name):
             result = market_checkout.purchase_history(self.profile.name, query)
             self.assertEqual([r.name for r in result["items"]], [source.name])
             self.assertNotIn("valuation_rate", result["items"][0])
             self.assertEqual(result["items"][0].customer_phone, self.customer.mobile_no)
+            self.assertEqual(result["items"][0].sales_person, "Test Salesperson")
         # Change only the disposable projection fixture, never live ledger dates.
         older = add_days(nowdate(), -3)
         frappe.db.set_value(source.doctype, source.name, "posting_date", older)

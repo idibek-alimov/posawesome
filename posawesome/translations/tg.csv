@@ -1889,3 +1889,5 @@ The attendance day for this shop is not open.,Рӯзи кории ҳозирӣ �
 "Invalid or unverified offline attendance evidence.","Далели беэътибор ё санҷиданашудаи ҳузури офлайн."
 "Employee {0} has no check-in record for the stated attendance day.","Корманд {0} барои рӯзи зикршуда қайди вуруд надорад."
 "Employee check-in time is later than evidence capture time.","Вақти вуруди корманд дертар аз вақти сабти далел аст."
+"Returns & Receipts","Бозгашт ва чекҳо"
+"Телефон, имя, продавец, чек или ФД №","Телефон, ном, фурӯшанда, чек ё рақами ФД"

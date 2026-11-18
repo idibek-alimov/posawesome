@@ -34,21 +34,17 @@
 			{{ __("Invoices") }}
 		</v-btn>
 		<v-btn
-			v-if="pos_profile.posa_allow_return == 1"
+			v-if="pos_profile.posa_allow_return == 1 || pos_profile.posa_allow_print_last_invoice == 1"
 			variant="tonal"
 			prepend-icon="mdi-backup-restore"
 			class="counter-grid-action"
 			data-pos-keyboard-target="invoice-action"
 			data-testid="invoice-action-returns"
 			:loading="returnsLoading"
-			@click="$emit('open-returns')"
+			@click="handleOpenReturns"
 		>
-			{{ __("Return") }}
+			{{ __("Returns & Receipts") }}
 		</v-btn>
-
-		<v-btn variant="tonal" prepend-icon="mdi-printer"
-			class="counter-grid-action" data-testid="invoice-action-receipts" data-pos-keyboard-target="invoice-action"
-			@click="bus.emit('open_receipts')">{{ __("Чеки") }}</v-btn>
 		<v-menu v-if="showMoreActions" location="top end">
 			<template #activator="{ props: menuProps }">
 				<v-btn
@@ -144,62 +140,18 @@
 
 	<div v-else class="classic-actions" data-testid="classic-actions">
 		<div class="classic-secondary-actions">
-		<v-btn variant="tonal" prepend-icon="mdi-printer"
-			class="counter-grid-action" data-testid="invoice-action-receipts" data-pos-keyboard-target="invoice-action"
-			@click="bus.emit('open_receipts')">{{ __("Чеки") }}</v-btn>
-
 			<v-btn
-				variant="tonal"
-				density="compact"
-				prepend-icon="mdi-tray-full"
-				class="secondary-action-btn"
-				data-pos-keyboard-target="invoice-action"
-				data-testid="invoice-action-drafts"
-				:loading="loadDraftsLoading"
-				@click="$emit('load-drafts')"
-			>
-				{{ __("Drafts") }}
-			</v-btn>
-
-			<v-btn
-				variant="tonal"
-				density="compact"
-				prepend-icon="mdi-folder-search-outline"
-				class="secondary-action-btn"
-				data-pos-keyboard-target="invoice-action"
-				data-testid="invoice-action-management"
-				:loading="invoiceManagementLoading"
-				@click="$emit('open-invoice-management')"
-			>
-				{{ __("Invoices") }}
-			</v-btn>
-
-			<v-btn
-				v-if="pos_profile.posa_allow_return == 1"
+				v-if="pos_profile.posa_allow_return == 1 || pos_profile.posa_allow_print_last_invoice == 1"
 				variant="tonal"
 				density="compact"
 				prepend-icon="mdi-backup-restore"
-				class="secondary-action-btn"
+				class="secondary-action-btn secondary-action-btn--returns"
 				data-pos-keyboard-target="invoice-action"
 				data-testid="invoice-action-returns"
 				:loading="returnsLoading"
-				@click="$emit('open-returns')"
+				@click="handleOpenReturns"
 			>
-				{{ __("Return") }}
-			</v-btn>
-
-			<v-btn
-				variant="tonal"
-				density="compact"
-				color="error"
-				prepend-icon="mdi-close-circle-outline"
-				class="secondary-action-btn secondary-action-btn--cancel"
-				data-pos-keyboard-target="invoice-action"
-				data-testid="invoice-action-cancel-sale"
-				:loading="cancelLoading"
-				@click="$emit('cancel-sale')"
-			>
-				{{ __("Cancel") }}
+				{{ __("Returns & Receipts") }}
 			</v-btn>
 
 			<v-menu location="top end">
@@ -217,6 +169,25 @@
 					</v-btn>
 				</template>
 				<v-list density="compact" min-width="220">
+					<v-list-item
+						prepend-icon="mdi-tray-full"
+						data-pos-keyboard-target="invoice-action"
+						data-testid="invoice-action-drafts"
+						:disabled="loadDraftsLoading"
+						@click="$emit('load-drafts')"
+					>
+						<v-list-item-title>{{ __("Drafts") }}</v-list-item-title>
+					</v-list-item>
+					<v-list-item
+						prepend-icon="mdi-folder-search-outline"
+						data-pos-keyboard-target="invoice-action"
+						data-testid="invoice-action-management"
+						:disabled="invoiceManagementLoading"
+						@click="$emit('open-invoice-management')"
+					>
+						<v-list-item-title>{{ __("Invoices") }}</v-list-item-title>
+					</v-list-item>
+					<v-divider class="my-1"></v-divider>
 					<v-list-item
 						prepend-icon="mdi-content-save-outline"
 						data-pos-keyboard-target="invoice-action"
@@ -263,6 +234,20 @@
 					</v-list-item>
 				</v-list>
 			</v-menu>
+
+			<v-btn
+				variant="flat"
+				density="compact"
+				color="error"
+				prepend-icon="mdi-close-circle-outline"
+				class="secondary-action-btn secondary-action-btn--cancel"
+				data-pos-keyboard-target="invoice-action"
+				data-testid="invoice-action-cancel-sale"
+				:loading="cancelLoading"
+				@click="$emit('cancel-sale')"
+			>
+				{{ __("Cancel") }}
+			</v-btn>
 		</div>
 
 		<!-- Giant Hero PAY Button -->
@@ -309,7 +294,7 @@ const props = defineProps({
 	customerDisplayLoading: Boolean,
 });
 
-defineEmits([
+const emit = defineEmits([
 	"save-and-clear",
 	"load-drafts",
 	"select-order",
@@ -323,6 +308,11 @@ defineEmits([
 	"open-coupons",
 	"refresh-prices",
 ]);
+
+const handleOpenReturns = () => {
+	emit("open-returns");
+	bus.emit("open_returns");
+};
 
 const __ = window.__;
 const isCounterGrid = computed(() => props.presentation === "counter-grid");
@@ -440,10 +430,27 @@ const showMoreActions = computed(
 	transform: translateY(-1px);
 }
 
+.secondary-action-btn--returns {
+	flex: 1.4 1 0 !important;
+}
+
+.secondary-action-btn--more {
+	flex: 0.9 1 0 !important;
+}
+
+.secondary-action-btn--cancel {
+	background: rgb(var(--v-theme-error, 239, 68, 68)) !important;
+	border-color: rgb(var(--v-theme-error, 239, 68, 68)) !important;
+	color: #ffffff !important;
+	font-weight: 700 !important;
+}
+
 .secondary-action-btn--cancel:hover {
-	background: rgba(var(--v-theme-error), 0.1) !important;
-	border-color: rgba(var(--v-theme-error), 0.4) !important;
-	color: rgb(var(--v-theme-error)) !important;
+	background: #dc2626 !important;
+	border-color: #b91c1c !important;
+	color: #ffffff !important;
+	transform: translateY(-1px);
+	box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35);
 }
 
 /* Enhanced button styling with better performance */

@@ -1,13 +1,13 @@
 <template>
 	<v-dialog v-model="open" max-width="1100" scrollable :persistent="busy">
 		<v-card class="quick-returns">
-			<v-card-title class="d-flex align-center">{{ __("Возврат") }}<v-spacer /><v-btn icon="mdi-close" variant="text" :disabled="busy" :aria-label="__('Close')" @click="open = false" /></v-card-title>
+			<v-card-title class="d-flex align-center">{{ __("Returns & Receipts") }}<v-spacer /><v-btn icon="mdi-close" variant="text" :disabled="busy" :aria-label="__('Close')" @click="open = false" /></v-card-title>
 			<v-card-text>
 				<v-alert v-if="error" type="warning" variant="tonal" class="mb-3">{{ error }}</v-alert>
 				<v-alert v-if="pending" type="info" variant="tonal" class="mb-3">{{ __("Результат возврата не подтверждён. Восстановите эту операцию перед новым возвратом.") }}</v-alert>
 				<template v-if="!completed && !pending">
 					<div class="mb-3"><v-btn v-if="scenario !== 'guest'" variant="text" :disabled="busy" @click="scenario = 'guest'">{{ __("Возврат без чека") }}</v-btn><v-btn v-else variant="text" :disabled="busy" prepend-icon="mdi-arrow-left" @click="scenario = 'receipt'">{{ __("История покупок") }}</v-btn></div>
-					<PurchaseHistory v-if="open && scenario !== 'guest'" v-show="!source" :profile="profile" :disabled="busy" :action-label="__('Выбрать')" @select="loadSale" />
+					<PurchaseHistory v-if="open && scenario !== 'guest'" v-show="!source" :profile="profile" :disabled="busy" :action-label="__('Возврат')" action-icon="mdi-backup-restore" @select="loadSale" />
 					<v-text-field v-if="scenario === 'guest'" ref="searchInput" v-model="query" autofocus clearable hide-details density="compact" variant="outlined" :disabled="busy"
 						:label="__('Штрихкод или код товара')" @keydown.enter.prevent="search" append-inner-icon="mdi-magnify" @click:append-inner="search" />
 					<v-progress-linear v-if="busy" indeterminate class="mt-2" />
@@ -148,8 +148,14 @@ export default {
 			if (isOffline()) this.error = __("Для возврата требуется соединение с ERPNext");
 		},
 	},
-	created() { this.eventBus.on("open_returns", this.openReturns); },
-	beforeUnmount() { this.eventBus.off("open_returns", this.openReturns); },
+	created() {
+		this.eventBus.on("open_returns", this.openReturns);
+		this.eventBus.on("open_receipts", this.openReturns);
+	},
+	beforeUnmount() {
+		this.eventBus.off("open_returns", this.openReturns);
+		this.eventBus.off("open_receipts", this.openReturns);
+	},
 };
 </script>
 <style scoped>

@@ -79,9 +79,11 @@ def purchase_history(pos_profile, query="", from_date=None, to_date=None, start=
     for doctype in ("Sales Invoice", "POS Invoice"):
         search = " AND COALESCE(i.is_consolidated, 0) = 0" if doctype == "Sales Invoice" else ""
         if query:
-            search += """ AND (i.name LIKE %(like)s OR i.custom_fiscal_fd_number = %(fd)s
+            search += f""" AND (i.name LIKE %(like)s OR i.custom_fiscal_fd_number = %(fd)s
                 OR i.customer_name LIKE %(like)s OR c.customer_name LIKE %(like)s
-                OR c.mobile_no LIKE %(like)s OR i.contact_mobile LIKE %(like)s"""
+                OR c.mobile_no LIKE %(like)s OR i.contact_mobile LIKE %(like)s
+                OR i.custom_sales_person LIKE %(like)s
+                OR EXISTS (SELECT 1 FROM `tabSales Team` st WHERE st.parent = i.name AND st.parenttype = '{doctype}' AND st.sales_person LIKE %(like)s)"""
             if phone_query:
                 search += f" OR {phone_sql('c.mobile_no')} LIKE %(phone_like)s OR {phone_sql('i.contact_mobile')} LIKE %(phone_like)s"
             search += ")"
@@ -89,7 +91,8 @@ def purchase_history(pos_profile, query="", from_date=None, to_date=None, start=
         selects.append(f"""SELECT '{doctype}' AS doctype, i.name, i.pos_profile,
             i.posting_date, i.posting_time, i.customer_name, i.grand_total, i.rounded_total,
             i.currency, i.custom_fiscal_fd_number,
-            COALESCE(NULLIF(i.contact_mobile, ''), c.mobile_no) AS customer_phone
+            COALESCE(NULLIF(i.contact_mobile, ''), c.mobile_no) AS customer_phone,
+            COALESCE(NULLIF(i.custom_sales_person, ''), (SELECT st.sales_person FROM `tabSales Team` st WHERE st.parent = i.name AND st.parenttype = '{doctype}' LIMIT 1), '') AS sales_person
             FROM `tab{doctype}` i LEFT JOIN `tabCustomer` c ON c.name = i.customer
             WHERE i.company = %(company)s AND i.pos_profile IN %(profiles)s
             AND i.docstatus = 1 AND i.is_return = 0
