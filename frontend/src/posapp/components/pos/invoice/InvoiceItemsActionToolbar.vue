@@ -1,15 +1,15 @@
 <template>
 	<div class="column-selector-container">
 		<v-btn
+			icon="mdi-cog-outline"
 			density="compact"
 			variant="text"
-			color="primary"
-			prepend-icon="mdi-cog-outline"
+			size="small"
+			:title="__('Columns')"
+			:aria-label="__('Columns')"
 			@click="toggleColumnSelection"
 			class="column-selector-btn"
-		>
-			{{ __("Columns") }}
-		</v-btn>
+		/>
 		<v-dialog v-model="showColumnSelector" max-width="500px" transition="dialog-bottom-transition">
 			<v-card class="pos-themed-card">
 				<v-card-title class="text-h6 pa-4 d-flex align-center">

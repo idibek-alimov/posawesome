@@ -82,6 +82,11 @@ export function useItemsIntegration(options: IntegrationOptions = {}) {
 	const debouncedSearch = (term: string) => {
 		if (searchTimeout) {
 			clearTimeout(searchTimeout);
+			searchTimeout = null;
+		}
+		if (!term.trim()) {
+			itemsStore.searchItems("");
+			return;
 		}
 		searchTimeout = setTimeout(() => {
 			itemsStore.searchItems(term);
@@ -134,7 +139,10 @@ export function useItemsIntegration(options: IntegrationOptions = {}) {
 		searchValue: string | null = null,
 		fromScanner = false,
 	) => {
-		const term = String(searchValue || searchTerm.value || "");
+		const term =
+			searchValue !== null && searchValue !== undefined
+				? String(searchValue)
+				: String(searchTerm.value || "");
 
 		if (fromScanner) {
 			// For scanner input, try to find item by barcode first

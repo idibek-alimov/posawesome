@@ -155,13 +155,13 @@ def _build_search_plan(
 
         resolved_item_code = data.get("item_code")
         base_search_term = resolved_item_code or (longest_search_token or raw_search_value)
-        min_search_len = 2
+        min_search_len = 1
 
         if use_limit_search:
             if len(raw_search_value) >= min_search_len:
                 or_filters = [
-                    ["name", "like", f"{base_search_term}%"],
-                    ["item_name", "like", f"{base_search_term}%"],
+                    ["name", "like", f"%{base_search_term}%"],
+                    ["item_name", "like", f"%{base_search_term}%"],
                     ["item_code", "like", f"%{base_search_term}%"],
                 ]
                 or_filters.extend(
@@ -233,7 +233,7 @@ def _build_search_plan(
     initial_page_start = limit_start or 0
     page_size = limit_page_length or 100
 
-    word_filter_active = bool(normalized_search_value) and len(normalized_search_value) >= 3
+    word_filter_active = bool(normalized_search_value) and len(normalized_search_value) >= 1
 
     return SearchPlan(
         filters=filters,

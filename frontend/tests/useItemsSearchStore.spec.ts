@@ -106,4 +106,63 @@ describe("useItemsSearch fuzzy local matching", () => {
 			"PARA-500",
 		]);
 	});
+
+	it("matches items by Cyrillic name and short query substrings", () => {
+		const search = useItemsSearch();
+		const items = [
+			{
+				item_code: "112-BLA",
+				item_name: "p1 (Черный)",
+				item_group: "Apparel",
+			},
+			{
+				item_code: "112-WHI",
+				item_name: "p1 (Белый)",
+				item_group: "Apparel",
+			},
+			{
+				item_code: "TEA-TJ",
+				item_name: "Чои кабуд",
+				item_group: "Beverages",
+			},
+		] as any[];
+
+		search.updateIndexes(items, null);
+
+		// Cyrillic search with 'й'
+		const blackResult = search.performRankedLocalSearch("Черный", items, "ALL", 10);
+		expect(blackResult.map((i) => i.item_code)).toEqual(["112-BLA"]);
+
+		// Substring search with 'Белый'
+		const whiteResult = search.performRankedLocalSearch("Белый", items, "ALL", 10);
+		expect(whiteResult.map((i) => i.item_code)).toEqual(["112-WHI"]);
+
+		// Short 2-character query 'p1'
+		const p1Result = search.performRankedLocalSearch("p1", items, "ALL", 10);
+		expect(p1Result.map((i) => i.item_code)).toEqual(["112-BLA", "112-WHI"]);
+
+		// Search with Tajik character
+		const teaResult = search.performRankedLocalSearch("чой", items, "ALL", 10);
+		expect(teaResult.map((i) => i.item_code)).toEqual(["TEA-TJ"]);
+	});
+
+	it("returns all items when search query is empty or cleared", () => {
+		const search = useItemsSearch();
+		const items = [
+			{ item_code: "112-BLA", item_name: "p1 (Черный)", item_group: "Apparel" },
+			{ item_code: "112-WHI", item_name: "p1 (Белый)", item_group: "Apparel" },
+			{ item_code: "TEA-TJ", item_name: "Чои кабуд", item_group: "Beverages" },
+		] as any[];
+
+		search.updateIndexes(items, null);
+
+		// Non-empty search filters items
+		expect(search.performRankedLocalSearch("Черный", items, "ALL", 10).map((i) => i.item_code)).toEqual(["112-BLA"]);
+
+		// Empty/cleared search returns all items
+		expect(search.performRankedLocalSearch("", items, "ALL", 10).map((i) => i.item_code)).toEqual(["112-BLA", "112-WHI", "TEA-TJ"]);
+
+		// Empty search with group filter returns all items in that group
+		expect(search.performRankedLocalSearch("", items, "Apparel", 10).map((i) => i.item_code)).toEqual(["112-BLA", "112-WHI"]);
+	});
 });

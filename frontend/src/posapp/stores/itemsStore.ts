@@ -1340,7 +1340,8 @@ export const useItemsStore = defineStore("items", () => {
 		searchTerm.value = term;
 		lastSearch.value = term;
 
-		if (!term || term.length < 2) {
+		const trimmedTerm = String(term || "").trim();
+		if (!trimmedTerm) {
 			cancelPendingServerSearchFallback();
 			if (limitSearchEnabled.value) {
 				return clearLimitSearchResults({ preserveItems: true });
@@ -1530,7 +1531,7 @@ export const useItemsStore = defineStore("items", () => {
 					resultLimit,
 				);
 
-				if (searchResults.length === 0 && term.length >= 3) {
+				if (searchResults.length === 0 && trimmedTerm.length >= 1) {
 					searchResults = await scheduleServerSearchFallback(
 						term,
 						itemGroup.value,
@@ -1589,7 +1590,7 @@ export const useItemsStore = defineStore("items", () => {
 		if (limitSearchEnabled.value) return [];
 		if (!cachedPagination.value.enabled || cachedPagination.value.loading)
 			return [];
-		if (searchTerm.value && searchTerm.value.length >= 2) return [];
+		if (searchTerm.value && searchTerm.value.trim().length >= 1) return [];
 		if (cachedPagination.value.offset >= cachedPagination.value.total)
 			return [];
 

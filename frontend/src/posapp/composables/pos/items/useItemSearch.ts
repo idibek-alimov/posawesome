@@ -1,5 +1,6 @@
 import { ref } from "vue";
 import { perfMarkStart, perfMarkEnd } from "../../../utils/perf.js";
+import { normalizeSearchText } from "./store/useItemsSearch";
 
 declare const frappe: any;
 
@@ -98,8 +99,8 @@ export function useItemSearch() {
 
 		// Filter by search term
 		const rawSearch = (searchTerm || "").trim();
-		if (rawSearch && rawSearch.length >= 3) {
-			const term = rawSearch.toLowerCase();
+		if (rawSearch) {
+			const term = normalizeSearchText(rawSearch);
 			const searchWords = term.split(/\s+/).filter(Boolean);
 
 			filtered = filtered.filter((item) => {
@@ -108,7 +109,7 @@ export function useItemSearch() {
 				// Collect all searchable values into a single string or array for checking
 				const searchable: string[] = [];
 				const pushValue = (v: unknown) => {
-					if (v) searchable.push(String(v).toLowerCase());
+					if (v) searchable.push(normalizeSearchText(v));
 				};
 
 				pushValue(item.item_code);
@@ -200,9 +201,10 @@ export function useItemSearch() {
 	) => {
 		if (!items || !items.length) return [];
 
-		const term = (searchTerm || "").trim().toLowerCase();
+		const rawTerm = (searchTerm || "").trim();
+		const term = normalizeSearchText(rawTerm);
 		const needsLocalSearch =
-			!searchAlreadyApplied && term && term.length >= 3;
+			!searchAlreadyApplied && term.length > 0;
 
 		// PERF: If no filters needed, just slice and return
 		if (
@@ -251,7 +253,7 @@ export function useItemSearch() {
 					);
 				} else {
 					// Fallback
-					const rawIndex = (
+					const rawIndex = normalizeSearchText(
 						(item.item_code || "") +
 						" " +
 						(item.item_name || "") +
@@ -259,7 +261,7 @@ export function useItemSearch() {
 						(item.barcode || "") +
 						" " +
 						(item.custom_short_code || "")
-					).toLowerCase();
+					);
 					matches = activeTerms.every((t) => rawIndex.includes(t));
 				}
 				if (!matches) continue;

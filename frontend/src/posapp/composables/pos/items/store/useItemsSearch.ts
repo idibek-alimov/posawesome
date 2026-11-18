@@ -28,15 +28,25 @@ export const updateCategoryDescendants = (groupNodes: any[]) => {
 	});
 };
 
+export const normalizeSearchText = (value: unknown): string =>
+	String(value || "")
+		.normalize("NFKD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.toLowerCase();
+
+export const tokenizeSearchText = (value: unknown): string[] => {
+	const normalized = normalizeSearchText(value)
+		.replace(/[^\p{L}\p{N}]+/gu, " ")
+		.trim();
+	if (!normalized) {
+		return [];
+	}
+	return Array.from(new Set(normalized.split(/\s+/).filter(Boolean)));
+};
+
 export function useItemsSearch() {
 	const itemsMap = ref(new Map<string, Item>()); // O(1) lookup by item_code
 	const barcodeIndex = ref(new Map<string, Item>()); // O(1) barcode lookup
-
-	const normalizeSearchText = (value: unknown): string =>
-		String(value || "")
-			.normalize("NFKD")
-			.replace(/[\u0300-\u036f]/g, "")
-			.toLowerCase();
 
 	const registerLookupValue = (
 		index: Map<string, Item>,
@@ -83,16 +93,6 @@ export function useItemsSearch() {
 		}
 
 		return Array.from(new Set(values.filter(Boolean)));
-	};
-
-	const tokenizeSearchText = (value: unknown): string[] => {
-		const normalized = normalizeSearchText(value)
-			.replace(/[^a-z0-9]+/g, " ")
-			.trim();
-		if (!normalized) {
-			return [];
-		}
-		return Array.from(new Set(normalized.split(/\s+/).filter(Boolean)));
 	};
 
 	const isNearTokenMatch = (query: string, token: string): boolean => {
@@ -396,5 +396,7 @@ export function useItemsSearch() {
 		filterItemsByGroup,
 		getItemByCode,
 		getItemByBarcode,
+		normalizeSearchText,
+		tokenizeSearchText,
 	};
 }

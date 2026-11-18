@@ -151,10 +151,7 @@
 						</v-card>
 					</div>
 
-					<v-card flat class="invoice-section-card invoice-items-card pos-themed-card">
-						<div class="invoice-section-heading">
-							<h3 class="invoice-section-heading__title">{{ __("Invoice Items") }}</h3>
-						</div>
+					<div class="invoice-items-card">
 						<div class="items-table-wrapper">
 							<InvoiceItemsActionToolbar
 								ref="actionToolbar"
@@ -220,7 +217,7 @@
 								:currencySymbol="currencySymbol"
 							/>
 						</div>
-					</v-card>
+					</div>
 				</div>
 			</div>
 		</v-card>
@@ -1757,12 +1754,15 @@ export default {
 }
 
 .invoice-items-card {
-	padding-bottom: var(--dynamic-xs);
+	padding: 0;
 	display: flex;
 	flex-direction: column;
-	flex: 0 0 auto;
-	min-height: 320px;
-	overflow: visible;
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow: hidden;
+	background: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
 }
 
 /* Responsive breakpoints */
@@ -1805,8 +1805,8 @@ export default {
 	}
 
 	.invoice-items-card {
-		flex: 0 0 auto;
-		min-height: 320px;
+		flex: 1 1 auto;
+		min-height: 0;
 	}
 
 	.items-table-wrapper {
@@ -1815,7 +1815,7 @@ export default {
 		margin-right: 0;
 		width: 100%;
 		max-width: 100%;
-		min-height: 280px;
+		min-height: 0;
 	}
 
 	.item-search-field {
@@ -1854,7 +1854,7 @@ export default {
 		margin-right: 0;
 		width: 100%;
 		max-width: 100%;
-		min-height: 240px;
+		min-height: 0;
 	}
 
 	.item-search-field {
@@ -1864,17 +1864,39 @@ export default {
 	}
 }
 
-.column-selector-container {
+.column-selector-container,
+:deep(.items-table-wrapper .column-selector-container) {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	z-index: 6;
 	display: flex;
 	align-items: center;
-	justify-content: flex-end;
-	flex-wrap: wrap;
-	gap: 8px;
-	padding: 8px 16px;
-	background-color: var(--pos-card-bg);
-	border-radius: 8px 8px 0 0;
-	box-sizing: border-box;
-	margin-bottom: 8px;
+	padding: 0;
+	margin: 0;
+	background: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+}
+
+.column-selector-btn,
+:deep(.column-selector-btn) {
+	width: 28px !important;
+	height: 28px !important;
+	min-width: 28px !important;
+	min-height: 28px !important;
+	padding: 0 !important;
+	color: var(--pos-text-secondary, #64748b) !important;
+	background: transparent !important;
+	border-radius: 50% !important;
+	transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.column-selector-btn:hover,
+:deep(.column-selector-btn:hover) {
+	background: rgba(var(--v-theme-primary, 24, 103, 192), 0.12) !important;
+	color: rgb(var(--v-theme-primary, 24, 103, 192)) !important;
+	transform: rotate(30deg);
 }
 
 .item-search-field {
@@ -1884,43 +1906,49 @@ export default {
 	margin-right: auto;
 }
 
-.column-selector-btn {
-	font-size: 0.875rem;
-}
-
 .items-table-wrapper {
 	position: relative;
-	margin-top: var(--dynamic-sm);
+	margin-top: 0;
 	width: 100%;
 	max-width: 100%;
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
-	flex: 0 0 auto;
-	min-height: 320px;
+	flex: 1 1 auto;
+	min-height: 0;
+	height: 100%;
 	min-width: 0;
-}
-
-:deep(.items-table-wrapper .column-selector-container) {
-	position: sticky;
-	top: 0;
-	z-index: 3;
-	background: var(--pos-card-bg);
+	overflow: hidden;
 }
 
 :deep(.items-table-wrapper .posa-items-table-container) {
-	flex: 0 0 auto;
-	min-height: 320px;
-	height: auto !important;
-	max-height: none !important;
-	overflow: visible !important;
+	flex: 1 1 auto;
+	min-height: 0;
+	height: 100% !important;
+	max-height: 100% !important;
+	overflow: auto !important;
 }
 
-:deep(.items-table-wrapper .posa-cart-table),
+:deep(.items-table-wrapper .posa-cart-table) {
+	flex: 1 1 auto;
+	height: 100% !important;
+	max-height: 100% !important;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+}
+
 :deep(.items-table-wrapper .v-data-table__wrapper),
 :deep(.items-table-wrapper .v-table__wrapper) {
-	height: auto !important;
-	max-height: none !important;
+	flex: 1 1 auto;
+	height: 100% !important;
+	max-height: 100% !important;
+	min-height: 0;
+	overflow-y: auto !important;
+}
+
+:deep(.items-table-wrapper .posa-cart-table th:last-child) {
+	padding-right: 36px !important;
 }
 
 /* New styles for improved column switches */

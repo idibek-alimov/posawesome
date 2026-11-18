@@ -245,6 +245,9 @@ export const useItemsSelectorSearch = ({
 		if (!match && new_item.item_code && String(new_item.item_code).trim().toLowerCase() === search.trim().toLowerCase()) {
 			match = true;
 		}
+		if (!match && new_item.item_name && String(new_item.item_name).trim().toLowerCase() === search.trim().toLowerCase()) {
+			match = true;
+		}
 		if (!match && displayedItems.length === 1) {
 			match = true;
 		}
@@ -345,8 +348,8 @@ export const useItemsSelectorSearch = ({
 			return;
 		}
 
-		// Require a minimum of three characters before running a search
-		if (!trimmedQuery || trimmedQuery.length < 3) {
+		// Require a non-empty query before running a search
+		if (!trimmedQuery) {
 			vm.search_from_scanner = false;
 			return;
 		}
@@ -377,19 +380,23 @@ export const useItemsSelectorSearch = ({
 					}
 				}
 			}
-		} else if (hasStorageAvailable(vm)) {
-			const loadVisibleItems = getVisibleItemsLoader(vm);
-			if (loadVisibleItems) {
-				await loadVisibleItems(true);
-			}
-			triggerEnterEvent(vm);
 		} else {
-			// When local storage is disabled, always fetch items
-			// from the server so searches aren't limited to the
-			// initially loaded set.
-			const getItems = getItemsLoader(vm);
-			if (getItems) {
-				await getItems(true);
+			const searchItems = getSearchExecutor(vm);
+			if (searchItems) {
+				await searchItems(trimmedQuery);
+			} else if (hasStorageAvailable(vm)) {
+				const loadVisibleItems = getVisibleItemsLoader(vm);
+				if (loadVisibleItems) {
+					await loadVisibleItems(true);
+				}
+			} else {
+				// When local storage is disabled, always fetch items
+				// from the server so searches aren't limited to the
+				// initially loaded set.
+				const getItems = getItemsLoader(vm);
+				if (getItems) {
+					await getItems(true);
+				}
 			}
 			triggerEnterEvent(vm);
 
@@ -435,10 +442,13 @@ export const useItemsSelectorSearch = ({
 			if (event && typeof event.preventDefault === "function") {
 				event.preventDefault();
 			}
-			selection.selectHighlightedItem({
+			const selectionOptions: Record<string, any> = {
 				postAddFocus: event?.shiftKey ? "qty" : "default",
-				keepSearchFocus: !event?.shiftKey,
-			});
+			};
+			if (!event?.shiftKey) {
+				selectionOptions.keepSearchFocus = true;
+			}
+			selection.selectHighlightedItem(selectionOptions);
 			return;
 		}
 

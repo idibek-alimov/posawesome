@@ -292,6 +292,7 @@ import { useFlyAnimation } from "../../../composables/core/useFlyAnimation";
 import { useCartValidation } from "../../../composables/pos/items/useCartValidation";
 import { useItemsIntegration } from "../../../composables/pos/items/useItemsIntegration";
 import { useItemSearch } from "../../../composables/pos/items/useItemSearch";
+import { normalizeSearchText } from "../../../composables/pos/items/store/useItemsSearch";
 import { useScannerInput } from "../../../composables/pos/items/useScannerInput";
 import { useItemAvailability } from "../../../composables/pos/items/useItemAvailability";
 import { useItemDetailFetcher } from "../../../composables/pos/items/useItemDetailFetcher";
@@ -559,18 +560,59 @@ const {
 } = itemsIntegration;
 
 const displayedItems = computed(() => {
-	const baseItems = Array.isArray(filteredItems.value) ? filteredItems.value : [];
 	const rawTerm = first_search.value;
-	const term = (typeof rawTerm === "string" ? rawTerm : "").trim().toLowerCase();
-	const searchAlreadyApplied = term.length >= 3 && filteredItemsSearchTerm.value === term;
+	const term = (typeof rawTerm === "string" ? rawTerm : "").trim();
+	const normalizedTerm = normalizeSearchText(term);
+
+	let baseItems: any[];
+	if (!normalizedTerm) {
+		const allItems =
+			Array.isArray(items.value) && items.value.length
+				? items.value
+				: Array.isArray(filteredItems.value)
+				? filteredItems.value
+				: [];
+		const currentGroup = item_group.value;
+		baseItems =
+			currentGroup && currentGroup !== "ALL"
+				? allItems.filter(
+						(i: any) =>
+							i?.item_group &&
+							i.item_group.toLowerCase() ===
+								currentGroup.toLowerCase(),
+				  )
+				: allItems;
+	} else {
+		baseItems = Array.isArray(filteredItems.value) ? filteredItems.value : [];
+	}
+
+	const searchAlreadyApplied =
+		normalizedTerm.length >= 1 &&
+		normalizeSearchText(filteredItemsSearchTerm.value || "") === normalizedTerm;
 	return filterAndPaginate(baseItems, {
-		searchTerm: term,
+		searchTerm: normalizedTerm,
 		searchAlreadyApplied,
 		hideZeroRate: hide_zero_rate_items.value,
 		hideVariants: pos_profile.value?.posa_hide_variants_items,
 		onlyBarcode: showOnlyBarcodeItemsRef.value,
 		limit: enable_custom_items_per_page.value ? items_per_page.value : itemsPerPage.value,
 	});
+});
+
+let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+watch(first_search, (newVal) => {
+	if (searchDebounceTimer) {
+		clearTimeout(searchDebounceTimer);
+		searchDebounceTimer = null;
+	}
+	const term = String(newVal || "").trim();
+	if (!term) {
+		itemsIntegration.search_onchange("");
+		return;
+	}
+	searchDebounceTimer = setTimeout(() => {
+		itemsIntegration.search_onchange(term);
+	}, 300);
 });
 
 // Item reloads (notably after a customer/price-list change) replace the
@@ -1539,6 +1581,10 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
+	if (searchDebounceTimer) {
+		clearTimeout(searchDebounceTimer);
+		searchDebounceTimer = null;
+	}
 	unbindItemCatalogRecoveryListeners();
 	if (pharmacyNavigationFrame !== null) {
 		window.cancelAnimationFrame(pharmacyNavigationFrame);
@@ -1721,7 +1767,7 @@ const { selectorCardStyle } = useItemsSelectorPanelSizing({
 });
 const itemSearchFocusClearGuard = createItemSearchFocusClearGuard();
 const {
-	clearSearch,
+	clearSearch: baseClearSearch,
 	handleSearchInput,
 	prepareSearchInjection,
 	appendSearchCharacter,
@@ -1743,6 +1789,15 @@ const {
 	setActiveView: (view) => uiStore.setActiveView(view),
 	triggerItemSearchFocus: () => uiStore.triggerItemSearchFocus(),
 });
+
+const clearSearch = () => {
+	baseClearSearch();
+	if (searchDebounceTimer) {
+		clearTimeout(searchDebounceTimer);
+		searchDebounceTimer = null;
+	}
+	itemsIntegration.search_onchange("");
+};
 const handleItemSearchFocusForPresentation = () => {
 	if (props.presentation === "counter-grid-dialog") {
 		itemSearchFocusClearGuard.armPreserveNextFocusClear();
