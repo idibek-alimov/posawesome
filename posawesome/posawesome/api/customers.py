@@ -561,10 +561,19 @@ def create_customer(
             tier_doc = None
             if selected_tier and frappe.db.exists("Customer Tier", selected_tier):
                 tier_doc = frappe.get_doc("Customer Tier", selected_tier)
+                if not tier_doc.tier_position and frappe.db.get_single_value(
+                    "Customer Loyalty Settings", "default_tier"
+                ):
+                    frappe.throw(_("Choose a configured loyalty tier."))
+                customer.flags.registration_tier = tier_doc.name
             elif not selected_tier or selected_tier in ("Individual", "All Customer Groups"):
                 default_tier = frappe.db.get_single_value("Customer Loyalty Settings", "default_tier") or "Базовый"
                 if frappe.db.exists("Customer Tier", default_tier):
                     tier_doc = frappe.get_doc("Customer Tier", default_tier)
+            elif tier and not (
+                tier == customer_group and frappe.db.exists("Customer Group", {"name": tier, "is_group": 0})
+            ):
+                frappe.throw(_("Choose a configured loyalty tier."))
 
             if tier_doc:
                 customer.customer_group = tier_doc.customer_group
