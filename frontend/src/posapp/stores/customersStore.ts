@@ -12,6 +12,7 @@ import type {
 import {
 	buildCustomerSearchParts,
 	buildCustomerMobileSearchKeys,
+	customerBarcodeMatchesSearch,
 	customerMobileMatchesSearch,
 	customerMatchesSearchParts,
 	getCustomerDuplicateFields,
@@ -187,6 +188,11 @@ export const useCustomersStore = defineStore("customers", () => {
 	const refreshToken = ref(0);
 	const isUpdateCustomerDialogOpen = ref(false);
 	const customerToUpdate = ref<StoredCustomer | null>(null);
+	const pendingCustomerPrefill = ref<{
+		mobile_no?: string;
+		customer_name?: string;
+		posa_barcode?: string;
+	} | null>(null);
 	let customerFetchPromise: Promise<void> | null = null;
 	let customerSearchRequestId = 0;
 	const customerLoadLogState = {
@@ -278,10 +284,21 @@ export const useCustomersStore = defineStore("customers", () => {
 			getStringField(info, "primary_address") ||
 			getStringField(info, "customer_address");
 		const taxId = getStringField(info, "tax_id");
+		const barcode = getStringField(info, "posa_barcode");
+		const birthday =
+			getStringField(info, "posa_birthday") ||
+			getStringField(info, "birthday");
+		const customerGroup = getStringField(info, "customer_group");
 		if (email) summary.email_id = email;
 		if (mobile) summary.mobile_no = mobile;
 		if (primaryAddress) summary.primary_address = primaryAddress;
 		if (taxId) summary.tax_id = taxId;
+		if (barcode) summary.posa_barcode = barcode;
+		if (birthday) {
+			summary.posa_birthday = birthday;
+			summary.birthday = birthday;
+		}
+		if (customerGroup) summary.customer_group = customerGroup;
 
 		if (existingIndex >= 0) {
 			const updated = [...customers.value];
@@ -423,7 +440,19 @@ export const useCustomersStore = defineStore("customers", () => {
 					.toArray(),
 			),
 		);
+		const barcodeMatches = await db
+			.table("customers")
+			.filter((customer: CustomerSummary) =>
+				customerBarcodeMatchesSearch(customer?.posa_barcode, term),
+			)
+			.limit(requestedLimit)
+			.toArray();
 		const uniqueMatches = new Map<string, CustomerSummary>();
+		barcodeMatches.forEach((customer: CustomerSummary) => {
+			if (customer?.name) {
+				uniqueMatches.set(customer.name, customer);
+			}
+		});
 		mobilePages.flat().forEach((customer: CustomerSummary) => {
 			if (
 				customer?.name &&
@@ -480,7 +509,7 @@ export const useCustomersStore = defineStore("customers", () => {
 			if (
 				!append &&
 				allowRemote &&
-				isMobileSearch &&
+				(isMobileSearch || requestedTerm.length >= 4) &&
 				results.length === 0
 			) {
 				const remoteResults =
@@ -543,13 +572,17 @@ export const useCustomersStore = defineStore("customers", () => {
 		excludeCustomer: string | null = null,
 	) {
 		await ensureDatabase();
-		const allowDuplicateNames = Boolean(
+		const allowDuplicateNames =
 			(
 				posProfile.value as POSProfile & {
 					posa_allow_duplicate_customer_names?: boolean | number;
 				}
-			)?.posa_allow_duplicate_customer_names,
-		);
+			)?.posa_allow_duplicate_customer_names !== 0 &&
+			(
+				posProfile.value as POSProfile & {
+					posa_allow_duplicate_customer_names?: boolean | number;
+				}
+			)?.posa_allow_duplicate_customer_names !== false;
 		const results = await db
 			.table("customers")
 			.filter((customer: CustomerSummary) => {
@@ -976,14 +1009,23 @@ export const useCustomersStore = defineStore("customers", () => {
 		requestCustomerRefresh();
 	}
 
-	function openUpdateCustomerDialog(customer: StoredCustomer | null = null) {
+	function openUpdateCustomerDialog(
+		customer: StoredCustomer | null = null,
+		prefill: {
+			mobile_no?: string;
+			customer_name?: string;
+			posa_barcode?: string;
+		} | null = null,
+	) {
 		customerToUpdate.value = customer;
+		pendingCustomerPrefill.value = prefill;
 		isUpdateCustomerDialogOpen.value = true;
 	}
 
 	function closeUpdateCustomerDialog() {
 		isUpdateCustomerDialogOpen.value = false;
 		customerToUpdate.value = null;
+		pendingCustomerPrefill.value = null;
 	}
 
 	function clearLocalState() {
@@ -1035,6 +1077,7 @@ export const useCustomersStore = defineStore("customers", () => {
 		clearLocalState,
 		isUpdateCustomerDialogOpen,
 		customerToUpdate,
+		pendingCustomerPrefill,
 		openUpdateCustomerDialog,
 		closeUpdateCustomerDialog,
 	};

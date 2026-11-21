@@ -3,10 +3,14 @@ import {
 	buildCustomerSearchParts,
 	buildCustomerSearchText,
 	buildCustomerMobileSearchKeys,
+	customerBarcodeMatchesSearch,
 	customerMobileMatchesSearch,
 	customerMatchesSearchParts,
 	customerMatchesSearchTerm,
+	formatCustomerBirthdayDisplay,
+	generateCustomerCardBarcode,
 	getCustomerDuplicateFields,
+	isExactCustomerBarcodeMatch,
 	normalizeCustomerDuplicateValue,
 	normalizeCustomerSearchTerm,
 } from "../src/posapp/stores/customers/customerSearch";
@@ -118,5 +122,42 @@ describe("customer search helpers", () => {
 				false,
 			),
 		).toEqual(["mobile_no"]);
+	});
+
+	it("matches numeric and alphanumeric customer card barcodes", () => {
+		const customer: CustomerSummary = {
+			name: "CUST-003",
+			customer_name: "Farhod",
+			mobile_no: "+992 98 111 2233",
+			posa_barcode: "2900001045123",
+		};
+
+		expect(customerBarcodeMatchesSearch("2900001045123", "1045")).toBe(true);
+		expect(customerMatchesSearchTerm(customer, "2900001045123")).toBe(true);
+		expect(customerMatchesSearchTerm(customer, "1045123")).toBe(true);
+		expect(isExactCustomerBarcodeMatch(customer, "2900001045123")).toBe(true);
+		expect(isExactCustomerBarcodeMatch(customer, "1045")).toBe(false);
+	});
+
+	it("detects duplicate card barcodes and generates valid 13-digit EAN barcodes", () => {
+		const code = generateCustomerCardBarcode();
+		expect(code).toMatch(/^29\d{11}$/);
+
+		const customer: CustomerSummary = {
+			name: "CUST-004",
+			customer_name: "Alisher",
+			posa_barcode: code,
+		};
+
+		expect(
+			getCustomerDuplicateFields(
+				customer,
+				{
+					posa_barcode: ` ${code} `,
+				},
+				false,
+			),
+		).toEqual(["posa_barcode"]);
+		expect(formatCustomerBirthdayDisplay("1994-11-04")).toBe("04.11.1994");
 	});
 });

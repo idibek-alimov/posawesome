@@ -288,12 +288,44 @@ COMPOSITE_AND_SCALE_INDEXES = [
     ),
     ("Customer", ["disabled", "customer_group", "name"], "disabled_customer_group_name"),
     ("Customer", ["disabled", "modified", "name"], "disabled_modified_name"),
+    ("Customer", ["disabled", "posa_barcode"], "disabled_posa_barcode"),
     (
         "Pricing Rule",
         ["selling", "disable", "company", "valid_from", "valid_upto"],
         "selling_disable_company_validity",
     ),
 ]
+
+
+CUSTOMER_LOYALTY_FIELDS = [
+    {
+        "fieldname": "posa_birthday",
+        "label": "Birthday",
+        "fieldtype": "Data",
+        "insert_after": "contact_html",
+        "search_index": 1,
+    },
+    {
+        "fieldname": "posa_barcode",
+        "label": "Customer Barcode",
+        "fieldtype": "Data",
+        "insert_after": "posa_birthday",
+        "unique": 1,
+        "no_copy": 1,
+        "search_index": 1,
+        "in_global_search": 1,
+        "in_standard_filter": 1,
+        "allow_in_quick_entry": 1,
+    },
+]
+
+
+def ensure_customer_loyalty_fields():
+    """Ensure Customer Barcode and Birthday custom fields exist on Customer."""
+    for field in CUSTOMER_LOYALTY_FIELDS:
+        create_custom_field("Customer", field, ignore_validate=True)
+    frappe.clear_cache(doctype="Customer")
+    frappe.db.updatedb("Customer")
 
 
 def ensure_expense_source_settings():
@@ -509,6 +541,7 @@ def setup_posawesome():
 
     ensure_attendance_profile_fields()
     ensure_attendance_invoice_fields()
+    ensure_customer_loyalty_fields()
     ensure_expense_source_settings()
     ensure_fiscal_fields()
     ensure_supervisor_role_and_cleanup_legacy_fields()

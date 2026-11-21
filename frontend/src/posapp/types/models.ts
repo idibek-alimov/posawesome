@@ -161,6 +161,9 @@ export interface Customer {
   email_id?: string;
   mobile_no?: string;
   tax_id?: string;
+  posa_barcode?: string;
+  posa_birthday?: string;
+  birthday?: string;
   image?: string;
   primary_address?: string;
   [key: string]: any;
@@ -171,6 +174,10 @@ export interface CustomerSummary {
   customer_name: string;
   email_id?: string;
   mobile_no?: string;
+  posa_barcode?: string;
+  posa_birthday?: string;
+  birthday?: string;
+  customer_group?: string;
   primary_address?: string;
   [key: string]: any;
 }

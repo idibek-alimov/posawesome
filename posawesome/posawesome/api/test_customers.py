@@ -169,23 +169,26 @@ class TestCustomersApi(unittest.TestCase):
         def get_all(doctype, **kwargs):
             if doctype != "Customer":
                 return []
-            self.assertEqual(kwargs["filters"]["disabled"], 0)
-            self.assertEqual(kwargs["filters"]["mobile_no"], ["like", "%4567%"])
+            filters = kwargs["filters"]
+            self.assertEqual(filters["disabled"], 0)
             self.assertEqual(
-                kwargs["filters"]["customer_group"], ["in", ["Retail"]]
+                filters["customer_group"], ["in", ["Retail"]]
             )
-            return [
-                AttrDict(
-                    name="CUST-EXISTING",
-                    customer_name="Existing Customer",
-                    mobile_no="+92 300-1234567",
-                ),
-                AttrDict(
-                    name="CUST-OTHER",
-                    customer_name="Other Customer",
-                    mobile_no="+92 311-1234567",
-                ),
-            ]
+            if "mobile_no" in filters:
+                self.assertEqual(filters["mobile_no"], ["like", "%4567%"])
+                return [
+                    AttrDict(
+                        name="CUST-EXISTING",
+                        customer_name="Existing Customer",
+                        mobile_no="+92 300-1234567",
+                    ),
+                    AttrDict(
+                        name="CUST-OTHER",
+                        customer_name="Other Customer",
+                        mobile_no="+92 311-1234567",
+                    ),
+                ]
+            return []
 
         self.module.frappe.get_all = get_all
         self.module.get_customer_groups = lambda profile: ["Retail"]
@@ -194,6 +197,53 @@ class TestCustomersApi(unittest.TestCase):
         )
 
         self.assertEqual([match["name"] for match in matches], ["CUST-EXISTING"])
+
+    def test_server_barcode_search_finds_matching_customer_card(self):
+        def get_all(doctype, **kwargs):
+            if doctype != "Customer":
+                return []
+            filters = kwargs["filters"]
+            if "posa_barcode" in filters:
+                return [
+                    AttrDict(
+                        name="CUST-CARD",
+                        customer_name="Card Customer",
+                        posa_barcode="2900001045123",
+                    )
+                ]
+            return []
+
+        self.module.frappe.get_all = get_all
+        self.module.get_customer_groups = lambda profile: []
+        matches = self.module.search_customers(
+            json.dumps({"name": "POS-TEST"}), "2900001045123"
+        )
+
+        self.assertEqual([match["name"] for match in matches], ["CUST-CARD"])
+
+    def test_duplicate_customer_lookup_detects_matching_barcode(self):
+        def get_all(doctype, **kwargs):
+            filters = kwargs.get("filters", {})
+            if doctype == "Customer" and filters.get("posa_barcode") == "2900001045123":
+                return [
+                    AttrDict(
+                        name="CUST-CARD",
+                        customer_name="Card Customer",
+                        posa_barcode="2900001045123",
+                    )
+                ]
+            return []
+
+        self.module.frappe.get_all = get_all
+        matches = self.module._find_duplicate_customer_records(
+            customer_name="New Customer",
+            posa_barcode="2900001045123",
+            allow_duplicate_names=True,
+        )
+
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(matches[0]["name"], "CUST-CARD")
+        self.assertEqual(matches[0]["matching_fields"], ["posa_barcode"])
 
 
 if __name__ == "__main__":

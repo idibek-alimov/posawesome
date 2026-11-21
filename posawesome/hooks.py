@@ -307,6 +307,7 @@ fixtures = [
                     "Customer-posa_referral_company",
                     "Customer-posa_referral_section",
                     "Customer-posa_birthday",
+                    "Customer-posa_barcode",
                     "Sales Order-posa_offers",
                     "Sales Order-posa_coupons",
                     "Sales Order Item-posa_row_id",

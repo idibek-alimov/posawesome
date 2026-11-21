@@ -91,7 +91,31 @@
 
 				<!-- Dropdown display -->
 				<template #item="{ props, item }">
-					<v-list-item v-bind="props">
+					<v-list-item v-bind="props" class="customer-dropdown-item">
+						<template #append v-if="item.raw.customer_group">
+							<v-chip
+								size="x-small"
+								variant="tonal"
+								:color="getTierChipColor(item.raw.customer_group)"
+								class="font-weight-bold ml-2"
+							>
+								{{ item.raw.customer_group }}
+							</v-chip>
+						</template>
+						<v-list-item-subtitle class="customer-dropdown-meta">
+							<span v-if="item.raw.mobile_no" class="mr-3">
+								{{ __("Mobile No") }}: {{ item.raw.mobile_no }}
+							</span>
+							<span v-if="item.raw.posa_barcode" class="mr-3">
+								{{ __("Card") }}: {{ item.raw.posa_barcode }}
+							</span>
+							<span
+								v-if="getBirthdayBadge(item.raw.posa_birthday || item.raw.birthday)"
+								class="customer-bday-inline"
+							>
+								🎂 {{ getBirthdayBadge(item.raw.posa_birthday || item.raw.birthday).displayDate }}
+							</span>
+						</v-list-item-subtitle>
 						<v-list-item-subtitle v-if="item.raw.customer_name !== item.raw.name">
 							<div>{{ __("ID") }}: {{ item.raw.name }}</div>
 						</v-list-item-subtitle>
@@ -101,15 +125,54 @@
 						<v-list-item-subtitle v-if="item.raw.email_id">
 							<div>{{ __("Email") }}: {{ item.raw.email_id }}</div>
 						</v-list-item-subtitle>
-						<v-list-item-subtitle v-if="item.raw.mobile_no">
-							<div>{{ __("Mobile No") }}: {{ item.raw.mobile_no }}</div>
-						</v-list-item-subtitle>
 						<v-list-item-subtitle v-if="item.raw.primary_address">
 							<div>{{ __("Primary Address") }}: {{ item.raw.primary_address }}</div>
 						</v-list-item-subtitle>
 					</v-list-item>
 				</template>
 			</v-autocomplete>
+			<div
+				v-if="showSelectedCustomerSummary"
+				class="selected-customer-summary"
+				aria-live="polite"
+			>
+				<v-chip
+					v-if="selectedCustomerTier"
+					size="x-small"
+					variant="tonal"
+					:color="getTierChipColor(selectedCustomerTier)"
+					class="font-weight-bold"
+				>
+					{{ selectedCustomerTier }}
+				</v-chip>
+				<span
+					v-if="selectedCustomerPoints !== null"
+					class="selected-customer-summary__item"
+				>
+					{{ __("Loyalty Points") }}:
+					<strong>{{ formatCustomerMetric(selectedCustomerPoints) }}</strong>
+				</span>
+				<span
+					v-if="selectedCustomerBarcode"
+					class="selected-customer-summary__item text-medium-emphasis"
+				>
+					{{ __("Card") }}: {{ selectedCustomerBarcode }}
+				</span>
+				<v-chip
+					v-if="selectedCustomerBirthday"
+					size="x-small"
+					color="amber-darken-2"
+					variant="tonal"
+					class="font-weight-bold"
+				>
+					🎂
+					{{
+						selectedCustomerBirthday.isToday
+							? __("Birthday today!")
+							: `${__("Birthday")}: ${selectedCustomerBirthday.displayDate}`
+					}}
+				</v-chip>
+			</div>
 			<v-progress-linear
 				v-if="showCustomerLoadProgress"
 				:model-value="customerLoadPercent"
@@ -227,6 +290,25 @@
 	cursor: not-allowed;
 }
 
+.selected-customer-summary {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 6px;
+	padding: 2px 6px;
+	font-size: 0.74rem;
+}
+
+.selected-customer-summary__item {
+	white-space: nowrap;
+}
+
+.customer-bday-inline {
+	font-weight: 600;
+	color: rgb(var(--v-theme-warning));
+}
+
 @media (max-width: 768px) {
 	.customer-input-wrapper {
 		padding-right: 0;
@@ -245,7 +327,12 @@ import { storeToRefs } from "pinia";
 import _ from "lodash";
 import UpdateCustomer from "../dialogs/customer/UpdateCustomer.vue";
 import { useCustomersStore } from "../../../stores/customersStore.js";
-import { customerMatchesSearchTerm } from "../../../stores/customers/customerSearch";
+import {
+	customerMatchesSearchTerm,
+	isCustomerBirthdaySoon,
+	isCustomerMobileSearchTerm,
+	isExactCustomerBarcodeMatch,
+} from "../../../stores/customers/customerSearch";
 import { useOnlineStatus } from "../../../composables/core/useOnlineStatus";
 import { useToastStore } from "../../../stores/toastStore.js";
 import { useUIStore } from "../../../stores/uiStore.js";
@@ -283,6 +370,7 @@ export default {
 		const customerDropdown = ref(null);
 		const readonlyState = ref(false);
 		const pendingCustomerSearchInput = ref(false);
+		const lastTypedSearchTerm = ref("");
 
 		let scrollContainer = null;
 
@@ -366,6 +454,54 @@ export default {
 
 		const defaultCustomerName = computed(() => {
 			return props.pos_profile?.customer || customersStore.posProfile?.customer || "Гость";
+		});
+
+		const getTierChipColor = (tierName) => {
+			const lower = String(tierName || "").toLowerCase();
+			if (lower.includes("золот") || lower.includes("gold") || lower.includes("тилло")) {
+				return "amber-darken-3";
+			}
+			if (lower.includes("серебр") || lower.includes("silver") || lower.includes("нуқра")) {
+				return "blue-grey-darken-1";
+			}
+			return "primary";
+		};
+
+		const getBirthdayBadge = (bday) => {
+			return isCustomerBirthdaySoon(bday, 3);
+		};
+
+		const showSelectedCustomerSummary = computed(() => {
+			const active = selectedCustomer.value;
+			if (!active || active === defaultCustomerName.value) {
+				return false;
+			}
+			return Boolean(
+				selectedCustomerTier.value ||
+					selectedCustomerPoints.value !== null ||
+					selectedCustomerBarcode.value ||
+					selectedCustomerBirthday.value,
+			);
+		});
+
+		const selectedCustomerTier = computed(() => {
+			return customerInfo.value?.customer_group || customerInfo.value?.loyalty_tier || null;
+		});
+
+		const selectedCustomerPoints = computed(() => {
+			const pts = customerInfo.value?.loyalty_points;
+			return pts !== null && pts !== undefined ? Number(pts) : null;
+		});
+
+		const selectedCustomerBarcode = computed(() => {
+			return customerInfo.value?.posa_barcode || null;
+		});
+
+		const selectedCustomerBirthday = computed(() => {
+			return isCustomerBirthdaySoon(
+				customerInfo.value?.posa_birthday || customerInfo.value?.birthday,
+				3,
+			);
 		});
 
 		const onCustomerClear = () => {
@@ -512,17 +648,23 @@ export default {
 				return;
 			}
 			const term = value || "";
+			lastTypedSearchTerm.value = term.trim();
 			customerSearchInputRequestId += 1;
 			pendingCustomerSearchInput.value = true;
 			searchDebounce(term, customerSearchInputRequestId);
 		};
 
 		const handleEnter = async (event) => {
-			const inputText = event.target.value || "";
+			const inputText = (event.target.value || "").trim();
 			await searchDebounce.flush();
-			const matched = customers.value.find((customer) =>
-				customerMatchesSearchTerm(customer, inputText),
+			const exactBarcodeMatch = customers.value.find((customer) =>
+				isExactCustomerBarcodeMatch(customer, inputText),
 			);
+			const matched =
+				exactBarcodeMatch ||
+				customers.value.find((customer) =>
+					customerMatchesSearchTerm(customer, inputText),
+				);
 
 			if (!matched) {
 				return;
@@ -531,10 +673,30 @@ export default {
 			tempSelectedCustomer.value = matched.name;
 			internalCustomer.value = matched.name;
 			customersStore.setSelectedCustomer(matched.name);
+			lastTypedSearchTerm.value = "";
 			closeCustomerMenu();
 			if (event?.target?.blur) {
 				event.target.blur();
 			}
+		};
+
+		const buildPrefillFromSearch = (rawTerm) => {
+			const term = String(rawTerm || "").trim();
+			if (!term || term === selectedCustomer.value || term === defaultCustomerName.value) {
+				return null;
+			}
+			const digitsOnly = term.replace(/\D/g, "");
+			if (isCustomerMobileSearchTerm(term)) {
+				// 12+ digits or starting with 29 is likely a scanned loyalty card barcode
+				if (digitsOnly.length >= 12 || digitsOnly.startsWith("29")) {
+					return { posa_barcode: term };
+				}
+				return { mobile_no: term };
+			}
+			if (/^[A-Za-z0-9-_]{6,}$/.test(term) && /\d/.test(term)) {
+				return { posa_barcode: term };
+			}
+			return { customer_name: term };
 		};
 
 		const new_customer = () => {
@@ -545,7 +707,9 @@ export default {
 				});
 				return;
 			}
-			customersStore.openUpdateCustomerDialog(null);
+			const prefill = buildPrefillFromSearch(lastTypedSearchTerm.value);
+			closeCustomerMenu();
+			customersStore.openUpdateCustomerDialog(null, prefill);
 		};
 
 		const edit_customer = () => {
@@ -682,6 +846,13 @@ export default {
 			networkOnline,
 			customerInfo,
 			formatCustomerMetric,
+			getTierChipColor,
+			getBirthdayBadge,
+			showSelectedCustomerSummary,
+			selectedCustomerTier,
+			selectedCustomerPoints,
+			selectedCustomerBarcode,
+			selectedCustomerBirthday,
 		};
 	},
 };

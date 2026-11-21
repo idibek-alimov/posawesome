@@ -253,6 +253,20 @@ export async function setCustomerStorage(customers: AnyRecord[]) {
 				primary_address:
 					customer.primary_address ?? existing?.primary_address,
 				tax_id: customer.tax_id ?? existing?.tax_id,
+				posa_barcode:
+					customer.posa_barcode ?? existing?.posa_barcode,
+				posa_birthday:
+					customer.posa_birthday ??
+					customer.birthday ??
+					existing?.posa_birthday ??
+					existing?.birthday,
+				birthday:
+					customer.birthday ??
+					customer.posa_birthday ??
+					existing?.birthday ??
+					existing?.posa_birthday,
+				customer_group:
+					customer.customer_group ?? existing?.customer_group,
 				loyalty_program:
 					customer.loyalty_program ?? existing?.loyalty_program,
 				loyalty_points:

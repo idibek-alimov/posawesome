@@ -55,6 +55,7 @@ def _find_duplicate_customer_records(
     mobile_no=None,
     email_id=None,
     tax_id=None,
+    posa_barcode=None,
     exclude_customer=None,
     allow_duplicate_names=False,
 ):
@@ -64,6 +65,8 @@ def _find_duplicate_customer_records(
         checks.append(("customer_name", str(customer_name).strip()))
     if mobile_no:
         checks.append(("mobile_no", str(mobile_no).strip()))
+    if posa_barcode:
+        checks.append(("posa_barcode", str(posa_barcode).strip()))
     if email_id:
         checks.append(("email_id", str(email_id).strip().lower()))
     if tax_id:
@@ -85,6 +88,8 @@ def _find_duplicate_customer_records(
                             "mobile_no": dup.get("mobile_no"),
                             "email_id": dup.get("email_id"),
                             "tax_id": dup.get("tax_id"),
+                            "posa_barcode": dup.get("posa_barcode"),
+                            "customer_group": dup.get("customer_group"),
                             "matching_fields": [],
                         },
                     )
@@ -102,14 +107,15 @@ def _find_duplicate_customer_records(
         for customer in frappe.get_all(
             "Customer",
             filters=filters,
-            fields=["name", "customer_name", "mobile_no", "email_id", "tax_id"],
+            fields=["name", "customer_name", "mobile_no", "email_id", "tax_id", "posa_barcode", "customer_group"],
             limit_page_length=5,
         ):
             customer_name_key = customer.get("name")
             if not customer_name_key:
                 continue
             match = matches.setdefault(customer_name_key, dict(customer, matching_fields=[]))
-            match["matching_fields"].append(fieldname)
+            if fieldname not in match["matching_fields"]:
+                match["matching_fields"].append(fieldname)
 
     return list(matches.values())
 
@@ -122,6 +128,7 @@ def find_duplicate_customers(
     mobile_no=None,
     email_id=None,
     tax_id=None,
+    posa_barcode=None,
     customer_id=None,
 ):
     pos_profile_doc_obj = _assert_customer_write_allowed(pos_profile_doc, company=company)
@@ -131,8 +138,9 @@ def find_duplicate_customers(
         mobile_no=mobile_no,
         email_id=email_id,
         tax_id=tax_id,
+        posa_barcode=posa_barcode,
         exclude_customer=customer_id,
-        allow_duplicate_names=bool(pos_profile.get("posa_allow_duplicate_customer_names")),
+        allow_duplicate_names=bool(pos_profile.get("posa_allow_duplicate_customer_names", True)),
     )
 
 
@@ -258,6 +266,8 @@ def get_customer_names(pos_profile, limit=None, offset=None, start_after=None, m
                 "customer_group",
                 "territory",
                 "primary_address",
+                "posa_barcode",
+                "posa_birthday",
             ],
             order_by="name",
             limit_start=None if start_after else offset,
@@ -271,12 +281,21 @@ def get_customer_names(pos_profile, limit=None, offset=None, start_after=None, m
         return _get_customer_names(pos_profile, limit, offset, start_after, modified_after)
 
 
+def _barcode_matches_search(posa_barcode, search_term):
+    barcode = cstr(posa_barcode or "").strip().lower()
+    term = cstr(search_term or "").strip().lower()
+    if not barcode or not term:
+        return False
+    return term in barcode
+
+
 @frappe.whitelist()
 def search_customers(pos_profile, search_term, limit=200):
-    """Find mobile-number matches that may not have reached the local POS cache yet."""
+    """Find mobile-number or barcode matches that may not have reached the local POS cache yet."""
     profile = _load_json_arg(pos_profile) or {}
-    search_keys = _mobile_search_keys(search_term)
-    if not search_keys:
+    clean_term = cstr(search_term or "").strip()
+    search_keys = _mobile_search_keys(clean_term)
+    if not search_keys and len(clean_term) < 3:
         return []
 
     try:
@@ -284,40 +303,75 @@ def search_customers(pos_profile, search_term, limit=200):
     except (TypeError, ValueError):
         result_limit = 200
 
-    digits = max(search_keys, key=len)
-    fragment = digits[-4:]
-    filters = {
-        "disabled": 0,
-        "mobile_no": ["like", f"%{fragment}%"],
-    }
-    customer_groups = get_customer_groups(profile)
-    if customer_groups:
-        filters["customer_group"] = ["in", customer_groups]
+    customer_fields = [
+        "name",
+        "modified",
+        "mobile_no",
+        "email_id",
+        "tax_id",
+        "customer_name",
+        "loyalty_program",
+        "default_price_list",
+        "customer_group",
+        "territory",
+        "primary_address",
+        "posa_barcode",
+        "posa_birthday",
+    ]
 
-    candidates = frappe.get_all(
-        "Customer",
-        filters=filters,
-        fields=[
-            "name",
-            "modified",
-            "mobile_no",
-            "email_id",
-            "tax_id",
-            "customer_name",
-            "loyalty_program",
-            "default_price_list",
-            "customer_group",
-            "territory",
-            "primary_address",
-        ],
-        order_by="name",
-        limit_page_length=max(result_limit * 5, 500),
-    )
-    return [
-        customer
-        for customer in candidates
-        if _mobile_matches_search(customer.get("mobile_no"), search_term)
-    ][:result_limit]
+    customer_groups = get_customer_groups(profile)
+    matches = []
+    seen_names = set()
+
+    if search_keys:
+        digits = max(search_keys, key=len)
+        fragment = digits[-4:]
+        filters = {
+            "disabled": 0,
+            "mobile_no": ["like", f"%{fragment}%"],
+        }
+        if customer_groups:
+            filters["customer_group"] = ["in", customer_groups]
+
+        candidates = frappe.get_all(
+            "Customer",
+            filters=filters,
+            fields=customer_fields,
+            order_by="name",
+            limit_page_length=max(result_limit * 5, 500),
+        )
+        for customer in candidates:
+            if _mobile_matches_search(customer.get("mobile_no"), clean_term):
+                cname = customer.get("name")
+                if cname and cname not in seen_names:
+                    seen_names.add(cname)
+                    matches.append(customer)
+
+    if len(clean_term) >= 3 and len(matches) < result_limit:
+        barcode_filters = {
+            "disabled": 0,
+            "posa_barcode": ["like", f"%{clean_term}%"],
+        }
+        if customer_groups:
+            barcode_filters["customer_group"] = ["in", customer_groups]
+        try:
+            barcode_candidates = frappe.get_all(
+                "Customer",
+                filters=barcode_filters,
+                fields=customer_fields,
+                order_by="name",
+                limit_page_length=result_limit,
+            )
+            for customer in barcode_candidates:
+                if _barcode_matches_search(customer.get("posa_barcode"), clean_term):
+                    cname = customer.get("name")
+                    if cname and cname not in seen_names:
+                        seen_names.add(cname)
+                        matches.append(customer)
+        except Exception:
+            pass
+
+    return matches[:result_limit]
 
 
 @frappe.whitelist()
@@ -349,6 +403,8 @@ def get_customer_info(customer=None, company=None):
     res["customer_type"] = customer.customer_type
     res["territory"] = customer.territory
     res["birthday"] = customer.posa_birthday
+    res["posa_birthday"] = customer.posa_birthday
+    res["posa_barcode"] = customer.get("posa_barcode")
     res["gender"] = customer.gender
     res["tax_id"] = customer.tax_id
     res["posa_discount"] = customer.posa_discount
@@ -432,6 +488,7 @@ def create_customer(
     email_id=None,
     referral_code=None,
     birthday=None,
+    posa_barcode=None,
     customer_group=None,
     tier=None,
     territory=None,
@@ -445,19 +502,24 @@ def create_customer(
     pos_profile_doc_obj = _assert_customer_write_allowed(pos_profile_doc, company=company)
     pos_profile = pos_profile_doc_obj.as_dict() if pos_profile_doc_obj else {}
 
+    clean_barcode = cstr(posa_barcode or "").strip() or None
+
     # Format birthday to MySQL compatible format (YYYY-MM-DD) if provided
     formatted_birthday = None
     if birthday:
         try:
-            # Try to parse date in DD-MM-YYYY format
-            if "-" in birthday:
-                date_parts = birthday.split("-")
+            clean_bday = cstr(birthday).strip().replace(".", "-").replace("/", "-")
+            if len(clean_bday) == 8 and clean_bday.isdigit():
+                day, month, year = clean_bday[:2], clean_bday[2:4], clean_bday[4:]
+                formatted_birthday = f"{year}-{month}-{day}"
+            elif "-" in clean_bday:
+                date_parts = clean_bday.split("-")
                 if len(date_parts) == 3:
-                    day, month, year = date_parts
+                    if len(date_parts[0]) == 4:
+                        year, month, day = date_parts
+                    else:
+                        day, month, year = date_parts
                     formatted_birthday = f"{year}-{month.zfill(2)}-{day.zfill(2)}"
-            # If format is already YYYY-MM-DD, use as is
-            elif len(birthday) == 10 and birthday[4] == "-" and birthday[7] == "-":
-                formatted_birthday = birthday
         except Exception:
             frappe.log_error(f"Error formatting birthday: {birthday}", "POS Awesome")
 
@@ -467,7 +529,8 @@ def create_customer(
             mobile_no=mobile_no,
             email_id=email_id,
             tax_id=tax_id,
-            allow_duplicate_names=bool(pos_profile.get("posa_allow_duplicate_customer_names")),
+            posa_barcode=clean_barcode,
+            allow_duplicate_names=bool(pos_profile.get("posa_allow_duplicate_customer_names", True)),
         )
         if duplicate_customers:
             existing = duplicate_customers[0]
@@ -487,6 +550,7 @@ def create_customer(
                     "email_id": email_id,
                     "posa_referral_code": referral_code,
                     "posa_birthday": formatted_birthday,
+                    "posa_barcode": clean_barcode,
                     "customer_type": customer_type,
                     "gender": gender,
                 }
@@ -540,6 +604,19 @@ def create_customer(
 
             return customer
     elif method == "update":
+        if clean_barcode:
+            barcode_dups = _find_duplicate_customer_records(
+                posa_barcode=clean_barcode,
+                exclude_customer=customer_id,
+                allow_duplicate_names=True,
+            )
+            if barcode_dups:
+                existing = barcode_dups[0]
+                frappe.throw(
+                    _("Card barcode {0} is already assigned to {1}").format(
+                        clean_barcode, existing.get("customer_name") or existing.get("name")
+                    )
+                )
         customer_doc = frappe.get_doc("Customer", customer_id)
         customer_doc.customer_name = customer_name
         customer_doc.tax_id = tax_id
@@ -547,6 +624,7 @@ def create_customer(
         customer_doc.email_id = email_id
         customer_doc.posa_referral_code = referral_code
         customer_doc.posa_birthday = formatted_birthday
+        customer_doc.posa_barcode = clean_barcode
         customer_doc.customer_type = customer_type
         customer_doc.gender = gender
 

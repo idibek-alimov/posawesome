@@ -87,11 +87,48 @@ export function buildCustomerSearchText(
 		customer.mobile_no,
 		customer.email_id,
 		(customer as CustomerSummary & { tax_id?: unknown }).tax_id,
+		customer.posa_barcode,
 		normalizeCustomerMobile(customer.mobile_no),
 	]
 		.filter((value) => value !== null && value !== undefined)
 		.map((value) => String(value).toLowerCase())
 		.join("\n");
+}
+
+export function normalizeCustomerBarcode(
+	value: string | null | undefined,
+): string {
+	return String(value ?? "")
+		.trim()
+		.toLowerCase();
+}
+
+export function customerBarcodeMatchesSearch(
+	barcode: string | null | undefined,
+	term: string | null | undefined,
+): boolean {
+	const normalizedBarcode = normalizeCustomerBarcode(barcode);
+	const normalizedTerm = normalizeCustomerBarcode(term);
+	if (!normalizedBarcode || !normalizedTerm) {
+		return false;
+	}
+	return normalizedBarcode.includes(normalizedTerm);
+}
+
+export function isExactCustomerBarcodeMatch(
+	customer: CustomerSummary | null | undefined,
+	term: string | null | undefined,
+): boolean {
+	if (!customer) {
+		return false;
+	}
+	const normalizedBarcode = normalizeCustomerBarcode(customer.posa_barcode);
+	const normalizedTerm = normalizeCustomerBarcode(term);
+	return Boolean(
+		normalizedBarcode &&
+			normalizedTerm &&
+			normalizedBarcode === normalizedTerm,
+	);
 }
 
 export function customerMatchesSearchParts(
@@ -118,7 +155,11 @@ export function customerMatchesSearchTerm(
 	term: string | null | undefined,
 ): boolean {
 	if (isCustomerMobileSearchTerm(term)) {
-		return customerMobileMatchesSearch(customer?.mobile_no, term);
+		return (
+			customerMobileMatchesSearch(customer?.mobile_no, term) ||
+			customerBarcodeMatchesSearch(customer?.posa_barcode, term) ||
+			customerMatchesSearchParts(customer, buildCustomerSearchParts(term))
+		);
 	}
 	return customerMatchesSearchParts(customer, buildCustomerSearchParts(term));
 }
@@ -126,6 +167,7 @@ export function customerMatchesSearchTerm(
 export type CustomerDuplicateField =
 	| "customer_name"
 	| "mobile_no"
+	| "posa_barcode"
 	| "email_id"
 	| "tax_id";
 
@@ -142,7 +184,7 @@ export function normalizeCustomerDuplicateValue(
 	if (field === "customer_name") {
 		return normalized.replace(/\s+/g, " ");
 	}
-	if (field === "tax_id") {
+	if (field === "tax_id" || field === "posa_barcode") {
 		return normalized.replace(/\s+/g, "");
 	}
 	return normalized;
@@ -156,6 +198,7 @@ export function getCustomerDuplicateFields(
 	const fields: CustomerDuplicateField[] = [
 		...(includeCustomerName ? (["customer_name"] as const) : []),
 		"mobile_no",
+		"posa_barcode",
 		"email_id",
 		"tax_id",
 	];
@@ -186,4 +229,78 @@ export function getCustomerDuplicateFields(
 		}
 		return candidateValue === customerValue;
 	});
+}
+
+export function generateCustomerCardBarcode(): string {
+	// Generates a unique 13-digit internal EAN-13 loyalty card barcode (prefix "29")
+	const timestampPart = String(Date.now()).slice(-7);
+	const randomPart = String(Math.floor(100 + Math.random() * 900));
+	const base12 = `29${timestampPart}${randomPart}`;
+	let sum = 0;
+	for (let i = 0; i < 12; i += 1) {
+		const digit = Number(base12[i] || 0);
+		sum += i % 2 === 0 ? digit : digit * 3;
+	}
+	const checkDigit = (10 - (sum % 10)) % 10;
+	return `${base12}${checkDigit}`;
+}
+
+export function formatCustomerBirthdayDisplay(
+	value: string | null | undefined,
+): string {
+	const raw = String(value ?? "").trim();
+	if (!raw) {
+		return "";
+	}
+	if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+		const [year, month, day] = raw.split("-");
+		return `${day}.${month}.${year}`;
+	}
+	if (/^\d{2}[-./]\d{2}[-./]\d{4}$/.test(raw)) {
+		return raw.replace(/[-/]/g, ".");
+	}
+	return raw;
+}
+
+export function isCustomerBirthdaySoon(
+	value: string | null | undefined,
+	windowDays = 3,
+): { isToday: boolean; isSoon: boolean; displayDate: string } | null {
+	const raw = String(value ?? "").trim();
+	if (!raw) {
+		return null;
+	}
+	let day = 0;
+	let month = 0;
+	if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+		const parts = raw.split("-");
+		month = Number(parts[1]);
+		day = Number(parts[2]);
+	} else if (/^\d{1,2}[-./]\d{1,2}[-./]\d{4}$/.test(raw)) {
+		const parts = raw.split(/[-./]/);
+		day = Number(parts[0]);
+		month = Number(parts[1]);
+	}
+	if (!day || !month || month < 1 || month > 12 || day < 1 || day > 31) {
+		return null;
+	}
+	const now = new Date();
+	const todayMidnight = new Date(
+		now.getFullYear(),
+		now.getMonth(),
+		now.getDate(),
+	);
+	const bdayThisYear = new Date(now.getFullYear(), month - 1, day);
+	const diffDays = Math.round(
+		(bdayThisYear.getTime() - todayMidnight.getTime()) /
+			(1000 * 60 * 60 * 24),
+	);
+	if (Math.abs(diffDays) <= windowDays) {
+		return {
+			isToday: diffDays === 0,
+			isSoon: true,
+			displayDate: `${String(day).padStart(2, "0")}.${String(month).padStart(2, "0")}`,
+		};
+	}
+	return null;
 }
